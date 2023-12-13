@@ -1,3 +1,4 @@
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 
@@ -14,6 +15,9 @@ class Savegame(models.Model):
 
 class TileType(models.Model):
     name = models.CharField(max_length=50)
+    map_color = models.CharField(max_length=20)
+    probability = models.PositiveSmallIntegerField("Probability weight",
+                                                   validators=(MaxValueValidator(100), MinValueValidator(1)))
 
     class Meta:
         default_related_name = "tile_types"
@@ -49,3 +53,6 @@ class Tile(models.Model):
     @property
     def content(self):
         return self.building if self.building else self.tile_type
+
+    def map_color(self):
+        return "lightgrey" if self.building else self.tile_type.map_color

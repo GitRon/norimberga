@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 
-from city.models import Savegame
-from city.services.map_generation import MapGenerationService
+from apps.city.models import Savegame
+from apps.city.services.map_generation import MapGenerationService
 
 
 class Command(BaseCommand):

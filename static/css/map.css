@@ -14,13 +14,3 @@
 .coordinates {
     font-size: smaller;
 }
-
-.tile-type-hills {
-    background: saddlebrown;
-}
-.tile-type-meadows {
-    background: lightgreen;
-}
-.tile-type-river {
-    background: lightblue;
-}

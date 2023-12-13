@@ -12,7 +12,7 @@
 
 <div class="container">
     {% for tile in savegame.tiles.all %}
-        <div class="tile tile-type-{{ tile.tile_type|lower }}">
+        <div class="tile" style="background: {{ tile.map_color }}">
             <div class="coordinates">{{ tile.x }}/{{ tile.y }}</div>
             <div class="building">{{ tile.content }}</div>
         </div>

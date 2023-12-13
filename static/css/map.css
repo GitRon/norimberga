@@ -1,0 +1,26 @@
+.container {
+    width: 500px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+}
+
+.tile {
+    height: 100px;
+    width: 100px;
+    border: 1px solid #3c3c3c;
+}
+
+.coordinates {
+    font-size: smaller;
+}
+
+.tile-type-hills {
+    background: saddlebrown;
+}
+.tile-type-meadows {
+    background: lightgreen;
+}
+.tile-type-river {
+    background: lightblue;
+}

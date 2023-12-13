@@ -1,0 +1,45 @@
+*~
+*.pyc
+.idea
+.local
+.webassets-cache
+.sonar
+.DS_Store
+/staticfiles
+/static/bundles/*
+/static/scss/.sass-cache/*
+/media/
+/dev.db
+/logs/*
+!/logs/.gitkeep
+*.sqlite3
+*.log
+.coverage*
+.bash_history
+.cache
+
+# Local env
+.env
+venv
+!/aws/**/.env
+
+# NPM
+/node_modules/
+/static/cache/*
+
+# Generated files
+**/.sass-cache/*
+/static/scss/**/*.css
+/static/scss/**/*.css.map
+
+# docker
+.bash_history
+
+# Internationalisation
+**/locale/**/*.mo
+
+# Coverage
+coverage*.xml
+
+# Celery
+celerybeat-schedule

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from apps.city.models import Savegame, Building, TileType, Tile
+from apps.city.models import Building, Savegame, Tile, TileType
 
 
 @admin.register(Savegame)

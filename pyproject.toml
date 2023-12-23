@@ -1,0 +1,122 @@
+[tool.poetry]
+name = "poetry-demo"
+version = "1.0.0"
+description = ""
+authors = ["Ronny Vedrilla <ronny.vedrilla@ambient.digital>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.12"
+django = "^5.0"
+django-crispy-forms = "^2.1"
+crispy-tailwind = "^0.5.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+select = [
+    "E", # pycodestyle errors
+    "W", # pycodestyle warnings
+    "F", # Pyflakes
+    "N", # pep8-naming
+    "I", # isort
+    "B", # flake8-bugbear
+    "A", # flake8-builtins
+    "DTZ", # flake8-datetimez
+    "DJ", # flake8-django
+    "TD", # flake8-to-do
+    "RUF", # Removes unnecessary "#noqa" comments
+    "YTT", # Avoid non-future-prove usages of "sys"
+    "FBT", # Protects you from the "boolean trap bug"
+    "C4", # Checks for unnecessary conversions
+    "PIE", # Bunch of useful rules
+    "SIM", # Simplifies your code
+    "INT", # Validates your gettext translation strings
+    "PERF", # Perflint
+    "PGH", # No all-purpose "# noqa" and eval validation
+    "UP", # PyUpgrade
+]
+ignore = [
+#    'N999', # Project name contains underscore, not fixable
+#    'A003', # Django attributes shadow python builtins
+#    'DJ012', # Odd ordering of Django model methods
+#    'RUF012', # Mutable class attributes should be annotated with `typing.ClassVar`
+#    'PERF401', # Use a list comprehension to create a transformed list
+#    'TD003', # To-Do issue links
+]
+
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+fixable = [
+    "E", # pycodestyle errors
+    "W", # pycodestyle warnings
+    "F", # Pyflakes
+    "N", # pep8-naming
+    "I", # isort
+    "B", # flake8-bugbear
+    "A", # flake8-builtins
+    "DTZ", # flake8-datetimez
+    "DJ", # flake8-django
+    "TD", # flake8-to-do
+    "RUF", # Removes unnecessary "#noqa" comments
+    "YTT", # Avoid non-future-prove usages of "sys"
+    "FBT", # Protects you from the "boolean trap bug"
+    "C4", # Checks for unnecessary conversions
+    "PIE", # Bunch of useful rules
+    "SIM", # Simplifies your code
+    "INT", # Validates your gettext translation strings
+    "PERF", # Perflint
+    "PGH", # No all-purpose "# noqa" and eval validation
+    "UP", # PyUpgrade
+]
+unfixable = []
+
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+    "*/migrations/*",
+]
+
+# For linting and formatting
+line-length = 120
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+# Assume Python 3.12.
+target-version = "py312"
+
+[tool.ruff.format]
+# Like Black, use double quotes for strings.
+quote-style = "double"
+
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+
+# Like Black, respect magic trailing commas.
+skip-magic-trailing-comma = false
+
+# Like Black, automatically detect the appropriate line ending.
+line-ending = "auto"
+
+# Exclude Django migration files
+exclude = ["migrations/*.py"]

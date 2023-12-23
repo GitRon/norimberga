@@ -17,7 +17,7 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path, include, reverse_lazy
+from django.urls import include, path, reverse_lazy
 from django.views.generic import RedirectView
 
 urlpatterns = [
@@ -25,7 +25,7 @@ urlpatterns = [
     path("city/", include("apps.city.urls", namespace="city")),
     path(
         "",
-        RedirectView.as_view(url=reverse_lazy("city:city-map")),
+        RedirectView.as_view(url=reverse_lazy("city:landing-page")),
         name="default",
     ),
 ]

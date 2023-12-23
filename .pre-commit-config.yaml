@@ -1,0 +1,47 @@
+# You find the full pre-commit-tools docs here:
+# https://pre-commit.com/
+
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.7
+    hooks:
+      # Run the Ruff linter.
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+      # Run the Ruff formatter.
+      - id: ruff-format
+
+  - repo: https://github.com/adamchainz/django-upgrade
+    rev: 1.15.0
+    hooks:
+      - id: django-upgrade
+        args: [--target-version, "4.2"]
+        stages: [ push ]
+
+  - repo: https://github.com/rtts/djhtml
+    rev: 3.0.6
+    hooks:
+      - id: djhtml
+        # Indent only HTML files in template directories
+        files: .*/?templates/.*\.html$
+        stages: [ push ]
+        exclude: |
+          (?x)^(
+              .*/node_modules/.*|
+          )$
+      - id: djcss
+        entry: djcss --tabwidth 2
+        exclude: |
+          (?x)^(
+              .*/node_modules/.*|
+          )$
+        # Run this hook only on SCSS files (CSS and SCSS is the default)
+        types: [ scss ]
+        stages: [ push ]
+      - id: djjs
+        # Exclude JavaScript files in vendor directories
+        exclude: |
+          (?x)^(
+              .*/node_modules/.*|
+          )$
+        stages: [ push ]

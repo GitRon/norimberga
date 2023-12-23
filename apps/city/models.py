@@ -14,10 +14,15 @@ class Savegame(models.Model):
 
 
 class TileType(models.Model):
+    """
+    Type of country. Determines what you can do on it.
+    """
+
     name = models.CharField(max_length=50)
-    map_color = models.CharField(max_length=20)
-    probability = models.PositiveSmallIntegerField("Probability weight",
-                                                   validators=(MaxValueValidator(100), MinValueValidator(1)))
+    color_class = models.CharField(max_length=20)
+    probability = models.PositiveSmallIntegerField(
+        "Probability weight", validators=(MaxValueValidator(100), MinValueValidator(1))
+    )
 
     class Meta:
         default_related_name = "tile_types"
@@ -28,6 +33,7 @@ class TileType(models.Model):
 
 class Building(models.Model):
     name = models.CharField(max_length=50)
+    is_wall = models.BooleanField(default=False)
 
     class Meta:
         default_related_name = "buildings"
@@ -54,5 +60,11 @@ class Tile(models.Model):
     def content(self):
         return self.building if self.building else self.tile_type
 
-    def map_color(self):
-        return "lightgrey" if self.building else self.tile_type.map_color
+    def color_class(self):
+        # Tailwind can't detect dynamic classes, therefore, they are safelist-ed
+        if self.building:
+            if self.building.is_wall:
+                return "bg-gray-400"
+            else:
+                return "bg-red-50"
+        return self.tile_type.color_class

@@ -43,3 +43,6 @@ coverage*.xml
 
 # Celery
 celerybeat-schedule
+
+# Tailwind
+/static/css/dist

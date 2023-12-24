@@ -1,13 +1,12 @@
 {% load crispy_forms_tags %}
 {% load tailwind_filters %}
-
 <div id="form-container" class="flex flex-row ml-10">
     <div class="flex flex-col">
-        <h1 class="text-xl font-bold mb-4">Build something</h1>
+        <h1 class="text-xl font-bold mb-4">Build something: {{ object.terrain }} ({{ object }})</h1>
         <form method="POST" action="{% url "city:tile-build" object.id %}">
             {% crispy form %}
             <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-                    hx-post="{% url "city:tile-build" object.id %}" hx-target="closest #form-container">
+                    hx-post="{% url "city:tile-build" object.id %}" hx-target="closest #form-container" hx-swap="outerHTML">
                 Commence changes!
             </button>
         </form>

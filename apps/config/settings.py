@@ -68,6 +68,8 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                # Custom
+                "apps.city.context_processors.savegame.get_current_savegame",
             ],
         },
     },

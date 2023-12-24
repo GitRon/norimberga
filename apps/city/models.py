@@ -5,6 +5,7 @@ from django.db import models
 class Savegame(models.Model):
     city_name = models.CharField(max_length=100)
     map_size = models.PositiveSmallIntegerField(default=5)
+    coins = models.PositiveSmallIntegerField("Coins", default=0)
 
     class Meta:
         default_related_name = "savegames"
@@ -13,7 +14,7 @@ class Savegame(models.Model):
         return self.city_name
 
 
-class TileType(models.Model):
+class Terrain(models.Model):
     """
     Type of country. Determines what you can do on it.
     """
@@ -25,26 +26,33 @@ class TileType(models.Model):
     )
 
     class Meta:
-        default_related_name = "tile_types"
+        default_related_name = "terrains"
 
     def __str__(self):
         return self.name
 
 
 class Building(models.Model):
+    class BehaviourTypeChoices(models.IntegerChoices):
+        IS_COUNTRY = 1, "Country building"
+        IS_CITY = 2, "City building"
+        IS_WALL = 3, "Type of city wall"
+
     name = models.CharField(max_length=50)
-    is_wall = models.BooleanField(default=False)
+    behaviour_type = models.PositiveSmallIntegerField("Behaviour type", choices=BehaviourTypeChoices.choices)
+    allowed_terrains = models.ManyToManyField(Terrain, verbose_name="Allowed terrains")
+    building_costs = models.PositiveSmallIntegerField("Building costs", default=0)
 
     class Meta:
         default_related_name = "buildings"
 
     def __str__(self):
-        return self.name
+        return f"{self.name} ({self.building_costs} coins)"
 
 
 class Tile(models.Model):
     savegame = models.ForeignKey(Savegame, on_delete=models.CASCADE)
-    tile_type = models.ForeignKey(TileType, on_delete=models.CASCADE)
+    terrain = models.ForeignKey(Terrain, on_delete=models.CASCADE)
     x = models.PositiveSmallIntegerField()
     y = models.PositiveSmallIntegerField()
     building = models.ForeignKey(Building, on_delete=models.SET_NULL, blank=True, null=True)
@@ -58,13 +66,13 @@ class Tile(models.Model):
 
     @property
     def content(self):
-        return self.building if self.building else self.tile_type
+        return self.building if self.building else self.terrain
 
     def color_class(self):
         # Tailwind can't detect dynamic classes, therefore, they are safelist-ed
         if self.building:
-            if self.building.is_wall:
+            if self.building.behaviour_type == Building.BehaviourTypeChoices.IS_WALL:
                 return "bg-gray-400"
             else:
-                return "bg-red-50"
-        return self.tile_type.color_class
+                return "pattern-zigzag pattern-red-500 pattern-bg-white pattern-size-8"
+        return self.terrain.color_class

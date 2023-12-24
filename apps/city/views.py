@@ -1,3 +1,4 @@
+import json
 from http import HTTPStatus
 
 from django.http import HttpResponse
@@ -7,26 +8,17 @@ from apps.city.forms.tile import TileBuildingForm
 from apps.city.models import Savegame, Tile
 
 
+class CoinUpdateView(generic.DetailView):
+    model = Savegame
+    template_name = "savegame/partials/_coins.html"
+
+
 class LandingPageView(generic.TemplateView):
     template_name = "city/landing_page.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        context["savegame"], _ = Savegame.objects.get_or_create(id=1)
-
-        return context
 
 
 class CityMapView(generic.TemplateView):
     template_name = "city/partials/map/_city_map.html.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        context["savegame"], _ = Savegame.objects.get_or_create(id=1)
-
-        return context
 
 
 class TileBuildView(generic.UpdateView):
@@ -37,15 +29,27 @@ class TileBuildView(generic.UpdateView):
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["savegame"], _ = Savegame.objects.get_or_create(id=1)
+        return kwargs
+
     def form_valid(self, form):
         super().form_valid(form=form)
+
+        if form.cleaned_data["building"]:
+            savegame, _ = Savegame.objects.get_or_create(id=1)
+            savegame.coins -= form.cleaned_data["building"].building_costs
+            savegame.save()
+
         response = HttpResponse(status=HTTPStatus.OK)
-        response["HX-Trigger"] = "refreshMap"
+        response["HX-Trigger"] = json.dumps(
+            {
+                "refreshMap": "-",
+                "updateCoins": "-",
+            }
+        )
         return response
 
     def get_success_url(self):
         return None
-
-    def form_invalid(self, form):
-        # We return a 400 because the form is supposed to be always valid (all-optional fields)
-        return HttpResponse(status=HTTPStatus.BAD_REQUEST)

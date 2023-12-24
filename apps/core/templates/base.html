@@ -11,6 +11,9 @@
 </html>
 <body class="min-h-screen bg-gray-100">
     <div class="container mx-auto">
-        {% block content %}{% endblock %}
+        {% include "partials/_navbar.html" %}
+        <div class="p-4">
+            {% block content %}{% endblock %}
+        </div>
     </div>
 </body>

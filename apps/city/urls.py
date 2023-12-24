@@ -9,4 +9,6 @@ urlpatterns = [
     path("map/", views.CityMapView.as_view(), name="city-map"),
     # Tiles
     path("tile/<int:pk>/build", views.TileBuildView.as_view(), name="tile-build"),
+    # Savegame
+    path("savegame/<int:pk>/coins", views.CoinUpdateView.as_view(), name="savegame-coins"),
 ]

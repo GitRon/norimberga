@@ -35,7 +35,9 @@ const getTemplateFiles = () => {
 module.exports = {
     // Allow configuring some folders manually, and then concatenate with the
     // output of the Django management command.
-    content: [].concat(getTemplateFiles()),
+    content: [
+        "./apps/**/templates/**/*.html",
+    ].concat(getTemplateFiles()),
     safelist: [
         "bg-yellow-600",
         "bg-blue-300",

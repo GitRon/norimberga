@@ -6,5 +6,11 @@
             <h1 class="text-3xl font-bold mb-4">Your city: {{ savegame }}</h1>
         </div>
     </div>
-    {% include 'city/partials/map/_city_map.html.html' %}
+    {% include 'city/partials/map/_city_map.html' %}
+
+    <div class="flex flex-row">
+        <div class="flex flex-col">
+            <h1 class="text-3xl font-bold my-4">Logs</h1>
+        </div>
+    </div>
 {% endblock %}

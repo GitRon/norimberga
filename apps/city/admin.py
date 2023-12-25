@@ -20,4 +20,4 @@ class TerrainAdmin(admin.ModelAdmin):
 
 @admin.register(Building)
 class BuildingAdmin(admin.ModelAdmin):
-    list_display = ("name", "behaviour_type", "building_costs")
+    list_display = ("name", "behaviour_type", "taxes", "building_costs", "maintenance_costs")

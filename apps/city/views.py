@@ -8,14 +8,9 @@ from apps.city.forms.tile import TileBuildingForm
 from apps.city.models import Savegame, Tile
 
 
-class CoinUpdateView(generic.DetailView):
+class SavegameValueView(generic.DetailView):
     model = Savegame
-    template_name = "savegame/partials/_coins.html"
-
-
-class PopulationUpdateView(generic.DetailView):
-    model = Savegame
-    template_name = "savegame/partials/_population.html"
+    template_name = "savegame/partials/_nav_values.html"
 
 
 class LandingPageView(generic.TemplateView):
@@ -23,7 +18,7 @@ class LandingPageView(generic.TemplateView):
 
 
 class CityMapView(generic.TemplateView):
-    template_name = "city/partials/map/_city_map.html.html"
+    template_name = "city/partials/map/_city_map.html"
 
 
 class TileBuildView(generic.UpdateView):
@@ -51,7 +46,7 @@ class TileBuildView(generic.UpdateView):
         response["HX-Trigger"] = json.dumps(
             {
                 "refreshMap": "-",
-                "updateCoins": "-",
+                "updateNavbarValues": "-",
             }
         )
         return response

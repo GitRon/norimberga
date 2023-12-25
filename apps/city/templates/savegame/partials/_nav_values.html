@@ -25,6 +25,19 @@
             {{ savegame.population }}
         </div>
     </div>
+    <!-- Year -->
+    <div class="flex mx-2">
+        <div class="flex-auto">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                 stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+            </svg>
+        </div>
+        <div class="flex-auto ml-2">
+            {{ savegame.current_year }}
+        </div>
+    </div>
     <!-- Finish round -->
     <div class="flex mx-2">
         <div class="flex-auto cursor-pointer" hx-post="{% url "round:finish" %}" hx-trigger="click">

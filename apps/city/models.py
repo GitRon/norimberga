@@ -1,11 +1,13 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.template.loader import render_to_string
 
 
 class Savegame(models.Model):
     city_name = models.CharField(max_length=100)
     map_size = models.PositiveSmallIntegerField(default=5)
     coins = models.PositiveSmallIntegerField("Coins", default=0)
+    population = models.PositiveSmallIntegerField("Population", default=0)
 
     class Meta:
         default_related_name = "savegames"
@@ -47,7 +49,7 @@ class Building(models.Model):
         default_related_name = "buildings"
 
     def __str__(self):
-        return f"{self.name} ({self.building_costs} coins)"
+        return f"{self.name}"
 
 
 class Tile(models.Model):
@@ -72,7 +74,11 @@ class Tile(models.Model):
         # Tailwind can't detect dynamic classes, therefore, they are safelist-ed
         if self.building:
             if self.building.behaviour_type == Building.BehaviourTypeChoices.IS_WALL:
-                return "bg-gray-400"
+                return render_to_string("city/classes/_tile_city_wall.txt")
+            elif self.building.behaviour_type == Building.BehaviourTypeChoices.IS_COUNTRY:
+                return render_to_string("city/classes/_tile_country.txt")
+            elif self.building.behaviour_type == Building.BehaviourTypeChoices.IS_CITY:
+                return render_to_string("city/classes/_tile_city.txt")
             else:
-                return "pattern-zigzag pattern-red-500 pattern-bg-white pattern-size-8"
+                return ""
         return self.terrain.color_class

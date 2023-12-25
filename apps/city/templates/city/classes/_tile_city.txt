@@ -1,0 +1,1 @@
+pattern-zigzag pattern-red-500 pattern-bg-white pattern-size-8

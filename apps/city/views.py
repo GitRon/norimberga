@@ -13,6 +13,11 @@ class CoinUpdateView(generic.DetailView):
     template_name = "savegame/partials/_coins.html"
 
 
+class PopulationUpdateView(generic.DetailView):
+    model = Savegame
+    template_name = "savegame/partials/_population.html"
+
+
 class LandingPageView(generic.TemplateView):
     template_name = "city/landing_page.html"
 

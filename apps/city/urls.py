@@ -11,4 +11,5 @@ urlpatterns = [
     path("tile/<int:pk>/build", views.TileBuildView.as_view(), name="tile-build"),
     # Savegame
     path("savegame/<int:pk>/coins", views.CoinUpdateView.as_view(), name="savegame-coins"),
+    path("savegame/<int:pk>/population", views.PopulationUpdateView.as_view(), name="savegame-population"),
 ]

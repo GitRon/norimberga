@@ -21,6 +21,6 @@ class Command(BaseCommand):
         template_files = []
         for dirpath, _, filenames in os.walk(str(template_dir)):
             for filename in filenames:
-                if filename.endswith((".html", ".py")):
+                if filename.endswith((".html", ".txt")):
                     template_files.append(os.path.join(dirpath, filename))  # noqa: PERF401
         return template_files

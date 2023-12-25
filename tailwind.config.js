@@ -42,8 +42,13 @@ module.exports = {
         "bg-green-400",
         "bg-gray-400",
         "bg-red-50",
+        "bg-lime-800",
         "aria-disabled",
         "aria-readonly",
+        "pattern-zigzag",
+        "pattern-red-500",
+        "pattern-rhombus",
+        "pattern-yellow-500",
     ],
     variants: {
         extend: {

@@ -2,10 +2,13 @@ from crispy_forms.helper import FormHelper
 from django import forms
 from django.core.exceptions import ValidationError
 
+from apps.city.fields.building import BuildingModelChoiceField
 from apps.city.models import Building, Tile
 
 
 class TileBuildingForm(forms.ModelForm):
+    building = BuildingModelChoiceField(queryset=Building.objects.none(), required=False)
+
     class Meta:
         model = Tile
         fields = ("building",)

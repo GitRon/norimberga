@@ -38,7 +38,7 @@ class Terrain(models.Model):
 class Building(models.Model):
     class BehaviourTypeChoices(models.IntegerChoices):
         IS_COUNTRY = 1, "Country building"
-        IS_CITY = 2, "City building"
+        IS_HOUSE = 2, "Type of house"
         IS_WALL = 3, "Type of city wall"
 
     name = models.CharField(max_length=50)
@@ -81,8 +81,6 @@ class Tile(models.Model):
                 return render_to_string("city/classes/_tile_city_wall.txt")
             elif self.building.behaviour_type == Building.BehaviourTypeChoices.IS_COUNTRY:
                 return render_to_string("city/classes/_tile_country.txt")
-            elif self.building.behaviour_type == Building.BehaviourTypeChoices.IS_CITY:
-                return render_to_string("city/classes/_tile_city.txt")
             else:
-                return ""
+                return render_to_string("city/classes/_tile_city.txt")
         return self.terrain.color_class

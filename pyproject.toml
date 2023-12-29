@@ -44,7 +44,7 @@ ignore = [
 #    'DJ012', # Odd ordering of Django model methods
 #    'RUF012', # Mutable class attributes should be annotated with `typing.ClassVar`
 #    'PERF401', # Use a list comprehension to create a transformed list
-#    'TD003', # To-Do issue links
+    'TD003', # To-Do issue links
 ]
 
 # Allow autofix for all enabled rules (when `--fix`) is provided.

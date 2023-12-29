@@ -5,6 +5,7 @@ from django.views import generic
 
 from apps.city.services.building.maintenance import BuildingMaintenanceService
 from apps.city.services.building.population import BuildingPopulationService
+from apps.event.services.event import EventService
 
 
 class RoundView(generic.View):
@@ -13,6 +14,7 @@ class RoundView(generic.View):
     def post(self, request, *args, **kwargs):
         BuildingMaintenanceService().process()
         BuildingPopulationService().process()
+        EventService().process()
         response = HttpResponse(status=HTTPStatus.OK)
         response["HX-Trigger"] = "updateNavbarValues"
         return response

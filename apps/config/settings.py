@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "apps.city",
     "apps.config",
     "apps.core",
+    "apps.event",
     "apps.round",
     "crispy_forms",
     "crispy_tailwind",

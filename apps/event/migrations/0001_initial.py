@@ -62,7 +62,7 @@ class Migration(migrations.Migration):
                 ),
             ],
             options={
-                "default_related_name": "event_effects",
+                "default_related_name": "effects",
             },
         ),
         migrations.CreateModel(

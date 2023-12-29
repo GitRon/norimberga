@@ -14,10 +14,15 @@ class RoundView(generic.View):
     http_method_names = ("post",)
 
     def post(self, request, *args, **kwargs):
-        event = EventSelectionService().process()
-        if event:
+        event_list = EventSelectionService().process()
+        for event in event_list:
             message = event.process()
             messages.add_message(self.request, messages.INFO, message)
+
+        if not len(event_list):
+            messages.add_message(
+                self.request, messages.INFO, "It was a quiet year. Nothing happened out of the ordinary."
+            )
 
         # Regular round-based stuff
         BuildingMaintenanceService().process()

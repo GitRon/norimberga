@@ -6,11 +6,13 @@ class BaseEvent:
     Prefix every method to instantiate a new event effect with "_prepare_effect"
     """
 
-    # Higher probability makes it more unlikely
     PROBABILITY = 0
 
     # TODO(RV): noch conditions einbauen, wann das passiert zusätzlich zur wahrscheinlichkeit?
-    #  oder wahrscheinlichkeit als methode, die sich dann berechnet?)
+    #  oder wahrscheinlichkeit als methode, die sich dann berechnet?) -> methode ist da
+
+    def get_probability(self):
+        return self.PROBABILITY
 
     def get_effects(self):
         method_list = inspect.getmembers(self, predicate=inspect.ismethod)

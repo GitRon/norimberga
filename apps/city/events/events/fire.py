@@ -7,7 +7,7 @@ from apps.event.events.events.base_event import BaseEvent
 
 
 class Event(BaseEvent):
-    PROBABILITY = 10
+    PROBABILITY = 5
 
     lost_population: int
     affected_tile: Tile

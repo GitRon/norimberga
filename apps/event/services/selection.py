@@ -10,8 +10,6 @@ from apps.event.events.events.base_event import BaseEvent
 
 class EventSelectionService:
     def _get_possible_events(self):
-        dice = random.randint(1, 100)
-
         # Get base dir and locally installed apps
         root_dir = settings.ROOT_DIR
         local_apps = settings.LOCAL_APPS
@@ -43,25 +41,21 @@ class EventSelectionService:
 
                 # Get event class
                 try:
-                    event_class = module.Event
+                    event: BaseEvent = module.Event()
                 except AttributeError:
                     continue
 
                 # Check if the loaded class is really an event
-                if not isinstance(event_class(), BaseEvent):
+                if not isinstance(event, BaseEvent):
                     continue
 
                 # Check probability and add event to possible events
-                probability = event_class.PROBABILITY
-                if probability <= dice:
-                    possible_event_classes.append(event_class)
+                probability = event.get_probability()
+                if probability >= random.randint(1, 100):
+                    possible_event_classes.append(event)
 
         return possible_event_classes
 
-    def process(self) -> BaseEvent | None:
-        possible_event_classes = self._get_possible_events()
-        if len(possible_event_classes):
-            event_class = random.choice(possible_event_classes)
-
-            if event_class:
-                return event_class()
+    def process(self) -> list[BaseEvent]:
+        possible_events = self._get_possible_events()
+        return [event for event in possible_events]

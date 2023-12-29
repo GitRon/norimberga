@@ -5,7 +5,7 @@ from apps.event.events.events.base_event import BaseEvent
 
 
 class Event(BaseEvent):
-    PROBABILITY = 25
+    PROBABILITY = 20
 
     lost_population: int
 

@@ -30,10 +30,7 @@ class Event(BaseEvent):
         return None
 
     def get_verbose_text(self):
-        message = (
-            f"Due to general neglect and watchful eyes, a fire raged throughout the city, killing "
-            f"{self.lost_population}."
-        )
+        message = f"Due to general neglect, a fire raged throughout the city, killing " f"{self.lost_population}."
         if self.affected_tile:
             message += f" The fire started in the building {self.affected_tile} and destroyed it completely."
 

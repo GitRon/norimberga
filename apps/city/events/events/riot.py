@@ -12,9 +12,9 @@ class Event(BaseEvent):
     def __init__(self):
         self.lost_population = random.randint(5, 10)
 
-    def get_effects(self):
+    def _prepare_effect_decrease_population(self):
         # TODO(RV): die zahlen stimmen nicht, da die grenzen erst vom effekt berechnet werden...
-        return (DecreasePopulationAbsolute(lost_population=self.lost_population),)
+        return DecreasePopulationAbsolute(lost_population=self.lost_population)
 
     def get_verbose_text(self):
         return (

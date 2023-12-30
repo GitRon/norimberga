@@ -25,8 +25,9 @@ class RoundView(generic.View):
         response = HttpResponse(status=HTTPStatus.OK)
         response["HX-Trigger"] = json.dumps(
             {
-                "updateNavbarValues": "-",
+                "reloadMessages": "-",
                 "refreshMap": "-",
+                "updateNavbarValues": "-",
             }
         )
         return response

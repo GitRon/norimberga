@@ -18,7 +18,11 @@ class LandingPageView(generic.TemplateView):
 
 
 class CityMapView(generic.TemplateView):
-    template_name = "city/partials/map/_city_map.html"
+    template_name = "city/partials/city/_city_map.html"
+
+
+class CityMessagesView(generic.TemplateView):
+    template_name = "city/partials/city/_messages.html"
 
 
 class TileBuildView(generic.UpdateView):

@@ -1,5 +1,5 @@
 from apps.city.models import Savegame
-from apps.city.services.building.population import BuildingPopulationService
+from apps.city.services.building.housing import BuildingHousingService
 
 
 class IncreasePopulationRelative:
@@ -11,6 +11,6 @@ class IncreasePopulationRelative:
     def process(self):
         savegame, _ = Savegame.objects.get_or_create(id=1)
 
-        max_population_housing = BuildingPopulationService().calculate_max_space()
+        max_population_housing = BuildingHousingService().calculate_max_space()
         savegame.population = min(round(savegame.population * (1 + self.new_population)), max_population_housing)
         savegame.save()

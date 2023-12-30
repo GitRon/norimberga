@@ -1,16 +1,22 @@
 import random
 
 from apps.city.events.effects.savegame.decrease_population_relative import DecreasePopulationRelative
+from apps.city.models import Savegame
 from apps.event.events.events.base_event import BaseEvent
 
 
 class Event(BaseEvent):
     PROBABILITY = 5
 
+    savegame: Savegame
     lost_population_percentage: float
 
     def __init__(self):
+        self.savegame, _ = Savegame.objects.get_or_create(id=1)
         self.lost_population_percentage = random.randint(10, 25) / 10
+
+    def get_probability(self):
+        return super().get_probability() if self.savegame.population > 0 else 0
 
     def get_effects(self):
         return (DecreasePopulationRelative(lost_population_percentage=self.lost_population_percentage),)

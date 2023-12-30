@@ -5,8 +5,6 @@ from django.contrib import messages
 from django.http import HttpResponse
 from django.views import generic
 
-from apps.city.services.building.maintenance import BuildingMaintenanceService
-from apps.city.services.building.population import BuildingPopulationService
 from apps.event.services.selection import EventSelectionService
 
 
@@ -23,10 +21,6 @@ class RoundView(generic.View):
             messages.add_message(
                 self.request, messages.INFO, "It was a quiet year. Nothing happened out of the ordinary."
             )
-
-        # Regular round-based stuff
-        BuildingMaintenanceService().process()
-        BuildingPopulationService().process()
 
         response = HttpResponse(status=HTTPStatus.OK)
         response["HX-Trigger"] = json.dumps(

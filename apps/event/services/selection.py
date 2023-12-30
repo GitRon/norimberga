@@ -57,5 +57,4 @@ class EventSelectionService:
         return possible_event_classes
 
     def process(self) -> list[BaseEvent]:
-        possible_events = self._get_possible_events()
-        return [event for event in possible_events]
+        return self._get_possible_events()

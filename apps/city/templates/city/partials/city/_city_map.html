@@ -1,11 +1,11 @@
 <div class="flex flex-col" hx-trigger="refreshMap from:body" hx-get="{% url "city:city-map" %}" hx-swap="outerHTML">
-    <div class="grid grid-cols-5 gap-x-0 rounded-md text-center">
+    {# todo: map_size in savegame can't be dynamic because it has to match the columns here #}
+    <div class="grid grid-cols-10 gap-x-0 text-center">
         {% for tile in savegame.tiles.all %}
             {# Tailwind can't detect dynamic classes, therefore, they are safelist-ed #}
-            <div class="px-3 py-6 w-24 h-23 border border-gray-50 cursor-pointer {{ tile.color_class }}"
+            <div class="px-3 py-6 w-12 h-8 border border-gray-50 cursor-pointer {{ tile.color_class }} relative"
                  hx-get="{% url "city:tile-build" tile.id %}" hx-target="#build-container" hx-swap="innerHTML">
-                <span class="coordinates">{{ tile.x }}/{{ tile.y }}</span>
-                <span class="building">{{ tile.content }}</span>
+{#                <span class="absolute bottom-0 right-0 m-1 text-xs text-slate-500">{{ tile.x }}/{{ tile.y }}</span>#}
             </div>
         {% endfor %}
     </div>

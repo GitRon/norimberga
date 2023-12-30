@@ -23,8 +23,6 @@ class TileBuildingForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         building_qs = Building.objects.filter(allowed_terrains=self.instance.terrain)
-        if self.instance.building:
-            building_qs = building_qs.exclude(id=self.instance.building.id)
         self.fields["building"].queryset = building_qs
 
     def clean_building(self):
@@ -32,5 +30,8 @@ class TileBuildingForm(forms.ModelForm):
 
         if building and building.building_costs > self.savegame.coins:
             raise ValidationError("You don't have enough coin.")
+
+        if building and self.instance.building == building:
+            raise ValidationError("This building has already been built here.")
 
         return building

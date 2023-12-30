@@ -1,7 +1,7 @@
 <div class="flex flex-col w-80" hx-trigger="reloadMessages from:body" hx-get="{% url "city:city-messages" %}" hx-swap="outerHTML">
     <h3 class="text-xl font-bold mb-4">Messages</h3>
     {% for message in messages %}
-        <div class="bg-orange-100 rounded-xl p-6 mb-6 mr-6 text-stone-500">
+        <div class="{% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}bg-red-100{% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}bg-orange-100{% elif message.level == DEFAULT_MESSAGE_LEVELS.INFO %}bg-sky-100{% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}bg-green-100{% endif %} rounded-xl p-6 mb-6 mr-6 text-stone-500">
             <div class="flex flex-row mb-2">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                      stroke="currentColor" class="w-6 h-6">

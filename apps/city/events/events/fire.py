@@ -1,5 +1,7 @@
 import random
 
+from django.contrib import messages
+
 from apps.city.events.effects.building.remove_building import RemoveBuilding
 from apps.city.events.effects.savegame.decrease_population_absolute import DecreasePopulationAbsolute
 from apps.city.models import Building, Savegame, Tile
@@ -8,6 +10,7 @@ from apps.event.events.events.base_event import BaseEvent
 
 class Event(BaseEvent):
     PROBABILITY = 5
+    LEVEL = messages.ERROR
 
     savegame: Savegame
     initial_population: int

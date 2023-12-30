@@ -1,5 +1,7 @@
 import random
 
+from django.contrib import messages
+
 from apps.city.events.effects.savegame.decrease_population_relative import DecreasePopulationRelative
 from apps.city.models import Savegame
 from apps.event.events.events.base_event import BaseEvent
@@ -7,6 +9,7 @@ from apps.event.events.events.base_event import BaseEvent
 
 class Event(BaseEvent):
     PROBABILITY = 5
+    LEVEL = messages.ERROR
 
     savegame: Savegame
     lost_population_percentage: float

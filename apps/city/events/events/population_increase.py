@@ -1,5 +1,7 @@
 from math import ceil
 
+from django.contrib import messages
+
 from apps.city.events.effects.savegame.increase_population_absolute import IncreasePopulationAbsolute
 from apps.city.models import Savegame
 from apps.city.services.building.housing import BuildingHousingService
@@ -8,6 +10,7 @@ from apps.event.events.events.base_event import BaseEvent
 
 class Event(BaseEvent):
     PROBABILITY = 100
+    LEVEL = messages.INFO
 
     YEARLY_POP_INCREASE_FACTOR = 0.05
 

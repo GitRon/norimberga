@@ -1,11 +1,14 @@
 import random
 
+from django.contrib import messages
+
 from apps.city.events.effects.savegame.increase_coins import IncreaseCoins
 from apps.event.events.events.base_event import BaseEvent
 
 
 class Event(BaseEvent):
     PROBABILITY = 20
+    LEVEL = messages.SUCCESS
 
     bounty: int
 

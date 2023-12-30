@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.db.models import Sum
 
 from apps.city.events.effects.savegame.decrease_coins import DecreaseCoins
@@ -7,6 +8,7 @@ from apps.event.events.events.base_event import BaseEvent
 
 class Event(BaseEvent):
     PROBABILITY = 100
+    LEVEL = messages.INFO
 
     savegame: Savegame
     maintenance: int

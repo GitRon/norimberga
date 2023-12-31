@@ -22,7 +22,7 @@ class Savegame(models.Model):
 
 class Terrain(models.Model):
     """
-    Type of country. Determines what you can do on it.
+    Type of country. Determines what you can build on it.
     """
 
     name = models.CharField(max_length=50)
@@ -38,19 +38,36 @@ class Terrain(models.Model):
         return self.name
 
 
-class Building(models.Model):
+class BuildingType(models.Model):
     class BehaviourTypeChoices(models.IntegerChoices):
         IS_COUNTRY = 1, "Country building"
-        IS_HOUSE = 2, "Type of house"
-        IS_WALL = 3, "Type of city wall"
+        IS_CITY = 2, "City building"
 
     name = models.CharField(max_length=50)
     behaviour_type = models.PositiveSmallIntegerField("Behaviour type", choices=BehaviourTypeChoices.choices)
     allowed_terrains = models.ManyToManyField(Terrain, verbose_name="Allowed terrains")
 
-    taxes = models.PositiveSmallIntegerField("Taxes", default=0)
-    building_costs = models.PositiveSmallIntegerField("Building costs", default=0)
-    maintenance_costs = models.PositiveSmallIntegerField("Maintenance costs", default=0)
+    is_house = models.BooleanField("Is house", default=False)
+    is_wall = models.BooleanField("Is Wall", default=False)
+
+    class Meta:
+        default_related_name = "building_types"
+
+    def __str__(self):
+        return f"{self.name}"
+
+
+class Building(models.Model):
+    name = models.CharField(max_length=50)
+    building_type = models.ForeignKey(BuildingType, verbose_name="Building type", on_delete=models.CASCADE)
+    level = models.PositiveSmallIntegerField("Level")
+
+    taxes = models.PositiveSmallIntegerField("Taxes", default=0, validators=(MinValueValidator(0),))
+    building_costs = models.PositiveSmallIntegerField("Building costs", default=0, validators=(MinValueValidator(0),))
+    maintenance_costs = models.PositiveSmallIntegerField(
+        "Maintenance costs", default=0, validators=(MinValueValidator(0),)
+    )
+    housing_space = models.PositiveSmallIntegerField("Housing space", default=0, validators=(MinValueValidator(0),))
 
     class Meta:
         default_related_name = "buildings"
@@ -80,9 +97,9 @@ class Tile(models.Model):
     def color_class(self):
         # Tailwind can't detect dynamic classes, therefore, they are safelist-ed
         if self.building:
-            if self.building.behaviour_type == Building.BehaviourTypeChoices.IS_WALL:
+            if self.building.building_type.is_wall:
                 return render_to_string("city/classes/_tile_city_wall.txt")
-            elif self.building.behaviour_type == Building.BehaviourTypeChoices.IS_COUNTRY:
+            elif self.building.building_type.behaviour_type == BuildingType.BehaviourTypeChoices.IS_COUNTRY:
                 return render_to_string("city/classes/_tile_country.txt")
             else:
                 return render_to_string("city/classes/_tile_city.txt")

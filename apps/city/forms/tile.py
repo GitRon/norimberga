@@ -7,11 +7,17 @@ from apps.city.models import Building, Tile
 
 
 class TileBuildingForm(forms.ModelForm):
+    tile = forms.ModelChoiceField(queryset=Tile.objects.all(), disabled=True, required=False)
+    current_building = forms.ModelChoiceField(queryset=Building.objects.all(), disabled=True, required=False)
     building = BuildingModelChoiceField(queryset=Building.objects.none(), required=False)
 
     class Meta:
         model = Tile
-        fields = ("building",)
+        fields = (
+            "tile",
+            "current_building",
+            "building",
+        )
 
     def __init__(self, savegame, *args, **kwargs):
         self.savegame = savegame
@@ -22,16 +28,20 @@ class TileBuildingForm(forms.ModelForm):
 
         super().__init__(*args, **kwargs)
 
-        building_qs = Building.objects.filter(allowed_terrains=self.instance.terrain)
-        self.fields["building"].queryset = building_qs
+        self.fields["tile"].initial = self.instance
+        self.fields["current_building"].initial = self.instance.building
+
+        building_qs = Building.objects.filter(building_type__allowed_terrains=self.instance.terrain)
+        if self.instance.building:
+            building_qs = building_qs.exclude(id=self.instance.building.id) | Building.objects.filter(
+                building_type=self.instance.building.building_type, level=self.instance.building.level + 1
+            )
+        self.fields["building"].queryset = building_qs.distinct()
 
     def clean_building(self):
         building = self.cleaned_data["building"]
 
         if building and building.building_costs > self.savegame.coins:
             raise ValidationError("You don't have enough coin.")
-
-        if building and self.instance.building == building:
-            raise ValidationError("This building has already been built here.")
 
         return building

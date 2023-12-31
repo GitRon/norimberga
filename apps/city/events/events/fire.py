@@ -4,7 +4,7 @@ from django.contrib import messages
 
 from apps.city.events.effects.building.remove_building import RemoveBuilding
 from apps.city.events.effects.savegame.decrease_population_absolute import DecreasePopulationAbsolute
-from apps.city.models import Building, Savegame, Tile
+from apps.city.models import Savegame, Tile
 from apps.event.events.events.base_event import BaseEvent
 
 
@@ -24,9 +24,7 @@ class Event(BaseEvent):
         self.initial_population = self.savegame.population
 
         self.lost_population = random.randint(10, 50)
-        self.affected_tile = self.savegame.tiles.filter(
-            building__behaviour_type=Building.BehaviourTypeChoices.IS_HOUSE
-        ).first()
+        self.affected_tile = self.savegame.tiles.filter(building__building_type__is_house=True).first()
 
     def get_probability(self):
         return super().get_probability() if self.savegame.population > 0 else 0

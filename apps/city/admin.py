@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from apps.city.models import Building, Savegame, Terrain, Tile
+from apps.city.models import Building, BuildingType, Savegame, Terrain, Tile
 
 
 @admin.register(Savegame)
@@ -18,6 +18,12 @@ class TerrainAdmin(admin.ModelAdmin):
     list_display = ("name", "color_class", "probability")
 
 
-@admin.register(Building)
-class BuildingAdmin(admin.ModelAdmin):
-    list_display = ("name", "behaviour_type", "taxes", "building_costs", "maintenance_costs")
+class BuildingInline(admin.TabularInline):
+    model = Building
+    fields = ("name", "level", "taxes", "building_costs", "maintenance_costs", "housing_space")
+
+
+@admin.register(BuildingType)
+class BuildingTypeAdmin(admin.ModelAdmin):
+    list_display = ("name", "behaviour_type", "is_house", "is_wall")
+    inlines = (BuildingInline,)

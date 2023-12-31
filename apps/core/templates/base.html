@@ -4,14 +4,29 @@
         <title>Norimberga! 🧱</title>
         <link rel="icon" type="image/x-icon" href="{% static "img/logo.svg" %}">
         <link href="{% static "css/dist/output.css" %}" rel="stylesheet">
-        <script src="{% static "htmx.org/dist/htmx.min.js" %}"></script>
     </head>
 </html>
-<body class="min-h-screen bg-gray-100" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+<body class="min-h-screen bg-gray-100 relative" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     <div class="container mx-auto">
         {% include "partials/_navbar.html" %}
         <div class="p-4">
             {% block content %}{% endblock %}
         </div>
     </div>
+
+    <script src="{% static "htmx.org/dist/htmx.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "toastify-js/src/toastify.js" %}"></script>
+    <script type="text/javascript">
+        document.body.addEventListener('htmx:beforeOnLoad', function (evt) {
+            if (evt.detail.xhr.status === 500) {
+                Toastify({
+                    text: "Server error 😕",
+                    className: "bg-red-400 text-co font-sans fixed m-5 p-4 cursor-pointer bottom-1 text-white rounded-sm absolute place-items-center",
+                    gravity: "bottom",
+                    position: "center",
+                    duration: 3000,
+                }).showToast();
+            }
+        });
+    </script>
 </body>

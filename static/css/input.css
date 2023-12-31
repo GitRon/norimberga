@@ -6,3 +6,13 @@
 select ~ .pointer-events-none {
     display: none !important;
 }
+
+/* Toastify */
+.toastify-center {
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    max-width: fit-content;
+    max-width: -moz-fit-content;
+}

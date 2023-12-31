@@ -5,6 +5,7 @@
     "tailwindcss-bg-patterns": "^0.3.0"
   },
   "dependencies": {
-    "htmx.org": "^1.9.10"
+    "htmx.org": "^1.9.10",
+    "toastify-js": "^1.12.0"
   }
 }

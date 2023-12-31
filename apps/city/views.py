@@ -6,15 +6,26 @@ from django.views import generic
 
 from apps.city.forms.tile import TileBuildingForm
 from apps.city.models import Savegame, Tile
+from apps.city.services.building.housing import BuildingHousingService
 
 
 class SavegameValueView(generic.DetailView):
     model = Savegame
     template_name = "savegame/partials/_nav_values.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["max_housing_space"] = BuildingHousingService().calculate_max_space()
+        return context
+
 
 class LandingPageView(generic.TemplateView):
     template_name = "city/landing_page.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["max_housing_space"] = BuildingHousingService().calculate_max_space()
+        return context
 
 
 class CityMapView(generic.TemplateView):

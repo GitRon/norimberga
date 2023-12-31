@@ -1,4 +1,5 @@
 import random
+from math import ceil
 
 from django.contrib import messages
 
@@ -19,7 +20,7 @@ class Event(BaseEvent):
     def __init__(self):
         self.savegame, _ = Savegame.objects.get_or_create(id=1)
         self.initial_population = self.savegame.population
-        self.lost_population = random.randint(5, 10)
+        self.lost_population = ceil((random.randint(5, 10) / 100) * self.initial_population)
 
     def get_probability(self):
         return super().get_probability() * self.savegame.unrest / 100 if self.savegame.population > 0 else 0

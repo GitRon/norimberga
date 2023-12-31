@@ -17,7 +17,7 @@ class Event(BaseEvent):
 
     def __init__(self):
         self.savegame, _ = Savegame.objects.get_or_create(id=1)
-        self.lost_population_percentage = random.randint(10, 25) / 10
+        self.lost_population_percentage = random.randint(10, 25) / 100
 
     def get_probability(self):
         return super().get_probability() if self.savegame.population > 0 else 0

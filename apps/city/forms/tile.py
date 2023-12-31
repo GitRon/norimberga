@@ -31,7 +31,7 @@ class TileBuildingForm(forms.ModelForm):
         self.fields["tile"].initial = self.instance
         self.fields["current_building"].initial = self.instance.building
 
-        building_qs = Building.objects.filter(building_type__allowed_terrains=self.instance.terrain)
+        building_qs = Building.objects.filter(building_type__allowed_terrains=self.instance.terrain, level=1)
         if self.instance.building:
             building_qs = building_qs.exclude(id=self.instance.building.id) | Building.objects.filter(
                 building_type=self.instance.building.building_type, level=self.instance.building.level + 1

@@ -13,6 +13,7 @@ class BuildingHousingService:
         return self.savegame.tiles.filter(building__behaviour_type=Building.BehaviourTypeChoices.IS_HOUSE).count()
 
     def calculate_max_space(self):
-        # TODO(RV): create event that tells the user that the homeless people have moved out of the city
+        # TODO(RV): create event that tells the user that the homeless people have moved out of the city or increase
+        #  unrest
         no_houses = self._calculate_no_houses()
         return no_houses * self.MAX_POP_PER_HOUSE

@@ -8,6 +8,9 @@ class Savegame(models.Model):
     map_size = models.PositiveSmallIntegerField(default=5)
     coins = models.SmallIntegerField("Coins", default=0)
     population = models.PositiveSmallIntegerField("Population", default=0)
+    unrest = models.PositiveSmallIntegerField(
+        "Unrest", default=0, validators=(MinValueValidator(0), MaxValueValidator(100))
+    )
     current_year = models.PositiveSmallIntegerField("Current year", default=1150)
 
     class Meta:

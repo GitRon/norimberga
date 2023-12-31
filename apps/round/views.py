@@ -15,7 +15,7 @@ class RoundView(generic.View):
         event_list = EventSelectionService().process()
         for event in event_list:
             message = event.process()
-            messages.add_message(self.request, event.LEVEL, message)
+            messages.add_message(self.request, event.LEVEL, message, extra_tags=event.TITLE)
 
         if not len(event_list):
             messages.add_message(

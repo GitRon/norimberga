@@ -11,6 +11,7 @@ from apps.event.events.events.base_event import BaseEvent
 class Event(BaseEvent):
     PROBABILITY = 100
     LEVEL = messages.INFO
+    TITLE = "Population increase"
 
     YEARLY_POP_INCREASE_FACTOR = 0.05
 

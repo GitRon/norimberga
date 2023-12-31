@@ -9,6 +9,7 @@ from apps.event.events.events.base_event import BaseEvent
 class Event(BaseEvent):
     PROBABILITY = 20
     LEVEL = messages.SUCCESS
+    TITLE = "Wanted criminal"
 
     bounty: int
 

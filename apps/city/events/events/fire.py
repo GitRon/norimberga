@@ -11,6 +11,7 @@ from apps.event.events.events.base_event import BaseEvent
 class Event(BaseEvent):
     PROBABILITY = 5
     LEVEL = messages.ERROR
+    TITLE = "Fire"
 
     savegame: Savegame
     initial_population: int

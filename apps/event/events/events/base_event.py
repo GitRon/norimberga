@@ -10,9 +10,7 @@ class BaseEvent:
 
     PROBABILITY = 0
     LEVEL = messages.INFO
-
-    # TODO(RV): noch conditions einbauen, wann das passiert zusätzlich zur wahrscheinlichkeit?
-    #  oder wahrscheinlichkeit als methode, die sich dann berechnet?) -> methode ist da
+    TITLE = "Missing title"
 
     def get_probability(self):
         return self.PROBABILITY

@@ -1,10 +1,9 @@
-from django.core.management.base import BaseCommand
+from random import randint
 
-from apps.city.models import Tile
+from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        tile = Tile.objects.filter(x=0, y=0).first()
-
-        print(tile, tile.is_adjacent_to_city_building())
+        for _i in range(100):
+            print(randint(1, 2))

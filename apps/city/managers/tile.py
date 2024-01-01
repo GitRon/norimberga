@@ -6,15 +6,16 @@ from django.db.models import Q
 from apps.city.services.map.coordinates import MapCoordinatesService
 
 if typing.TYPE_CHECKING:
-    from apps.city.models import Tile
+    from apps.city.models import Savegame, Tile
 
 
 class TileQuerySet(models.QuerySet):
-    def filter_savegame(self, tile: "Tile"):
-        return self.filter(savegame=tile.savegame)
+    def filter_savegame(self, savegame: "Savegame"):
+        return self.filter(savegame=savegame)
 
     def filter_adjacent_tiles(self, tile: "Tile"):
-        adjacent_coordinates = MapCoordinatesService.get_adjacent_coordinates(tile=tile)
+        service = MapCoordinatesService(map_size=tile.savegame.map_size)
+        adjacent_coordinates = service.get_adjacent_coordinates(x=tile.x, y=tile.y)
         filter_condition = Q(id=-1)
         for coordinates in adjacent_coordinates:
             filter_condition |= Q(x=coordinates.x, y=coordinates.y)

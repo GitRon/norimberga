@@ -50,6 +50,7 @@ class BuildingType(models.Model):
     is_city = models.BooleanField("Is city building", default=False)
     is_house = models.BooleanField("Is house", default=False)
     is_wall = models.BooleanField("Is Wall", default=False)
+    is_unique = models.BooleanField("Is Unique", default=False)
 
     class Meta:
         default_related_name = "building_types"
@@ -111,4 +112,9 @@ class Tile(models.Model):
         return self.terrain.color_class
 
     def is_adjacent_to_city_building(self):
-        return Tile.objects.filter_savegame(tile=self).filter_adjacent_tiles(tile=self).filter_city_building().exists()
+        return (
+            Tile.objects.filter_savegame(savegame=self.savegame)
+            .filter_adjacent_tiles(tile=self)
+            .filter_city_building()
+            .exists()
+        )

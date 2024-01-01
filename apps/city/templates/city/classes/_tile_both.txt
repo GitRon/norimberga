@@ -1,0 +1,1 @@
+pattern-rhombus pattern-blue-500 pattern-bg-white pattern-size-6 pattern-opacity-20

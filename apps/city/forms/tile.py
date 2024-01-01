@@ -36,7 +36,7 @@ class TileBuildingForm(forms.ModelForm):
 
         # If this tile is not adjacent to a city-tile, we can't build city-buildings
         if not self.instance.is_adjacent_to_city_building():
-            building_qs = building_qs.exclude(building_type__is_city=True)
+            building_qs = building_qs.exclude(building_type__is_city=True, building_type__is_country=False)
 
         # If we already have a building, we allow level 2 buildings of the same type
         if self.instance.building:

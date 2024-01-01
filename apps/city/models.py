@@ -102,6 +102,8 @@ class Tile(models.Model):
         if self.building:
             if self.building.building_type.is_wall:
                 return render_to_string("city/classes/_tile_city_wall.txt")
+            elif self.building.building_type.is_country and self.building.building_type.is_city:
+                return render_to_string("city/classes/_tile_both.txt")
             elif self.building.building_type.is_country:
                 return render_to_string("city/classes/_tile_country.txt")
             else:

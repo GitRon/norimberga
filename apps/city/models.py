@@ -2,6 +2,8 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.template.loader import render_to_string
 
+from apps.city.managers.tile import TileManager
+
 
 class Savegame(models.Model):
     city_name = models.CharField(max_length=100)
@@ -12,6 +14,8 @@ class Savegame(models.Model):
         "Unrest", default=0, validators=(MinValueValidator(0), MaxValueValidator(100))
     )
     current_year = models.PositiveSmallIntegerField("Current year", default=1150)
+
+    is_active = models.BooleanField("Is active", default=False)
 
     class Meta:
         default_related_name = "savegames"
@@ -39,14 +43,11 @@ class Terrain(models.Model):
 
 
 class BuildingType(models.Model):
-    class BehaviourTypeChoices(models.IntegerChoices):
-        IS_COUNTRY = 1, "Country building"
-        IS_CITY = 2, "City building"
-
     name = models.CharField(max_length=50)
-    behaviour_type = models.PositiveSmallIntegerField("Behaviour type", choices=BehaviourTypeChoices.choices)
     allowed_terrains = models.ManyToManyField(Terrain, verbose_name="Allowed terrains")
 
+    is_country = models.BooleanField("Is country building", default=False)
+    is_city = models.BooleanField("Is city building", default=False)
     is_house = models.BooleanField("Is house", default=False)
     is_wall = models.BooleanField("Is Wall", default=False)
 
@@ -83,6 +84,8 @@ class Tile(models.Model):
     y = models.PositiveSmallIntegerField()
     building = models.ForeignKey(Building, on_delete=models.SET_NULL, blank=True, null=True)
 
+    objects = TileManager()
+
     class Meta:
         unique_together = ("savegame", "x", "y")
         default_related_name = "tiles"
@@ -99,8 +102,11 @@ class Tile(models.Model):
         if self.building:
             if self.building.building_type.is_wall:
                 return render_to_string("city/classes/_tile_city_wall.txt")
-            elif self.building.building_type.behaviour_type == BuildingType.BehaviourTypeChoices.IS_COUNTRY:
+            elif self.building.building_type.is_country:
                 return render_to_string("city/classes/_tile_country.txt")
             else:
                 return render_to_string("city/classes/_tile_city.txt")
         return self.terrain.color_class
+
+    def is_adjacent_to_city_building(self):
+        return Tile.objects.filter_savegame(tile=self).filter_adjacent_tiles(tile=self).filter_city_building().exists()

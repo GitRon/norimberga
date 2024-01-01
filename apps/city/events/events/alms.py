@@ -16,6 +16,7 @@ class Event(BaseEvent):
     initial_unrest: int
 
     def __init__(self):
+        # TODO(RV): pass savegame as first param to every event and then to every effect?
         self.savegame, _ = Savegame.objects.get_or_create(id=1)
         self.initial_unrest = self.savegame.unrest
         self.lost_unrest = random.randint(3, 5)

@@ -25,5 +25,6 @@ class BuildingInline(admin.TabularInline):
 
 @admin.register(BuildingType)
 class BuildingTypeAdmin(admin.ModelAdmin):
-    list_display = ("name", "behaviour_type", "is_house", "is_wall")
+    list_display = ("name", "is_country", "is_city", "is_house", "is_wall")
+    list_filter = ("is_country", "is_city", "is_house", "is_wall")
     inlines = (BuildingInline,)

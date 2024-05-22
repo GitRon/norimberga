@@ -50,6 +50,7 @@ LOCAL_APPS = [
     "apps.config",
     "apps.core",
     "apps.event",
+    "apps.milestone",
     "apps.round",
 ]
 

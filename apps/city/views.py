@@ -24,6 +24,7 @@ class LandingPageView(generic.TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        # TODO(RV): move to context processor
         context["max_housing_space"] = BuildingHousingService().calculate_max_space()
         return context
 

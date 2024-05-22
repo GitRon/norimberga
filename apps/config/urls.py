@@ -23,7 +23,8 @@ from django.views.generic import RedirectView
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("city/", include("apps.city.urls", namespace="city")),
-    path("round/", include("apps.round.urls", namespace="finish")),
+    path("milestone/", include("apps.milestone.urls", namespace="milestone")),
+    path("round/", include("apps.round.urls", namespace="round")),
     path(
         "",
         RedirectView.as_view(url=reverse_lazy("city:landing-page")),

@@ -5,7 +5,7 @@ from apps.city.models import Building, BuildingType, Savegame, Terrain, Tile
 
 @admin.register(Savegame)
 class SavegameAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("id", "city_name")
 
 
 @admin.register(Tile)

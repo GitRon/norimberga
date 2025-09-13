@@ -12,10 +12,11 @@ class Event(BaseEvent):
     TITLE = "Milestone accomplished"
 
     savegame: Savegame
-    accomplish_milestones: list = []
+    accomplish_milestones: list
 
     def __init__(self):
         super().__init__()
+        self.accomplish_milestones = []
         self.savegame, _ = Savegame.objects.get_or_create(id=1)
 
         # TODO(RV): build service to get active milestones

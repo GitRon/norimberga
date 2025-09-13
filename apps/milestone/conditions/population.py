@@ -11,6 +11,4 @@ class MinPopulationCondition(AbstractCondition):
         self.min_population = min_population
 
     def is_valid(self, savegame: Savegame) -> bool:
-        if savegame.population >= self.min_population:
-            return True
-        return False
+        return savegame.population >= self.min_population

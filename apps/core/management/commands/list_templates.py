@@ -6,7 +6,7 @@ from django.template.utils import get_app_template_dirs
 
 
 class Command(BaseCommand):
-    help = "List all template files"  # noqa: A003
+    help = "List all template files"
 
     def handle(self, *args, **options):
         template_files = []

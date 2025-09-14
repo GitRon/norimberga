@@ -69,3 +69,27 @@ class TileBuildView(generic.UpdateView):
 
     def get_success_url(self):
         return None
+
+
+class TileDemolishView(generic.View):
+    def post(self, request, pk, *args, **kwargs):
+        tile = Tile.objects.get(pk=pk)
+
+        # Check if building can be demolished
+        if tile.building and tile.building.building_type.is_unique:
+            # TODO(RV): give user proper feedback
+            return HttpResponse("Cannot demolish unique buildings", status=400)
+
+        # Remove the building
+        if tile.building:
+            tile.building = None
+            tile.save()
+
+        response = HttpResponse(status=HTTPStatus.OK)
+        response["HX-Trigger"] = json.dumps(
+            {
+                "refreshMap": "-",
+                "updateNavbarValues": "-",
+            }
+        )
+        return response

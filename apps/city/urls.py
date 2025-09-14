@@ -10,6 +10,7 @@ urlpatterns = [
     path("messages/", views.CityMessagesView.as_view(), name="city-messages"),
     # Tiles
     path("tile/<int:pk>/build", views.TileBuildView.as_view(), name="tile-build"),
+    path("tile/<int:pk>/demolish", views.TileDemolishView.as_view(), name="tile-demolish"),
     # Savegame
     path("savegame/<int:pk>/values", views.SavegameValueView.as_view(), name="savegame-value"),
 ]

@@ -1,38 +1,16 @@
 # Norimberga
 
-## TailwindCSS
+Norimberga is a small browser game which simulates city development in the high middle ages. It focuses on the
+challenges dealing with space within the city walls.
 
-> npx tailwindcss -i ./static/css/input.css -o ./static/css/dist/output.css --watch
+## Topics
 
-## WIP
-
-Ziel Norimberga: Reichsstadt werden
-
-- Edikte, wo man entscheiden kann, was man möchte, die vll auch widerrufen werden können?
-    - Gib einen Tile an die Kirche, das gibt Einfluss, aber kostet die Tile?
-    - Steuern erhöhen -> kostet Wirtschaft/Immigration aber bringt mehr Geld? Wie waren Abgaben früher geregelt? Der
-      Zehnt etc?
-    - Dann müsste ich die Faktoren für Wachstum, Steuern etc. irgendwo berechnen lassen, es gibt einen Basiswert
-- Quest-Baum
-    - Sind das wirklich Quests? Oder eher Milestones, die automatisch erreicht werden?
-    - Gibt es ein Event, welches darauf lauscht, wenn ich einen Milestone erledigt habe?
-        - Klingt sinnvoll
-- Gibt es verschiedene Verzweigungen im Quest/Milestone-Baum?
-- Braucht man, um Reichsstadt zu werden
-    - Ist das der letzte Quest? Klingt sinnvoll
-- Brauche ich dann Favour überhaupt noch? Klingt sinvoll, damit es etwas mehr Spiel gibt bei den Milestones
-
-Quests:
-
-- X Häuser/Bevölkerung?, X Workshops oder Workshopaufkommen (weniger aber bessere Workshops?)
-- Verteidigungspunkte sammeln
-
-Favor:
-
-- Punkte (Verteidigung, Palisade auf Hügel gibt Bonus, bessere Mauer gibt Bonus, dazu vollständige Stadtmauer gibt
-  Bonus (Christian nach Algo fragen)
-- Wohlwollen des Kaisers (Punkte, die man auch ausgeben kann?)
-
-Militär:
-
-- Möchte ich Stadtwache/Soldaten haben? Soll ich die ausleihen können für Favour?
+* Contributing
+    * [Getting started](docs/contributing/getting_started.md)
+    * [Idea pool](docs/contributing/idea_pool.md)
+* Patterns
+    * [Dependency injection](docs/patterns/dependency_injection.md)
+    * [Mono app approach](docs/patterns/mono_app_approach.md)
+    * [ORM structure](docs/patterns/orm_structure.md)
+    * [Services](docs/patterns/services.md)
+    * [Testing strategy](docs/patterns/testing_strategy.md)

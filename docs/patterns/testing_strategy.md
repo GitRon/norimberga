@@ -17,7 +17,7 @@ Here are a few rules to keep in mind when writing unittests:
 * The name of a test method will reflect the testee and the test case. Stick to this pattern:
   `test_[TESTEE]_[TEST_CASE]`. Don't add the class name to the test functions name. It is already set in the test class
   name.
-* Try to keep the test class setup as limited as possible to avoid overhead
+* Try to keep the global test setup as limited as possible to avoid overhead
 * When testing exceptions, ensure that you assert the error message and not just the exception class
 * Avoid loops and strong abstractions since they make the test harder to understand and change.
 * Keep unittests simple and understandable.
@@ -34,3 +34,5 @@ Here are a few rules to keep in mind when writing unittests:
 * Avoid type-hints in variable names like `mymodel_qs`.
 * Ensure that all code branches are covered. This doesn't say anything about test quality but at least gives the
   maintainers some peace of mind when updating packages.
+* Avoid testing the framework. It's not our job to do that but the persons in charge of maintaining any third-party
+  package.

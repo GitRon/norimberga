@@ -32,17 +32,29 @@ class TerrainFactory(factory.django.DjangoModelFactory):
         model = Terrain
 
     name = factory.Faker("word")
-    color_class = factory.Faker("color_name")
+    color_class = factory.Sequence(lambda n: f"bg-color-{n}")
     probability = factory.Faker("random_int", min=1, max=100)
 
 
 class BuildingTypeFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = BuildingType
+        skip_postgeneration_save = True
 
     name = factory.Faker("word")
     is_country = False
     is_city = True
+    is_house = False
+    is_wall = False
+    is_unique = False
+
+    @factory.post_generation
+    def allowed_terrains(self, create, extracted, **kwargs):
+        if not create:
+            return
+        if extracted:
+            for terrain in extracted:
+                self.allowed_terrains.add(terrain)
 
 
 class TileFactory(factory.django.DjangoModelFactory):
@@ -50,19 +62,55 @@ class TileFactory(factory.django.DjangoModelFactory):
         model = Tile
 
     savegame = factory.SubFactory(SavegameFactory)
-    coordinate_x = factory.Faker("random_int", min=0, max=4)
-    coordinate_y = factory.Faker("random_int", min=0, max=4)
-    tile_type = factory.SubFactory(TerrainFactory)
+    x = factory.Faker("random_int", min=0, max=4)
+    y = factory.Faker("random_int", min=0, max=4)
+    terrain = factory.SubFactory(TerrainFactory)
+    building = None
 
 
 class BuildingFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Building
 
+    name = factory.Faker("word")
     building_type = factory.SubFactory(BuildingTypeFactory)
-    tile = factory.SubFactory(TileFactory)
+    level = 1
+    taxes = 10
     building_costs = 50
     maintenance_costs = 5
-    taxes = 10
     housing_space = 2
-    level = 1
+
+
+# Specialized factories
+class RiverTerrainFactory(TerrainFactory):
+    name = "River"
+
+
+class WallBuildingTypeFactory(BuildingTypeFactory):
+    class Meta:
+        model = BuildingType
+        skip_postgeneration_save = True
+
+    name = "Wall"
+    is_wall = True
+    is_city = True
+
+
+class HouseBuildingTypeFactory(BuildingTypeFactory):
+    class Meta:
+        model = BuildingType
+        skip_postgeneration_save = True
+
+    name = "House"
+    is_house = True
+    is_city = True
+
+
+class UniqueBuildingTypeFactory(BuildingTypeFactory):
+    class Meta:
+        model = BuildingType
+        skip_postgeneration_save = True
+
+    name = "Cathedral"
+    is_unique = True
+    is_city = True

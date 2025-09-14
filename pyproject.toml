@@ -1,26 +1,33 @@
-[tool.poetry]
-name = "poetry-demo"
+[project]
+name = "norimberga"
 version = "1.0.0"
-description = ""
-authors = ["Ronny Vedrilla <ronny.vedrilla@ambient.digital>"]
+description = "A browser-based city simulation game set in the high middle ages"
+authors = [
+    {name = "Ronny Vedrilla", email = "ronny.vedrilla@ambient.digital"}
+]
 readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "django>=5.2,<6.0",
+    "django-crispy-forms>=2.1,<3.0",
+    "crispy-tailwind>=0.5.0,<1.0",
+]
 
-[tool.poetry.dependencies]
-python = "3.12"
-django = "^5.0"
-django-crispy-forms = "^2.1"
-crispy-tailwind = "^0.5.0"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4,<8.0",
+    "pytest-django>=4.5,<5.0",
+    "pytest-cov>=4.1,<5.0",
+    "factory-boy>=3.3,<4.0",
+    "pytest-xdist>=3.8,<4.0",
+]
 
 [tool.ruff]
 # For linting and formatting
 line-length = 120
 
-# Assume Python 3.12.
-target-version = "py312"
+# Assume Python 3.13.
+target-version = "py313"
 
 exclude = [
     ".bzr",
@@ -121,3 +128,43 @@ line-ending = "auto"
 
 # Exclude Django migration files
 exclude = ["migrations/*.py"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "apps.config.settings"
+addopts = [
+    "--reuse-db",
+    "--cov=apps",
+    "--cov-report=html",
+    "--cov-report=term-missing",
+    "--cov-fail-under=80",
+    "-v",
+]
+testpaths = ["apps"]
+python_files = ["test_*.py", "*_test.py"]
+python_functions = ["test_*"]
+
+[tool.coverage.run]
+source = ["apps"]
+omit = [
+    "*/migrations/*",
+    "*/venv/*",
+    "*/node_modules/*",
+    "*/tests/*",
+    "manage.py",
+    "apps/config/wsgi.py",
+    "apps/config/asgi.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+
+[tool.coverage.html]
+directory = "htmlcov"

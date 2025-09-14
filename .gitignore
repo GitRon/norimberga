@@ -21,7 +21,11 @@
 # Local env
 .env
 venv
+.venv
 !/aws/**/.env
+
+# uv
+uv.lock
 
 # NPM
 /node_modules/
@@ -38,11 +42,17 @@ venv
 # Internationalisation
 **/locale/**/*.mo
 
-# Coverage
+# Coverage and testing
 coverage*.xml
+htmlcov/
+.pytest_cache/
+.coverage
 
 # Celery
 celerybeat-schedule
 
 # Tailwind
 /static/css/dist
+
+# AI
+.claude/

@@ -164,6 +164,8 @@ exclude_lines = [
     "if __name__ == .__main__.:",
     "class .*\\bProtocol\\):",
     "@(abc\\.)?abstractmethod",
+    "if typing.TYPE_CHECKING:",
+    "if TYPE_CHECKING:",
 ]
 
 [tool.coverage.html]

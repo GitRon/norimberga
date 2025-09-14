@@ -60,8 +60,8 @@ def test_map_generation_service_get_terrain_retry():
 
 
 @pytest.mark.django_db
-def test_map_generation_service_draw_river():
-    """Test _draw_river creates river tiles."""
+def test_map_generation_service_draw_river_y_axis():
+    """Test _draw_river creates river tiles starting from y-axis."""
     savegame = SavegameFactory(map_size=3)
     service = MapGenerationService(savegame)
 
@@ -78,7 +78,40 @@ def test_map_generation_service_draw_river():
     with mock.patch("apps.city.services.map.generation.randint") as mock_randint:
         with mock.patch("apps.city.services.map.generation.random.choice") as mock_choice:
             # Set up river starting at (0, 1) and going to (1, 1), then (2, 2)
-            mock_randint.side_effect = [1, 1]  # Start on x-axis at y=1
+            mock_randint.side_effect = [1, 1]  # dice=1 means start on y-axis, y=1
+
+            # Mock coordinate choices for river path
+            coord1 = MapCoordinatesService.Coordinates(x=1, y=1)
+            coord2 = MapCoordinatesService.Coordinates(x=2, y=2)
+            mock_choice.side_effect = [coord1, coord2]
+
+            service._draw_river()
+
+            # Verify river tiles were created at expected coordinates
+            river_tiles = savegame.tiles.filter(terrain=river_terrain)
+            assert river_tiles.count() >= 1
+
+
+@pytest.mark.django_db
+def test_map_generation_service_draw_river_x_axis():
+    """Test _draw_river creates river tiles starting from x-axis."""
+    savegame = SavegameFactory(map_size=3)
+    service = MapGenerationService(savegame)
+
+    # Clear any existing "River" terrain and create a unique one
+    from apps.city.models import Terrain
+    Terrain.objects.filter(name="River").delete()
+    river_terrain = RiverTerrainFactory()
+
+    # Create initial tiles
+    for x in range(3):
+        for y in range(3):
+            TileFactory(savegame=savegame, x=x, y=y)
+
+    with mock.patch("apps.city.services.map.generation.randint") as mock_randint:
+        with mock.patch("apps.city.services.map.generation.random.choice") as mock_choice:
+            # Set up river starting on x-axis - dice=2 triggers else branch (line 31)
+            mock_randint.side_effect = [2, 1]  # dice=2 means start on x-axis, x=1
 
             # Mock coordinate choices for river path
             coord1 = MapCoordinatesService.Coordinates(x=1, y=1)

@@ -35,4 +35,4 @@ Here are a few rules to keep in mind when writing unittests:
 * Ensure that all code branches are covered. This doesn't say anything about test quality but at least gives the
   maintainers some peace of mind when updating packages.
 * Avoid testing the framework. It's not our job to do that but the persons in charge of maintaining any third-party
-  package.
+  package. Therefore, avoid testing `apps.py` or admin classes which don't implement any custom code.

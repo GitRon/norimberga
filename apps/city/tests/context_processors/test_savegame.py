@@ -16,12 +16,13 @@ def test_get_current_savegame_returns_existing_savegame(request_factory):
     """Test get_current_savegame returns existing savegame."""
     # Clear any existing savegame with id=1
     from apps.city.models import Savegame
+
     Savegame.objects.filter(id=1).delete()
 
     # Create existing savegame with id=1
     existing_savegame = SavegameFactory(id=1, city_name="Test City")
 
-    request = request_factory.get('/')
+    request = request_factory.get("/")
     result = get_current_savegame(request)
 
     assert "savegame" in result
@@ -32,7 +33,7 @@ def test_get_current_savegame_returns_existing_savegame(request_factory):
 @pytest.mark.django_db
 def test_get_current_savegame_creates_new_savegame(request_factory):
     """Test get_current_savegame creates new savegame if doesn't exist."""
-    request = request_factory.get('/')
+    request = request_factory.get("/")
     result = get_current_savegame(request)
 
     assert "savegame" in result
@@ -43,7 +44,7 @@ def test_get_current_savegame_creates_new_savegame(request_factory):
 @pytest.mark.django_db
 def test_get_current_savegame_consistent_results(request_factory):
     """Test get_current_savegame returns same savegame across calls."""
-    request = request_factory.get('/')
+    request = request_factory.get("/")
 
     # First call should create savegame
     result1 = get_current_savegame(request)
@@ -61,11 +62,11 @@ def test_get_current_savegame_consistent_results(request_factory):
 def test_get_current_savegame_request_type_independence(request_factory):
     """Test get_current_savegame works with different request types."""
     # Test with GET request
-    get_request = request_factory.get('/')
+    get_request = request_factory.get("/")
     get_result = get_current_savegame(get_request)
 
     # Test with POST request
-    post_request = request_factory.post('/')
+    post_request = request_factory.post("/")
     post_result = get_current_savegame(post_request)
 
     # Should return same savegame regardless of request type
@@ -75,7 +76,7 @@ def test_get_current_savegame_request_type_independence(request_factory):
 @pytest.mark.django_db
 def test_get_current_savegame_return_structure(request_factory):
     """Test get_current_savegame returns correct dictionary structure."""
-    request = request_factory.get('/')
+    request = request_factory.get("/")
     result = get_current_savegame(request)
 
     # Should be a dictionary with 'savegame' key
@@ -85,4 +86,5 @@ def test_get_current_savegame_return_structure(request_factory):
 
     # Value should be a Savegame instance
     from apps.city.models import Savegame
+
     assert isinstance(result["savegame"], Savegame)

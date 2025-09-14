@@ -1,7 +1,8 @@
+from unittest import mock
+
 import pytest
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
-from unittest import mock
 
 from apps.city.tests.factories import (
     BuildingFactory,
@@ -187,7 +188,7 @@ def test_building_creation_with_all_fields():
         taxes=20,
         building_costs=100,
         maintenance_costs=10,
-        housing_space=4
+        housing_space=4,
     )
 
     assert building.name == "Manor"

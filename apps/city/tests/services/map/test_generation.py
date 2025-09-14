@@ -1,5 +1,6 @@
-import pytest
 from unittest import mock
+
+import pytest
 
 from apps.city.services.map.coordinates import MapCoordinatesService
 from apps.city.services.map.generation import MapGenerationService
@@ -47,7 +48,7 @@ def test_map_generation_service_get_terrain_retry():
         mock_randint.side_effect = [10, 60]
 
         # Mock the terrain queryset to return None first, then terrain
-        with mock.patch('apps.city.models.Terrain.objects.filter') as mock_filter:
+        with mock.patch("apps.city.models.Terrain.objects.filter") as mock_filter:
             mock_queryset = mock.Mock()
             mock_filter.return_value = mock_queryset
             mock_queryset.order_by.return_value = mock_queryset
@@ -67,6 +68,7 @@ def test_map_generation_service_draw_river_y_axis():
 
     # Clear any existing "River" terrain and create a unique one
     from apps.city.models import Terrain
+
     Terrain.objects.filter(name="River").delete()
     river_terrain = RiverTerrainFactory()
 
@@ -100,6 +102,7 @@ def test_map_generation_service_draw_river_x_axis():
 
     # Clear any existing "River" terrain and create a unique one
     from apps.city.models import Terrain
+
     Terrain.objects.filter(name="River").delete()
     river_terrain = RiverTerrainFactory()
 
@@ -134,8 +137,8 @@ def test_map_generation_service_process():
     terrain = TerrainFactory()
     river_terrain = RiverTerrainFactory()
 
-    with mock.patch.object(service, 'get_terrain') as mock_get_terrain:
-        with mock.patch.object(service, '_draw_river') as mock_draw_river:
+    with mock.patch.object(service, "get_terrain") as mock_get_terrain:
+        with mock.patch.object(service, "_draw_river") as mock_draw_river:
             mock_get_terrain.return_value = terrain
 
             service.process()

@@ -1,11 +1,11 @@
-import pytest
 from unittest import mock
 
+import pytest
 from django.contrib import messages
 
-from apps.city.events.events.fire import Event as FireEvent
 from apps.city.events.effects.building.remove_building import RemoveBuilding
 from apps.city.events.effects.savegame.decrease_population_absolute import DecreasePopulationAbsolute
+from apps.city.events.events.fire import Event as FireEvent
 from apps.city.models import Savegame
 from apps.city.tests.factories import BuildingFactory, HouseBuildingTypeFactory, TileFactory
 
@@ -19,7 +19,7 @@ def test_fire_event_init():
     building = BuildingFactory(building_type=house_type)
     tile = TileFactory(savegame=savegame, building=building)
 
-    with mock.patch('apps.city.events.events.fire.random.randint') as mock_randint:
+    with mock.patch("apps.city.events.events.fire.random.randint") as mock_randint:
         mock_randint.return_value = 25
 
         event = FireEvent()
@@ -39,7 +39,7 @@ def test_fire_event_init_no_house():
     Savegame.objects.filter(id=1).delete()
     Savegame.objects.create(id=1, population=100)
 
-    with mock.patch('apps.city.events.events.fire.random.randint') as mock_randint:
+    with mock.patch("apps.city.events.events.fire.random.randint") as mock_randint:
         mock_randint.return_value = 30
 
         event = FireEvent()
@@ -52,7 +52,7 @@ def test_fire_event_init_creates_savegame():
     """Test FireEvent creates savegame if it doesn't exist."""
     Savegame.objects.filter(id=1).delete()
 
-    with mock.patch('apps.city.events.events.fire.random.randint') as mock_randint:
+    with mock.patch("apps.city.events.events.fire.random.randint") as mock_randint:
         mock_randint.return_value = 20
 
         event = FireEvent()
@@ -93,7 +93,7 @@ def test_fire_event_prepare_effect_decrease_population():
     Savegame.objects.filter(id=1).delete()
     Savegame.objects.create(id=1, population=100)
 
-    with mock.patch('apps.city.events.events.fire.random.randint') as mock_randint:
+    with mock.patch("apps.city.events.events.fire.random.randint") as mock_randint:
         mock_randint.return_value = 35
 
         event = FireEvent()
@@ -141,7 +141,7 @@ def test_fire_event_get_verbose_text_with_building():
     building = BuildingFactory(building_type=house_type)
     tile = TileFactory(savegame=savegame, building=building)
 
-    with mock.patch('apps.city.events.events.fire.random.randint') as mock_randint:
+    with mock.patch("apps.city.events.events.fire.random.randint") as mock_randint:
         mock_randint.return_value = 20
 
         event = FireEvent()
@@ -167,7 +167,7 @@ def test_fire_event_get_verbose_text_no_building():
     Savegame.objects.filter(id=1).delete()
     savegame = Savegame.objects.create(id=1, population=80)
 
-    with mock.patch('apps.city.events.events.fire.random.randint') as mock_randint:
+    with mock.patch("apps.city.events.events.fire.random.randint") as mock_randint:
         mock_randint.return_value = 15
 
         event = FireEvent()
@@ -195,7 +195,7 @@ def test_fire_event_get_effects_with_building():
     building = BuildingFactory(building_type=house_type)
     TileFactory(savegame=savegame, building=building)
 
-    with mock.patch('apps.city.events.events.fire.random.randint') as mock_randint:
+    with mock.patch("apps.city.events.events.fire.random.randint") as mock_randint:
         mock_randint.return_value = 25
 
         event = FireEvent()
@@ -215,7 +215,7 @@ def test_fire_event_get_effects_no_building():
     Savegame.objects.filter(id=1).delete()
     Savegame.objects.create(id=1, population=100)
 
-    with mock.patch('apps.city.events.events.fire.random.randint') as mock_randint:
+    with mock.patch("apps.city.events.events.fire.random.randint") as mock_randint:
         mock_randint.return_value = 30
 
         event = FireEvent()
@@ -240,7 +240,7 @@ def test_fire_event_process():
     building = BuildingFactory(building_type=house_type)
     tile = TileFactory(savegame=savegame, building=building)
 
-    with mock.patch('apps.city.events.events.fire.random.randint') as mock_randint:
+    with mock.patch("apps.city.events.events.fire.random.randint") as mock_randint:
         mock_randint.return_value = 20
 
         event = FireEvent()

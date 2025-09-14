@@ -15,7 +15,7 @@ def test_decrease_unrest_absolute_init():
 @pytest.mark.django_db
 def test_decrease_unrest_absolute_process_normal_decrease():
     """Test process decreases unrest by specified amount."""
-    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={'unrest': 50})
+    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={"unrest": 50})
     savegame.unrest = 50
     savegame.save()
     effect = DecreaseUnrestAbsolute(lost_unrest=15)
@@ -29,7 +29,7 @@ def test_decrease_unrest_absolute_process_normal_decrease():
 @pytest.mark.django_db
 def test_decrease_unrest_absolute_process_minimum_zero():
     """Test process does not decrease unrest below zero."""
-    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={'unrest': 5})
+    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={"unrest": 5})
     savegame.unrest = 5
     savegame.save()
     effect = DecreaseUnrestAbsolute(lost_unrest=10)
@@ -43,7 +43,7 @@ def test_decrease_unrest_absolute_process_minimum_zero():
 @pytest.mark.django_db
 def test_decrease_unrest_absolute_process_exact_zero():
     """Test process handles exact zero unrest correctly."""
-    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={'unrest': 10})
+    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={"unrest": 10})
     savegame.unrest = 10
     savegame.save()
     effect = DecreaseUnrestAbsolute(lost_unrest=10)
@@ -70,7 +70,7 @@ def test_decrease_unrest_absolute_process_creates_savegame():
 @pytest.mark.django_db
 def test_decrease_unrest_absolute_process_zero_decrease():
     """Test process with zero decrease amount."""
-    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={'unrest': 30})
+    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={"unrest": 30})
     savegame.unrest = 30
     savegame.save()
     effect = DecreaseUnrestAbsolute(lost_unrest=0)

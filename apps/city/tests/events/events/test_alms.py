@@ -1,21 +1,21 @@
-import pytest
 from unittest import mock
 
+import pytest
 from django.contrib import messages
 
-from apps.city.events.events.alms import Event as AlmsEvent
 from apps.city.events.effects.savegame.decrease_unrest_absolute import DecreaseUnrestAbsolute
+from apps.city.events.events.alms import Event as AlmsEvent
 from apps.city.models import Savegame
 
 
 @pytest.mark.django_db
 def test_alms_event_init():
     """Test AlmsEvent initialization and class attributes."""
-    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={'unrest': 30})
+    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={"unrest": 30})
     savegame.unrest = 30
     savegame.save()
 
-    with mock.patch('apps.city.events.events.alms.random.randint') as mock_randint:
+    with mock.patch("apps.city.events.events.alms.random.randint") as mock_randint:
         mock_randint.return_value = 4
 
         event = AlmsEvent()
@@ -34,7 +34,7 @@ def test_alms_event_init_creates_savegame():
     # Ensure no savegame exists
     Savegame.objects.filter(id=1).delete()
 
-    with mock.patch('apps.city.events.events.alms.random.randint') as mock_randint:
+    with mock.patch("apps.city.events.events.alms.random.randint") as mock_randint:
         mock_randint.return_value = 3
 
         event = AlmsEvent()
@@ -47,7 +47,7 @@ def test_alms_event_init_creates_savegame():
 def test_alms_event_get_probability_with_conditions():
     """Test get_probability returns base probability when conditions are met."""
     Savegame.objects.filter(id=1).delete()
-    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={'unrest': 20, 'population': 50})
+    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={"unrest": 20, "population": 50})
     savegame.unrest = 20
     savegame.population = 50
     savegame.save()
@@ -63,7 +63,7 @@ def test_alms_event_get_probability_with_conditions():
 def test_alms_event_get_probability_zero_unrest():
     """Test get_probability returns 0 when unrest is zero."""
     Savegame.objects.filter(id=1).delete()
-    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={'unrest': 0, 'population': 50})
+    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={"unrest": 0, "population": 50})
     savegame.unrest = 0
     savegame.population = 50
     savegame.save()
@@ -79,7 +79,7 @@ def test_alms_event_get_probability_zero_unrest():
 def test_alms_event_get_probability_zero_population():
     """Test get_probability returns 0 when population is zero."""
     Savegame.objects.filter(id=1).delete()
-    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={'unrest': 30, 'population': 0})
+    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={"unrest": 30, "population": 0})
     savegame.unrest = 30
     savegame.population = 0
     savegame.save()
@@ -95,7 +95,7 @@ def test_alms_event_get_probability_zero_population():
 def test_alms_event_get_probability_both_zero():
     """Test get_probability returns 0 when both unrest and population are zero."""
     Savegame.objects.filter(id=1).delete()
-    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={'unrest': 0, 'population': 0})
+    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={"unrest": 0, "population": 0})
     savegame.unrest = 0
     savegame.population = 0
     savegame.save()
@@ -113,7 +113,7 @@ def test_alms_event_prepare_effect_decrease_population():
     Savegame.objects.filter(id=1).delete()
     Savegame.objects.create(id=1, unrest=25)
 
-    with mock.patch('apps.city.events.events.alms.random.randint') as mock_randint:
+    with mock.patch("apps.city.events.events.alms.random.randint") as mock_randint:
         mock_randint.return_value = 4
 
         event = AlmsEvent()
@@ -129,7 +129,7 @@ def test_alms_event_get_verbose_text():
     Savegame.objects.filter(id=1).delete()
     savegame = Savegame.objects.create(id=1, unrest=40)
 
-    with mock.patch('apps.city.events.events.alms.random.randint') as mock_randint:
+    with mock.patch("apps.city.events.events.alms.random.randint") as mock_randint:
         mock_randint.return_value = 5
 
         event = AlmsEvent()
@@ -154,7 +154,7 @@ def test_alms_event_process():
     Savegame.objects.filter(id=1).delete()
     savegame = Savegame.objects.create(id=1, unrest=30, population=100)
 
-    with mock.patch('apps.city.events.events.alms.random.randint') as mock_randint:
+    with mock.patch("apps.city.events.events.alms.random.randint") as mock_randint:
         mock_randint.return_value = 4
 
         event = AlmsEvent()
@@ -175,7 +175,7 @@ def test_alms_event_get_effects():
     Savegame.objects.filter(id=1).delete()
     Savegame.objects.create(id=1, unrest=20)
 
-    with mock.patch('apps.city.events.events.alms.random.randint') as mock_randint:
+    with mock.patch("apps.city.events.events.alms.random.randint") as mock_randint:
         mock_randint.return_value = 3
 
         event = AlmsEvent()

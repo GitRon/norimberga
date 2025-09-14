@@ -15,7 +15,7 @@ def test_decrease_population_relative_init():
 @pytest.mark.django_db
 def test_decrease_population_relative_process_percentage_decrease():
     """Test process decreases population by specified percentage."""
-    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={'population': 100})
+    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={"population": 100})
     savegame.population = 100
     savegame.save()
     effect = DecreasePopulationRelative(lost_population_percentage=0.3)  # 30% decrease
@@ -29,7 +29,7 @@ def test_decrease_population_relative_process_percentage_decrease():
 @pytest.mark.django_db
 def test_decrease_population_relative_process_rounding():
     """Test process handles rounding correctly."""
-    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={'population': 77})
+    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={"population": 77})
     savegame.population = 77
     savegame.save()
     effect = DecreasePopulationRelative(lost_population_percentage=0.1)  # 10% decrease
@@ -43,7 +43,7 @@ def test_decrease_population_relative_process_rounding():
 @pytest.mark.django_db
 def test_decrease_population_relative_process_minimum_zero():
     """Test process does not decrease population below zero."""
-    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={'population': 50})
+    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={"population": 50})
     savegame.population = 50
     savegame.save()
     effect = DecreasePopulationRelative(lost_population_percentage=1.5)  # 150% decrease
@@ -57,7 +57,7 @@ def test_decrease_population_relative_process_minimum_zero():
 @pytest.mark.django_db
 def test_decrease_population_relative_process_complete_loss():
     """Test process handles 100% population loss."""
-    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={'population': 80})
+    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={"population": 80})
     savegame.population = 80
     savegame.save()
     effect = DecreasePopulationRelative(lost_population_percentage=1.0)  # 100% decrease
@@ -85,7 +85,7 @@ def test_decrease_population_relative_process_creates_savegame():
 @pytest.mark.django_db
 def test_decrease_population_relative_process_zero_percentage():
     """Test process with zero percentage decrease."""
-    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={'population': 120})
+    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={"population": 120})
     savegame.population = 120
     savegame.save()
     effect = DecreasePopulationRelative(lost_population_percentage=0.0)
@@ -99,7 +99,7 @@ def test_decrease_population_relative_process_zero_percentage():
 @pytest.mark.django_db
 def test_decrease_population_relative_process_small_percentage():
     """Test process with very small percentage."""
-    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={'population': 1000})
+    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={"population": 1000})
     savegame.population = 1000
     savegame.save()
     effect = DecreasePopulationRelative(lost_population_percentage=0.05)  # 5% decrease

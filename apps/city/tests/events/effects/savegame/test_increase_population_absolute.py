@@ -1,5 +1,6 @@
-import pytest
 from unittest import mock
+
+import pytest
 
 from apps.city.events.effects.savegame.increase_population_absolute import IncreasePopulationAbsolute
 from apps.city.models import Savegame
@@ -16,12 +17,14 @@ def test_increase_population_absolute_init():
 @pytest.mark.django_db
 def test_increase_population_absolute_process_normal_increase():
     """Test process increases population by specified amount."""
-    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={'population': 60})
+    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={"population": 60})
     savegame.population = 60
     savegame.save()
     effect = IncreasePopulationAbsolute(new_population=25)
 
-    with mock.patch('apps.city.events.effects.savegame.increase_population_absolute.BuildingHousingService') as mock_service:
+    with mock.patch(
+        "apps.city.events.effects.savegame.increase_population_absolute.BuildingHousingService"
+    ) as mock_service:
         mock_service.return_value.calculate_max_space.return_value = 200
 
         effect.process()
@@ -33,12 +36,14 @@ def test_increase_population_absolute_process_normal_increase():
 @pytest.mark.django_db
 def test_increase_population_absolute_process_housing_limit():
     """Test process respects maximum housing capacity."""
-    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={'population': 80})
+    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={"population": 80})
     savegame.population = 80
     savegame.save()
     effect = IncreasePopulationAbsolute(new_population=50)
 
-    with mock.patch('apps.city.events.effects.savegame.increase_population_absolute.BuildingHousingService') as mock_service:
+    with mock.patch(
+        "apps.city.events.effects.savegame.increase_population_absolute.BuildingHousingService"
+    ) as mock_service:
         mock_service.return_value.calculate_max_space.return_value = 100  # Housing limit
 
         effect.process()
@@ -50,12 +55,14 @@ def test_increase_population_absolute_process_housing_limit():
 @pytest.mark.django_db
 def test_increase_population_absolute_process_exact_housing_limit():
     """Test process handles exact housing capacity correctly."""
-    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={'population': 75})
+    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={"population": 75})
     savegame.population = 75
     savegame.save()
     effect = IncreasePopulationAbsolute(new_population=25)
 
-    with mock.patch('apps.city.events.effects.savegame.increase_population_absolute.BuildingHousingService') as mock_service:
+    with mock.patch(
+        "apps.city.events.effects.savegame.increase_population_absolute.BuildingHousingService"
+    ) as mock_service:
         mock_service.return_value.calculate_max_space.return_value = 100
 
         effect.process()
@@ -71,7 +78,9 @@ def test_increase_population_absolute_process_creates_savegame():
     Savegame.objects.filter(id=1).delete()
     effect = IncreasePopulationAbsolute(new_population=30)
 
-    with mock.patch('apps.city.events.effects.savegame.increase_population_absolute.BuildingHousingService') as mock_service:
+    with mock.patch(
+        "apps.city.events.effects.savegame.increase_population_absolute.BuildingHousingService"
+    ) as mock_service:
         mock_service.return_value.calculate_max_space.return_value = 150
 
         effect.process()
@@ -84,12 +93,14 @@ def test_increase_population_absolute_process_creates_savegame():
 @pytest.mark.django_db
 def test_increase_population_absolute_process_zero_increase():
     """Test process with zero increase amount."""
-    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={'population': 90})
+    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={"population": 90})
     savegame.population = 90
     savegame.save()
     effect = IncreasePopulationAbsolute(new_population=0)
 
-    with mock.patch('apps.city.events.effects.savegame.increase_population_absolute.BuildingHousingService') as mock_service:
+    with mock.patch(
+        "apps.city.events.effects.savegame.increase_population_absolute.BuildingHousingService"
+    ) as mock_service:
         mock_service.return_value.calculate_max_space.return_value = 200
 
         effect.process()
@@ -101,12 +112,14 @@ def test_increase_population_absolute_process_zero_increase():
 @pytest.mark.django_db
 def test_increase_population_absolute_process_calls_housing_service():
     """Test process calls BuildingHousingService to calculate max space."""
-    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={'population': 40})
+    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={"population": 40})
     savegame.population = 40
     savegame.save()
     effect = IncreasePopulationAbsolute(new_population=20)
 
-    with mock.patch('apps.city.events.effects.savegame.increase_population_absolute.BuildingHousingService') as mock_service:
+    with mock.patch(
+        "apps.city.events.effects.savegame.increase_population_absolute.BuildingHousingService"
+    ) as mock_service:
         mock_service.return_value.calculate_max_space.return_value = 150
 
         effect.process()

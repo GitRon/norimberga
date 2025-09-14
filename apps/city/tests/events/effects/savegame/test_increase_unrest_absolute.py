@@ -15,7 +15,7 @@ def test_increase_unrest_absolute_init():
 @pytest.mark.django_db
 def test_increase_unrest_absolute_process_normal_increase():
     """Test process increases unrest by specified amount."""
-    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={'unrest': 30})
+    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={"unrest": 30})
     savegame.unrest = 30
     savegame.save()
     effect = IncreaseUnrestAbsolute(additional_unrest=20)
@@ -29,7 +29,7 @@ def test_increase_unrest_absolute_process_normal_increase():
 @pytest.mark.django_db
 def test_increase_unrest_absolute_process_maximum_hundred():
     """Test process does not increase unrest above 100."""
-    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={'unrest': 95})
+    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={"unrest": 95})
     savegame.unrest = 95
     savegame.save()
     effect = IncreaseUnrestAbsolute(additional_unrest=15)
@@ -43,7 +43,7 @@ def test_increase_unrest_absolute_process_maximum_hundred():
 @pytest.mark.django_db
 def test_increase_unrest_absolute_process_exact_hundred():
     """Test process handles exact 100 unrest correctly."""
-    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={'unrest': 85})
+    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={"unrest": 85})
     savegame.unrest = 85
     savegame.save()
     effect = IncreaseUnrestAbsolute(additional_unrest=15)
@@ -70,7 +70,7 @@ def test_increase_unrest_absolute_process_creates_savegame():
 @pytest.mark.django_db
 def test_increase_unrest_absolute_process_zero_increase():
     """Test process with zero increase amount."""
-    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={'unrest': 40})
+    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={"unrest": 40})
     savegame.unrest = 40
     savegame.save()
     effect = IncreaseUnrestAbsolute(additional_unrest=0)

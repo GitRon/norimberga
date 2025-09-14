@@ -1,18 +1,10 @@
 import json
-import pytest
-from django.http import HttpResponse
-from django.test import Client, RequestFactory
-from django.urls import reverse
 from unittest import mock
 
-from apps.city.views import (
-    CityMapView,
-    CityMessagesView,
-    LandingPageView,
-    SavegameValueView,
-    TileBuildView,
-    TileDemolishView,
-)
+import pytest
+from django.test import Client, RequestFactory
+from django.urls import reverse
+
 from apps.city.tests.factories import (
     BuildingFactory,
     BuildingTypeFactory,
@@ -20,6 +12,12 @@ from apps.city.tests.factories import (
     TerrainFactory,
     TileFactory,
     UniqueBuildingTypeFactory,
+)
+from apps.city.views import (
+    LandingPageView,
+    SavegameValueView,
+    TileBuildView,
+    TileDemolishView,
 )
 
 
@@ -41,7 +39,7 @@ def test_savegame_value_view_get_context_data():
     """Test SavegameValueView includes max_housing_space in context."""
     savegame = SavegameFactory()
 
-    with mock.patch('apps.city.views.BuildingHousingService') as mock_service:
+    with mock.patch("apps.city.views.BuildingHousingService") as mock_service:
         mock_instance = mock_service.return_value
         mock_instance.calculate_max_space.return_value = 50
 
@@ -60,18 +58,18 @@ def test_savegame_value_view_response(client):
     """Test SavegameValueView responds correctly."""
     savegame = SavegameFactory()
 
-    with mock.patch('apps.city.views.BuildingHousingService'):
-        response = client.get(reverse('city:savegame-value', kwargs={'pk': savegame.pk}))
+    with mock.patch("apps.city.views.BuildingHousingService"):
+        response = client.get(reverse("city:savegame-value", kwargs={"pk": savegame.pk}))
 
         assert response.status_code == 200
-        assert 'savegame/partials/_nav_values.html' in [t.name for t in response.templates]
+        assert "savegame/partials/_nav_values.html" in [t.name for t in response.templates]
 
 
 # LandingPageView Tests
 @pytest.mark.django_db
 def test_landing_page_view_get_context_data():
     """Test LandingPageView includes max_housing_space in context."""
-    with mock.patch('apps.city.views.BuildingHousingService') as mock_service:
+    with mock.patch("apps.city.views.BuildingHousingService") as mock_service:
         mock_instance = mock_service.return_value
         mock_instance.calculate_max_space.return_value = 75
 
@@ -86,31 +84,31 @@ def test_landing_page_view_get_context_data():
 @pytest.mark.django_db
 def test_landing_page_view_response(client):
     """Test LandingPageView responds correctly."""
-    with mock.patch('apps.city.views.BuildingHousingService'):
-        response = client.get(reverse('city:landing-page'))
+    with mock.patch("apps.city.views.BuildingHousingService"):
+        response = client.get(reverse("city:landing-page"))
 
         assert response.status_code == 200
-        assert 'city/landing_page.html' in [t.name for t in response.templates]
+        assert "city/landing_page.html" in [t.name for t in response.templates]
 
 
 # CityMapView Tests
 @pytest.mark.django_db
 def test_city_map_view_response(client):
     """Test CityMapView responds correctly."""
-    response = client.get(reverse('city:city-map'))
+    response = client.get(reverse("city:city-map"))
 
     assert response.status_code == 200
-    assert 'city/partials/city/_city_map.html' in [t.name for t in response.templates]
+    assert "city/partials/city/_city_map.html" in [t.name for t in response.templates]
 
 
 # CityMessagesView Tests
 @pytest.mark.django_db
 def test_city_messages_view_response(client):
     """Test CityMessagesView responds correctly."""
-    response = client.get(reverse('city:city-messages'))
+    response = client.get(reverse("city:city-messages"))
 
     assert response.status_code == 200
-    assert 'city/partials/city/_messages.html' in [t.name for t in response.templates]
+    assert "city/partials/city/_messages.html" in [t.name for t in response.templates]
 
 
 # TileBuildView Tests
@@ -119,12 +117,13 @@ def test_tile_build_view_get_form_kwargs(request_factory):
     """Test TileBuildView adds savegame to form kwargs."""
     # Clear any existing savegame with id=1
     from apps.city.models import Savegame
+
     Savegame.objects.filter(id=1).delete()
 
     savegame = SavegameFactory(id=1)
     tile = TileFactory()
 
-    request = request_factory.get('/')
+    request = request_factory.get("/")
     view = TileBuildView()
     view.request = request
     view.object = tile
@@ -140,11 +139,12 @@ def test_tile_build_view_get_form_kwargs_creates_savegame(request_factory):
     """Test TileBuildView creates savegame if doesn't exist."""
     # Clear any existing savegame with id=1
     from apps.city.models import Savegame
+
     Savegame.objects.filter(id=1).delete()
 
     tile = TileFactory()
 
-    request = request_factory.get('/')
+    request = request_factory.get("/")
     view = TileBuildView()
     view.request = request
     view.object = tile
@@ -160,6 +160,7 @@ def test_tile_build_view_form_valid_with_building():
     """Test TileBuildView deducts coins when building is selected."""
     # Clear any existing savegame with id=1
     from apps.city.models import Savegame
+
     Savegame.objects.filter(id=1).delete()
 
     savegame = SavegameFactory(id=1, coins=100)
@@ -173,7 +174,7 @@ def test_tile_build_view_form_valid_with_building():
     view = TileBuildView()
     view.object = tile
 
-    with mock.patch('apps.city.views.generic.UpdateView.form_valid') as mock_super_form_valid:
+    with mock.patch("apps.city.views.generic.UpdateView.form_valid") as mock_super_form_valid:
         mock_super_form_valid.return_value = mock.Mock()
 
         response = view.form_valid(mock_form)
@@ -194,6 +195,7 @@ def test_tile_build_view_form_valid_without_building():
     """Test TileBuildView doesn't deduct coins when no building selected."""
     # Clear any existing savegame with id=1
     from apps.city.models import Savegame
+
     Savegame.objects.filter(id=1).delete()
 
     savegame = SavegameFactory(id=1, coins=100)
@@ -206,7 +208,7 @@ def test_tile_build_view_form_valid_without_building():
     view = TileBuildView()
     view.object = tile
 
-    with mock.patch('apps.city.views.generic.UpdateView.form_valid') as mock_super_form_valid:
+    with mock.patch("apps.city.views.generic.UpdateView.form_valid") as mock_super_form_valid:
         mock_super_form_valid.return_value = mock.Mock()
 
         response = view.form_valid(mock_form)
@@ -236,16 +238,14 @@ def test_tile_build_view_post_request(client):
 
     # Clear any existing savegame with id=1
     from apps.city.models import Savegame
+
     Savegame.objects.filter(id=1).delete()
 
     savegame = SavegameFactory(id=1, coins=100)
     tile = TileFactory(savegame=savegame, terrain=terrain)
 
-    with mock.patch.object(tile, 'is_adjacent_to_city_building', return_value=True):
-        response = client.post(
-            reverse('city:tile-build', kwargs={'pk': tile.pk}),
-            data={'building': building.pk}
-        )
+    with mock.patch.object(tile, "is_adjacent_to_city_building", return_value=True):
+        response = client.post(reverse("city:tile-build", kwargs={"pk": tile.pk}), data={"building": building.pk})
 
         # Should redirect or return success status
         assert response.status_code in [200, 302]
@@ -260,7 +260,7 @@ def test_tile_demolish_view_post_success():
     tile = TileFactory(building=building)
 
     view = TileDemolishView()
-    request = RequestFactory().post('/')
+    request = RequestFactory().post("/")
 
     response = view.post(request, pk=tile.pk)
 
@@ -283,7 +283,7 @@ def test_tile_demolish_view_post_unique_building():
     tile = TileFactory(building=unique_building)
 
     view = TileDemolishView()
-    request = RequestFactory().post('/')
+    request = RequestFactory().post("/")
 
     response = view.post(request, pk=tile.pk)
 
@@ -302,7 +302,7 @@ def test_tile_demolish_view_post_no_building():
     tile = TileFactory(building=None)
 
     view = TileDemolishView()
-    request = RequestFactory().post('/')
+    request = RequestFactory().post("/")
 
     response = view.post(request, pk=tile.pk)
 
@@ -321,7 +321,7 @@ def test_tile_demolish_view_post_request(client):
     building = BuildingFactory(building_type=building_type)
     tile = TileFactory(building=building)
 
-    response = client.post(reverse('city:tile-demolish', kwargs={'pk': tile.pk}))
+    response = client.post(reverse("city:tile-demolish", kwargs={"pk": tile.pk}))
 
     # Verify building was removed
     tile.refresh_from_db()
@@ -338,7 +338,7 @@ def test_tile_demolish_view_post_unique_building_via_client(client):
     unique_building = BuildingFactory(building_type=unique_building_type)
     tile = TileFactory(building=unique_building)
 
-    response = client.post(reverse('city:tile-demolish', kwargs={'pk': tile.pk}))
+    response = client.post(reverse("city:tile-demolish", kwargs={"pk": tile.pk}))
 
     # Verify building was not removed
     tile.refresh_from_db()

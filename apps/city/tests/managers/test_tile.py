@@ -1,12 +1,12 @@
-import pytest
 from unittest import mock
 
-from apps.city.managers.tile import TileQuerySet, TileManager
+import pytest
+
+from apps.city.managers.tile import TileManager, TileQuerySet
 from apps.city.tests.factories import (
     BuildingFactory,
     BuildingTypeFactory,
     SavegameFactory,
-    TerrainFactory,
     TileFactory,
 )
 
@@ -26,7 +26,7 @@ def test_tile_queryset_filter_savegame():
     result = queryset.filter_savegame(savegame=savegame1)
 
     # Should only return tiles from savegame1
-    tile_ids = list(result.values_list('id', flat=True))
+    tile_ids = list(result.values_list("id", flat=True))
     assert tile1.id in tile_ids
     assert tile2.id in tile_ids
     assert tile3.id not in tile_ids
@@ -55,14 +55,19 @@ def test_tile_queryset_filter_adjacent_tiles():
     queryset = TileQuerySet(model=center_tile.__class__)
 
     # Mock MapCoordinatesService to return expected adjacent coordinates
-    with mock.patch('apps.city.managers.tile.MapCoordinatesService') as mock_service_class:
+    with mock.patch("apps.city.managers.tile.MapCoordinatesService") as mock_service_class:
         mock_service = mock_service_class.return_value
 
         # Mock the adjacent coordinates
         mock_coords = [
-            mock.Mock(x=0, y=0), mock.Mock(x=0, y=1), mock.Mock(x=0, y=2),
-            mock.Mock(x=1, y=0), mock.Mock(x=1, y=2),
-            mock.Mock(x=2, y=0), mock.Mock(x=2, y=1), mock.Mock(x=2, y=2),
+            mock.Mock(x=0, y=0),
+            mock.Mock(x=0, y=1),
+            mock.Mock(x=0, y=2),
+            mock.Mock(x=1, y=0),
+            mock.Mock(x=1, y=2),
+            mock.Mock(x=2, y=0),
+            mock.Mock(x=2, y=1),
+            mock.Mock(x=2, y=2),
         ]
         mock_service.get_adjacent_coordinates.return_value = mock_coords
 
@@ -73,7 +78,7 @@ def test_tile_queryset_filter_adjacent_tiles():
         mock_service.get_adjacent_coordinates.assert_called_once_with(x=center_tile.x, y=center_tile.y)
 
         # The result should contain the adjacent tiles
-        result_ids = set(result.values_list('id', flat=True))
+        result_ids = set(result.values_list("id", flat=True))
         expected_ids = {t.id for t in adjacent_tiles}
 
         # Should contain all adjacent tiles but not the far tile or center tile
@@ -101,7 +106,7 @@ def test_tile_queryset_filter_city_building():
     queryset = TileQuerySet(model=tile_with_city_building.__class__)
     result = queryset.filter_city_building()
 
-    result_ids = list(result.values_list('id', flat=True))
+    result_ids = list(result.values_list("id", flat=True))
 
     # Should only return tile with city building
     assert tile_with_city_building.id in result_ids
@@ -132,22 +137,25 @@ def test_tile_queryset_chaining():
 
     queryset = TileQuerySet(model=center_tile.__class__)
 
-    with mock.patch('apps.city.managers.tile.MapCoordinatesService') as mock_service_class:
+    with mock.patch("apps.city.managers.tile.MapCoordinatesService") as mock_service_class:
         mock_service = mock_service_class.return_value
         mock_coords = [
-            mock.Mock(x=0, y=0), mock.Mock(x=0, y=1), mock.Mock(x=0, y=2),
-            mock.Mock(x=1, y=0), mock.Mock(x=1, y=2),
-            mock.Mock(x=2, y=0), mock.Mock(x=2, y=1),
+            mock.Mock(x=0, y=0),
+            mock.Mock(x=0, y=1),
+            mock.Mock(x=0, y=2),
+            mock.Mock(x=1, y=0),
+            mock.Mock(x=1, y=2),
+            mock.Mock(x=2, y=0),
+            mock.Mock(x=2, y=1),
         ]
         mock_service.get_adjacent_coordinates.return_value = mock_coords
 
         # Chain methods: filter by savegame, then adjacent tiles, then city buildings
-        result = (queryset
-                  .filter_savegame(savegame=savegame)
-                  .filter_adjacent_tiles(tile=center_tile)
-                  .filter_city_building())
+        result = (
+            queryset.filter_savegame(savegame=savegame).filter_adjacent_tiles(tile=center_tile).filter_city_building()
+        )
 
-        result_ids = list(result.values_list('id', flat=True))
+        result_ids = list(result.values_list("id", flat=True))
 
         # Should only return adjacent tile with city building
         assert adjacent_city_tile.id in result_ids
@@ -162,9 +170,9 @@ def test_tile_manager_from_queryset():
     manager = TileManager()
 
     # Should have queryset methods
-    assert hasattr(manager, 'filter_savegame')
-    assert hasattr(manager, 'filter_adjacent_tiles')
-    assert hasattr(manager, 'filter_city_building')
+    assert hasattr(manager, "filter_savegame")
+    assert hasattr(manager, "filter_adjacent_tiles")
+    assert hasattr(manager, "filter_city_building")
 
 
 @pytest.mark.django_db
@@ -196,13 +204,11 @@ def test_tile_queryset_filter_adjacent_tiles_edge_case():
 
     queryset = TileQuerySet(model=edge_tile.__class__)
 
-    with mock.patch('apps.city.managers.tile.MapCoordinatesService') as mock_service_class:
+    with mock.patch("apps.city.managers.tile.MapCoordinatesService") as mock_service_class:
         mock_service = mock_service_class.return_value
 
         # Mock coordinates for edge case (should have fewer adjacent coordinates)
-        mock_coords = [
-            mock.Mock(x=0, y=1), mock.Mock(x=1, y=0), mock.Mock(x=1, y=1)
-        ]
+        mock_coords = [mock.Mock(x=0, y=1), mock.Mock(x=1, y=0), mock.Mock(x=1, y=1)]
         mock_service.get_adjacent_coordinates.return_value = mock_coords
 
         result = queryset.filter_adjacent_tiles(tile=edge_tile)
@@ -234,7 +240,7 @@ def test_tile_queryset_filter_city_building_edge_cases():
     queryset = TileQuerySet(model=tile_city_only.__class__)
     result = queryset.filter_city_building()
 
-    result_ids = set(result.values_list('id', flat=True))
+    result_ids = set(result.values_list("id", flat=True))
 
     # Should include tiles with is_city=True (city_only and both)
     assert tile_city_only.id in result_ids

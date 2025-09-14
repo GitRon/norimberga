@@ -1,6 +1,7 @@
+from unittest import mock
+
 import pytest
 from django.core.exceptions import ValidationError
-from unittest import mock
 
 from apps.city.forms.tile import TileBuildingForm
 from apps.city.tests.factories import (
@@ -48,11 +49,11 @@ def test_tile_building_form_building_queryset_basic():
     tile = TileFactory(savegame=savegame, terrain=terrain, building=None)
 
     # Mock the tile method to avoid adjacency check complexity
-    with mock.patch.object(tile, 'is_adjacent_to_city_building', return_value=True):
+    with mock.patch.object(tile, "is_adjacent_to_city_building", return_value=True):
         form = TileBuildingForm(savegame=savegame, instance=tile)
 
         building_queryset = form.fields["building"].queryset
-        building_ids = list(building_queryset.values_list('id', flat=True))
+        building_ids = list(building_queryset.values_list("id", flat=True))
 
         assert allowed_building.id in building_ids
         assert not_allowed_building.id not in building_ids
@@ -78,7 +79,7 @@ def test_tile_building_form_excludes_unique_buildings():
     form = TileBuildingForm(savegame=savegame, instance=tile)
 
     building_queryset = form.fields["building"].queryset
-    building_ids = list(building_queryset.values_list('id', flat=True))
+    building_ids = list(building_queryset.values_list("id", flat=True))
 
     # Unique building should be excluded since it's already built
     assert unique_building.id not in building_ids
@@ -99,11 +100,11 @@ def test_tile_building_form_excludes_city_buildings_without_adjacent_city():
     tile = TileFactory(savegame=savegame, terrain=terrain, building=None)
 
     # Mock is_adjacent_to_city_building to return False
-    with mock.patch.object(tile, 'is_adjacent_to_city_building', return_value=False):
+    with mock.patch.object(tile, "is_adjacent_to_city_building", return_value=False):
         form = TileBuildingForm(savegame=savegame, instance=tile)
 
         building_queryset = form.fields["building"].queryset
-        building_ids = list(building_queryset.values_list('id', flat=True))
+        building_ids = list(building_queryset.values_list("id", flat=True))
 
         # City-only building should be excluded
         assert city_building.id not in building_ids
@@ -124,11 +125,11 @@ def test_tile_building_form_includes_city_buildings_with_adjacent_city():
     tile = TileFactory(savegame=savegame, terrain=terrain, building=None)
 
     # Mock is_adjacent_to_city_building to return True
-    with mock.patch.object(tile, 'is_adjacent_to_city_building', return_value=True):
+    with mock.patch.object(tile, "is_adjacent_to_city_building", return_value=True):
         form = TileBuildingForm(savegame=savegame, instance=tile)
 
         building_queryset = form.fields["building"].queryset
-        building_ids = list(building_queryset.values_list('id', flat=True))
+        building_ids = list(building_queryset.values_list("id", flat=True))
 
         # City building should be included
         assert city_building.id in building_ids
@@ -148,11 +149,11 @@ def test_tile_building_form_includes_country_buildings_always():
     tile = TileFactory(savegame=savegame, terrain=terrain, building=None)
 
     # Mock is_adjacent_to_city_building to return False
-    with mock.patch.object(tile, 'is_adjacent_to_city_building', return_value=False):
+    with mock.patch.object(tile, "is_adjacent_to_city_building", return_value=False):
         form = TileBuildingForm(savegame=savegame, instance=tile)
 
         building_queryset = form.fields["building"].queryset
-        building_ids = list(building_queryset.values_list('id', flat=True))
+        building_ids = list(building_queryset.values_list("id", flat=True))
 
         # Country building should still be included
         assert country_building.id in building_ids
@@ -172,11 +173,11 @@ def test_tile_building_form_includes_both_buildings():
     tile = TileFactory(savegame=savegame, terrain=terrain, building=None)
 
     # Mock is_adjacent_to_city_building to return False
-    with mock.patch.object(tile, 'is_adjacent_to_city_building', return_value=False):
+    with mock.patch.object(tile, "is_adjacent_to_city_building", return_value=False):
         form = TileBuildingForm(savegame=savegame, instance=tile)
 
         building_queryset = form.fields["building"].queryset
-        building_ids = list(building_queryset.values_list('id', flat=True))
+        building_ids = list(building_queryset.values_list("id", flat=True))
 
         # Both building should be included (has is_country=True)
         assert both_building.id in building_ids
@@ -200,7 +201,7 @@ def test_tile_building_form_upgrade_existing_building():
     form = TileBuildingForm(savegame=savegame, instance=tile)
 
     building_queryset = form.fields["building"].queryset
-    building_ids = list(building_queryset.values_list('id', flat=True))
+    building_ids = list(building_queryset.values_list("id", flat=True))
 
     # Should exclude current building but include upgrade
     assert level1_building.id not in building_ids
@@ -309,5 +310,5 @@ def test_tile_building_form_crispy_helper():
 
     form = TileBuildingForm(savegame=savegame, instance=tile)
 
-    assert hasattr(form, 'helper')
+    assert hasattr(form, "helper")
     assert form.helper.form_tag is False

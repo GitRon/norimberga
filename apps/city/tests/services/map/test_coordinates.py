@@ -1,5 +1,3 @@
-import pytest
-
 from apps.city.services.map.coordinates import MapCoordinatesService
 
 
@@ -20,15 +18,18 @@ def test_get_valid_coordinates():
     """Test _get_valid_coordinates returns correct coordinates."""
     service = MapCoordinatesService(map_size=5)
 
-    result = service._get_valid_coordinates(
-        start_x=1, start_y=1, min_x=0, max_x=2, min_y=0, max_y=2
-    )
+    result = service._get_valid_coordinates(start_x=1, start_y=1, min_x=0, max_x=2, min_y=0, max_y=2)
 
     # Should return all coordinates in range except start coordinates
     expected_coords = [
-        (0, 0), (0, 1), (0, 2),
-        (1, 0),         (1, 2),  # (1, 1) excluded as start
-        (2, 0), (2, 1), (2, 2)
+        (0, 0),
+        (0, 1),
+        (0, 2),
+        (1, 0),
+        (1, 2),  # (1, 1) excluded as start
+        (2, 0),
+        (2, 1),
+        (2, 2),
     ]
 
     result_coords = [(c.x, c.y) for c in result]
@@ -43,16 +44,15 @@ def test_get_adjacent_coordinates_center():
     result = service.get_adjacent_coordinates(x=2, y=2)
 
     # Should return 8 adjacent coordinates around (2,2)
-    expected_coords = [
-        (1, 1), (1, 2), (1, 3),
-        (2, 1),         (2, 3),
-        (3, 1), (3, 2), (3, 3)
-    ]
+    expected_coords = [(1, 1), (1, 2), (1, 3), (2, 1), (2, 3), (3, 1), (3, 2), (3, 3)]
 
     result_coords = [(c.x, c.y) for c in result]
     assert len(result_coords) == 8
     assert set(result_coords) == set(expected_coords)
+
+
 2
+
 
 def test_get_adjacent_coordinates_corner():
     """Test get_adjacent_coordinates from corner of map."""
@@ -61,9 +61,7 @@ def test_get_adjacent_coordinates_corner():
     result = service.get_adjacent_coordinates(x=0, y=0)
 
     # Should return 3 adjacent coordinates from (0,0) corner
-    expected_coords = [
-        (0, 1), (1, 0), (1, 1)
-    ]
+    expected_coords = [(0, 1), (1, 0), (1, 1)]
 
     result_coords = [(c.x, c.y) for c in result]
     assert len(result_coords) == 3
@@ -77,10 +75,7 @@ def test_get_adjacent_coordinates_edge():
     result = service.get_adjacent_coordinates(x=0, y=2)
 
     # Should return 5 adjacent coordinates from (0,2) edge
-    expected_coords = [
-        (0, 1), (0, 3),
-        (1, 1), (1, 2), (1, 3)
-    ]
+    expected_coords = [(0, 1), (0, 3), (1, 1), (1, 2), (1, 3)]
 
     result_coords = [(c.x, c.y) for c in result]
     assert len(result_coords) == 5
@@ -94,9 +89,7 @@ def test_get_forward_adjacent_fields_center():
     result = service.get_forward_adjacent_fields(x=2, y=2)
 
     # Should return 3 forward adjacent coordinates
-    expected_coords = [
-        (2, 3), (3, 2), (3, 3)
-    ]
+    expected_coords = [(2, 3), (3, 2), (3, 3)]
 
     result_coords = [(c.x, c.y) for c in result]
     assert len(result_coords) == 3

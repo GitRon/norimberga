@@ -1,5 +1,4 @@
 import pytest
-from unittest import mock
 
 from apps.city.services.building.housing import BuildingHousingService
 from apps.city.tests.factories import BuildingFactory, BuildingTypeFactory, SavegameFactory, TileFactory
@@ -10,6 +9,7 @@ def test_building_housing_service_init():
     """Test BuildingHousingService initialization."""
     # Clear any existing savegame with id=1
     from apps.city.models import Savegame
+
     Savegame.objects.filter(id=1).delete()
 
     # Create a savegame with id=1 to test get_or_create
@@ -26,6 +26,7 @@ def test_building_housing_service_init_creates_savegame():
     """Test BuildingHousingService creates savegame if doesn't exist."""
     # Clear any existing savegame with id=1
     from apps.city.models import Savegame
+
     Savegame.objects.filter(id=1).delete()
 
     service = BuildingHousingService()
@@ -39,6 +40,7 @@ def test_building_housing_service_calculate_max_space_with_buildings():
     """Test calculate_max_space returns sum of housing space from buildings."""
     # Clear any existing savegame with id=1
     from apps.city.models import Savegame
+
     Savegame.objects.filter(id=1).delete()
 
     savegame = SavegameFactory(id=1)
@@ -65,6 +67,7 @@ def test_building_housing_service_calculate_max_space_no_buildings():
     """Test calculate_max_space returns None when no buildings have housing space."""
     # Clear any existing savegame with id=1
     from apps.city.models import Savegame
+
     Savegame.objects.filter(id=1).delete()
 
     savegame = SavegameFactory(id=1)

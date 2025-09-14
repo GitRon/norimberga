@@ -15,7 +15,7 @@ def test_decrease_population_absolute_init():
 @pytest.mark.django_db
 def test_decrease_population_absolute_process_normal_decrease():
     """Test process decreases population by specified amount."""
-    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={'population': 100})
+    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={"population": 100})
     savegame.population = 100
     savegame.save()
     effect = DecreasePopulationAbsolute(lost_population=30)
@@ -29,7 +29,7 @@ def test_decrease_population_absolute_process_normal_decrease():
 @pytest.mark.django_db
 def test_decrease_population_absolute_process_minimum_zero():
     """Test process does not decrease population below zero."""
-    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={'population': 20})
+    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={"population": 20})
     savegame.population = 20
     savegame.save()
     effect = DecreasePopulationAbsolute(lost_population=35)
@@ -43,7 +43,7 @@ def test_decrease_population_absolute_process_minimum_zero():
 @pytest.mark.django_db
 def test_decrease_population_absolute_process_exact_zero():
     """Test process handles exact zero population correctly."""
-    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={'population': 40})
+    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={"population": 40})
     savegame.population = 40
     savegame.save()
     effect = DecreasePopulationAbsolute(lost_population=40)
@@ -70,7 +70,7 @@ def test_decrease_population_absolute_process_creates_savegame():
 @pytest.mark.django_db
 def test_decrease_population_absolute_process_zero_decrease():
     """Test process with zero decrease amount."""
-    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={'population': 80})
+    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={"population": 80})
     savegame.population = 80
     savegame.save()
     effect = DecreasePopulationAbsolute(lost_population=0)

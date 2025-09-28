@@ -3,8 +3,9 @@ from io import StringIO
 from pathlib import Path
 from unittest import mock
 
+import pytest
 from django.core.management import call_command
-from django.test import TestCase, override_settings
+from django.test import override_settings
 
 from apps.core.management.commands.list_templates import Command as ListTemplatesCommand
 
@@ -138,75 +139,75 @@ def test_list_templates_command_has_list_template_files_method():
     assert callable(command.list_template_files)
 
 
-# Integration test with actual Django TestCase for full command testing
-class ListTemplatesCommandIntegrationTest(TestCase):
-    """Integration tests for list_templates command using Django's TestCase."""
+# Integration tests with pytest for full command testing
+@pytest.mark.django_db
+def test_list_templates_integration():
+    """Integration test for list_templates command with temporary templates."""
+    with tempfile.TemporaryDirectory() as temp_dir:
+        # Create test template files
+        template_dir = Path(temp_dir)
+        (template_dir / "test.html").write_text("<html>Test</html>")
+        (template_dir / "email.txt").write_text("Test email")
 
-    def test_list_templates_integration(self):
-        """Integration test for list_templates command with temporary templates."""
-        with tempfile.TemporaryDirectory() as temp_dir:
-            # Create test template files
-            template_dir = Path(temp_dir)
-            (template_dir / "test.html").write_text("<html>Test</html>")
-            (template_dir / "email.txt").write_text("Test email")
+        # Mock settings to use our temp directory
+        with (
+            override_settings(
+                TEMPLATES=[
+                    {
+                        "BACKEND": "django.template.backends.django.DjangoTemplates",
+                        "DIRS": [str(template_dir)],
+                        "APP_DIRS": True,
+                        "OPTIONS": {},
+                    }
+                ]
+            ),
+            mock.patch("apps.core.management.commands.list_templates.get_app_template_dirs") as mock_get_dirs,
+        ):
+            # Mock app template dirs to return empty list for simpler testing
+            mock_get_dirs.return_value = []
 
-            # Mock settings to use our temp directory
-            with (
-                override_settings(
-                    TEMPLATES=[
-                        {
-                            "BACKEND": "django.template.backends.django.DjangoTemplates",
-                            "DIRS": [str(template_dir)],
-                            "APP_DIRS": True,
-                            "OPTIONS": {},
-                        }
-                    ]
-                ),
-                mock.patch("apps.core.management.commands.list_templates.get_app_template_dirs") as mock_get_dirs,
+            # Run the command
+            out = StringIO()
+            call_command("list_templates", stdout=out)
+
+            # Verify output contains our test files
+            output = out.getvalue()
+            assert "test.html" in output
+            assert "email.txt" in output
+
+
+@pytest.mark.django_db
+def test_list_templates_integration_with_app_templates():
+    """Integration test for list_templates command with app templates."""
+    with tempfile.TemporaryDirectory() as temp_dir:
+        # Create test app template structure
+        app_template_dir = Path(temp_dir) / "app_templates"
+        app_template_dir.mkdir()
+        (app_template_dir / "app.html").write_text("<html>App Template</html>")
+
+        global_template_dir = Path(temp_dir) / "global_templates"
+        global_template_dir.mkdir()
+        (global_template_dir / "base.html").write_text("<html>Base Template</html>")
+
+        # Mock both app and global template directories
+        with mock.patch("apps.core.management.commands.list_templates.get_app_template_dirs") as mock_get_dirs:
+            with override_settings(
+                TEMPLATES=[
+                    {
+                        "BACKEND": "django.template.backends.django.DjangoTemplates",
+                        "DIRS": [str(global_template_dir)],
+                        "APP_DIRS": True,
+                        "OPTIONS": {},
+                    }
+                ]
             ):
-                # Mock app template dirs to return empty list for simpler testing
-                mock_get_dirs.return_value = []
+                mock_get_dirs.return_value = [str(app_template_dir)]
 
                 # Run the command
                 out = StringIO()
                 call_command("list_templates", stdout=out)
 
-                # Verify output contains our test files
+                # Verify output contains templates from both sources
                 output = out.getvalue()
-                self.assertIn("test.html", output)
-                self.assertIn("email.txt", output)
-
-    def test_list_templates_integration_with_app_templates(self):
-        """Integration test for list_templates command with app templates."""
-        with tempfile.TemporaryDirectory() as temp_dir:
-            # Create test app template structure
-            app_template_dir = Path(temp_dir) / "app_templates"
-            app_template_dir.mkdir()
-            (app_template_dir / "app.html").write_text("<html>App Template</html>")
-
-            global_template_dir = Path(temp_dir) / "global_templates"
-            global_template_dir.mkdir()
-            (global_template_dir / "base.html").write_text("<html>Base Template</html>")
-
-            # Mock both app and global template directories
-            with mock.patch("apps.core.management.commands.list_templates.get_app_template_dirs") as mock_get_dirs:
-                with override_settings(
-                    TEMPLATES=[
-                        {
-                            "BACKEND": "django.template.backends.django.DjangoTemplates",
-                            "DIRS": [str(global_template_dir)],
-                            "APP_DIRS": True,
-                            "OPTIONS": {},
-                        }
-                    ]
-                ):
-                    mock_get_dirs.return_value = [str(app_template_dir)]
-
-                    # Run the command
-                    out = StringIO()
-                    call_command("list_templates", stdout=out)
-
-                    # Verify output contains templates from both sources
-                    output = out.getvalue()
-                    self.assertIn("app.html", output)
-                    self.assertIn("base.html", output)
+                assert "app.html" in output
+                assert "base.html" in output

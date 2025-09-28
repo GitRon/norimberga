@@ -62,8 +62,8 @@ class TileFactory(factory.django.DjangoModelFactory):
         model = Tile
 
     savegame = factory.SubFactory(SavegameFactory)
-    x = factory.Faker("random_int", min=0, max=4)
-    y = factory.Faker("random_int", min=0, max=4)
+    x = factory.Sequence(lambda n: (n * 17) % 1000)  # Use prime number for better distribution
+    y = factory.Sequence(lambda n: (n * 23) % 1000)  # Use different prime for y
     terrain = factory.SubFactory(TerrainFactory)
     building = None
 

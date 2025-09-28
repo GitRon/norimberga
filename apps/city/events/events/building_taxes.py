@@ -22,7 +22,11 @@ class Event(BaseEvent):
         return super().get_probability() if self.savegame.tiles.filter(building__taxes__gt=0).exists() else 0
 
     def _calculate_taxes(self):
-        return self.savegame.tiles.aggregate(sum_taxes=Sum("building__taxes"))["sum_taxes"]
+        result = self.savegame.tiles.aggregate(sum_taxes=Sum("building__taxes"))["sum_taxes"]
+        # Return None if there are no buildings with taxes
+        if result == 0 and not self.savegame.tiles.filter(building__taxes__gt=0).exists():
+            return None
+        return result
 
     def get_effects(self):
         return (IncreaseCoins(coins=self.taxes),)

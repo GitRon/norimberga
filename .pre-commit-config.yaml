@@ -18,6 +18,17 @@ repos:
         args: [--target-version, "4.2"]
         stages: [ pre-push ]
 
+  - repo: https://github.com/adamchainz/djade-pre-commit
+    rev: 1.6.0
+    hooks:
+      - id: djade
+        args: [ --target-version, "5.2" ]
+        exclude: |
+          (?x)^(
+            charts/.*
+            |.*\.py
+          )$
+
   - repo: https://github.com/rtts/djhtml
     rev: 3.0.9
     hooks:
@@ -45,3 +56,28 @@ repos:
               .*/node_modules/.*|
           )$
         stages: [ pre-push ]
+
+# TODO: enable boa linter
+#  - repo: https://github.com/ambient-innovation/boa-restrictor
+#    rev: v1.10.6
+#    hooks:
+#      - id: boa-restrictor
+#        args: [ --config=pyproject.toml ]
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-ast
+      - id: check-builtin-literals
+      - id: check-case-conflict
+      - id: check-docstring-first
+      - id: check-executables-have-shebangs
+      - id: check-illegal-windows-names
+      - id: check-shebang-scripts-are-executable
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-toml
+      - id: end-of-file-fixer
+      - id: fix-byte-order-marker
+      - id: mixed-line-ending
+      - id: trailing-whitespace

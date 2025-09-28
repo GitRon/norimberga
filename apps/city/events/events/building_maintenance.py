@@ -20,13 +20,15 @@ class Event(BaseEvent):
 
     def get_probability(self):
         return (
-            super().get_probability()
-            if self.savegame.tiles.filter(building__maintenance_costs__gt=False).exists()
-            else 0
+            super().get_probability() if self.savegame.tiles.filter(building__maintenance_costs__gt=0).exists() else 0
         )
 
     def _calculate_maintenance(self):
-        return self.savegame.tiles.aggregate(sum_maintenance=Sum("building__maintenance_costs"))["sum_maintenance"]
+        result = self.savegame.tiles.aggregate(sum_maintenance=Sum("building__maintenance_costs"))["sum_maintenance"]
+        # Return None if there are no buildings with maintenance costs
+        if result == 0 and not self.savegame.tiles.filter(building__maintenance_costs__gt=0).exists():
+            return None
+        return result
 
     def get_effects(self):
         return (DecreaseCoins(coins=self.maintenance),)

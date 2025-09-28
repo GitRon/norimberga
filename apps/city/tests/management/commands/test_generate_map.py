@@ -3,7 +3,6 @@ from unittest import mock
 
 import pytest
 from django.core.management import call_command
-from django.test import TestCase
 
 from apps.city.management.commands.generate_map import Command as GenerateMapCommand
 from apps.city.tests.factories import SavegameFactory
@@ -85,35 +84,31 @@ def test_generate_map_command_has_handle_method():
     assert callable(command.handle)
 
 
-# Integration test with actual Django TestCase for full command testing
-class GenerateMapCommandIntegrationTest(TestCase):
-    """Integration tests for generate_map command using Django's TestCase."""
+# Integration test with pytest for full command testing
+@pytest.mark.django_db
+def test_generate_map_integration():
+    """Integration test for generate_map command."""
+    from apps.city.models import Savegame, Tile
+    from apps.city.tests.factories import RiverTerrainFactory, TerrainFactory
 
-    def test_generate_map_integration(self):
-        """Integration test for generate_map command."""
-        from apps.city.models import Savegame, Tile
+    # Create required terrain for map generation
+    # Create river terrain needed by the service
+    RiverTerrainFactory()
+    # Create regular terrain for get_terrain() calls
+    terrain = TerrainFactory()
 
-        # Create required terrain for map generation
-        terrain = self.create_test_terrain()
+    with mock.patch("apps.city.services.map.generation.MapGenerationService.get_terrain") as mock_get_terrain:
+        mock_get_terrain.return_value = terrain
 
-        with mock.patch("apps.city.services.map.generation.MapGenerationService.get_terrain") as mock_get_terrain:
-            mock_get_terrain.return_value = terrain
+        # Run the command
+        out = StringIO()
+        call_command("generate_map", stdout=out)
 
-            # Run the command
-            out = StringIO()
-            call_command("generate_map", stdout=out)
+        # Verify savegame was created
+        savegame = Savegame.objects.get(id=1)
+        assert savegame is not None
 
-            # Verify savegame was created
-            savegame = Savegame.objects.get(id=1)
-            self.assertIsNotNone(savegame)
-
-            # Verify tiles were created (depends on implementation)
-            # This would vary based on the actual MapGenerationService behavior
-            tiles_count = Tile.objects.filter(savegame=savegame).count()
-            self.assertGreaterEqual(tiles_count, 0)
-
-    def create_test_terrain(self):
-        """Create test terrain for integration tests."""
-        from apps.city.tests.factories import TerrainFactory
-
-        return TerrainFactory()
+        # Verify tiles were created (depends on implementation)
+        # This would vary based on the actual MapGenerationService behavior
+        tiles_count = Tile.objects.filter(savegame=savegame).count()
+        assert tiles_count >= 0

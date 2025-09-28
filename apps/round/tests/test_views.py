@@ -1,0 +1,253 @@
+import json
+from unittest import mock
+
+import pytest
+from django.contrib import messages
+from django.test import Client, RequestFactory
+from django.urls import reverse
+
+from apps.round.views import RoundView
+
+
+@pytest.fixture
+def client():
+    """Provide Django test client."""
+    return Client()
+
+
+@pytest.fixture
+def request_factory():
+    """Provide Django request factory."""
+    return RequestFactory()
+
+
+# RoundView Tests
+@pytest.mark.django_db
+def test_round_view_http_method_names():
+    """Test RoundView only allows POST method."""
+    view = RoundView()
+    assert view.http_method_names == ("post",)
+
+
+@pytest.mark.django_db
+def test_round_view_post_with_events(request_factory):
+    """Test RoundView processes events and adds messages."""
+    # Create mock events
+    mock_event1 = mock.Mock()
+    mock_event1.process.return_value = "Event 1 happened"
+    mock_event1.LEVEL = messages.INFO
+    mock_event1.TITLE = "Event 1"
+
+    mock_event2 = mock.Mock()
+    mock_event2.process.return_value = "Event 2 happened"
+    mock_event2.LEVEL = messages.WARNING
+    mock_event2.TITLE = "Event 2"
+
+    event_list = [mock_event1, mock_event2]
+
+    # Mock EventSelectionService
+    with mock.patch("apps.round.views.EventSelectionService") as mock_service:
+        mock_service_instance = mock_service.return_value
+        mock_service_instance.process.return_value = event_list
+
+        # Create request and view
+        request = request_factory.post("/")
+        view = RoundView()
+        view.request = request
+
+        # Mock messages framework
+        with mock.patch("apps.round.views.messages") as mock_messages:
+            response = view.post(request)
+
+            # Verify service was called
+            mock_service.assert_called_once()
+            mock_service_instance.process.assert_called_once()
+
+            # Verify events were processed
+            mock_event1.process.assert_called_once()
+            mock_event2.process.assert_called_once()
+
+            # Verify messages were added
+            assert mock_messages.add_message.call_count == 2
+            mock_messages.add_message.assert_any_call(
+                request, mock_event1.LEVEL, "Event 1 happened", extra_tags="Event 1"
+            )
+            mock_messages.add_message.assert_any_call(
+                request, mock_event2.LEVEL, "Event 2 happened", extra_tags="Event 2"
+            )
+
+            # Verify response
+            assert response.status_code == 200
+            hx_trigger = json.loads(response["HX-Trigger"])
+            assert "reloadMessages" in hx_trigger
+            assert "refreshMap" in hx_trigger
+            assert "updateNavbarValues" in hx_trigger
+
+
+@pytest.mark.django_db
+def test_round_view_post_with_no_events(request_factory):
+    """Test RoundView handles case when no events occur."""
+    # Mock EventSelectionService to return empty list
+    with mock.patch("apps.round.views.EventSelectionService") as mock_service:
+        mock_service_instance = mock_service.return_value
+        mock_service_instance.process.return_value = []
+
+        # Create request and view
+        request = request_factory.post("/")
+        view = RoundView()
+        view.request = request
+
+        # Mock messages framework
+        with mock.patch("apps.round.views.messages") as mock_messages:
+            response = view.post(request)
+
+            # Verify service was called
+            mock_service.assert_called_once()
+            mock_service_instance.process.assert_called_once()
+
+            # Verify quiet year message was added
+            mock_messages.add_message.assert_called_once_with(
+                request, mock_messages.INFO, "It was a quiet year. Nothing happened out of the ordinary."
+            )
+
+            # Verify response
+            assert response.status_code == 200
+            hx_trigger = json.loads(response["HX-Trigger"])
+            assert "reloadMessages" in hx_trigger
+            assert "refreshMap" in hx_trigger
+            assert "updateNavbarValues" in hx_trigger
+
+
+@pytest.mark.django_db
+def test_round_view_post_response_headers(request_factory):
+    """Test RoundView sets correct HTMX trigger headers."""
+    # Mock EventSelectionService
+    with mock.patch("apps.round.views.EventSelectionService") as mock_service:
+        mock_service_instance = mock_service.return_value
+        mock_service_instance.process.return_value = []
+
+        # Create request and view
+        request = request_factory.post("/")
+        view = RoundView()
+        view.request = request
+
+        # Mock messages framework
+        with mock.patch("apps.round.views.messages"):
+            response = view.post(request)
+
+            # Verify response headers
+            assert response.status_code == 200
+            assert "HX-Trigger" in response
+
+            hx_trigger = json.loads(response["HX-Trigger"])
+            assert hx_trigger == {
+                "reloadMessages": "-",
+                "refreshMap": "-",
+                "updateNavbarValues": "-",
+            }
+
+
+@pytest.mark.django_db
+def test_round_view_post_via_client(client):
+    """Test RoundView responds correctly via Django test client."""
+    # Mock EventSelectionService
+    with mock.patch("apps.round.views.EventSelectionService") as mock_service:
+        mock_service_instance = mock_service.return_value
+        mock_service_instance.process.return_value = []
+
+        response = client.post(reverse("round:finish"))
+
+        # Verify successful response
+        assert response.status_code == 200
+        assert "HX-Trigger" in response
+
+        hx_trigger = json.loads(response["HX-Trigger"])
+        assert "reloadMessages" in hx_trigger
+        assert "refreshMap" in hx_trigger
+        assert "updateNavbarValues" in hx_trigger
+
+
+@pytest.mark.django_db
+def test_round_view_get_not_allowed(client):
+    """Test RoundView rejects GET requests."""
+    response = client.get(reverse("round:finish"))
+    assert response.status_code == 405  # Method Not Allowed
+
+
+@pytest.mark.django_db
+def test_round_view_event_processing_order(request_factory):
+    """Test RoundView processes events in the order returned by service."""
+    # Create mock events with different processing order
+    mock_event1 = mock.Mock()
+    mock_event1.process.return_value = "First event"
+    mock_event1.LEVEL = messages.INFO
+    mock_event1.TITLE = "First"
+
+    mock_event2 = mock.Mock()
+    mock_event2.process.return_value = "Second event"
+    mock_event2.LEVEL = messages.INFO
+    mock_event2.TITLE = "Second"
+
+    event_list = [mock_event1, mock_event2]
+
+    # Mock EventSelectionService
+    with mock.patch("apps.round.views.EventSelectionService") as mock_service:
+        mock_service_instance = mock_service.return_value
+        mock_service_instance.process.return_value = event_list
+
+        # Create request and view
+        request = request_factory.post("/")
+        view = RoundView()
+        view.request = request
+
+        # Track call order
+        call_order = []
+        mock_event1.process.side_effect = lambda: call_order.append("event1")
+        mock_event2.process.side_effect = lambda: call_order.append("event2")
+
+        # Mock messages framework
+        with mock.patch("apps.round.views.messages"):
+            view.post(request)
+
+            # Verify events were processed in correct order
+            assert call_order == ["event1", "event2"]
+
+
+@pytest.mark.django_db
+def test_round_view_single_event(request_factory):
+    """Test RoundView handles single event correctly."""
+    # Create single mock event
+    mock_event = mock.Mock()
+    mock_event.process.return_value = "Single event occurred"
+    mock_event.LEVEL = messages.SUCCESS
+    mock_event.TITLE = "Single Event"
+
+    event_list = [mock_event]
+
+    # Mock EventSelectionService
+    with mock.patch("apps.round.views.EventSelectionService") as mock_service:
+        mock_service_instance = mock_service.return_value
+        mock_service_instance.process.return_value = event_list
+
+        # Create request and view
+        request = request_factory.post("/")
+        view = RoundView()
+        view.request = request
+
+        # Mock messages framework
+        with mock.patch("apps.round.views.messages") as mock_messages:
+            response = view.post(request)
+
+            # Verify single event was processed
+            mock_event.process.assert_called_once()
+
+            # Verify single message was added
+            mock_messages.add_message.assert_called_once_with(
+                request, mock_event.LEVEL, "Single event occurred", extra_tags="Single Event"
+            )
+
+            # Should not add quiet year message
+            assert mock_messages.add_message.call_count == 1
+
+            # Verify response
+            assert response.status_code == 200

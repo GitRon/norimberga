@@ -51,9 +51,6 @@ def test_get_adjacent_coordinates_center():
     assert set(result_coords) == set(expected_coords)
 
 
-2
-
-
 def test_get_adjacent_coordinates_corner():
     """Test get_adjacent_coordinates from corner of map."""
     service = MapCoordinatesService(map_size=5)

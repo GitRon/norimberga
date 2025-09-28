@@ -129,6 +129,26 @@ def test_map_generation_service_draw_river_x_axis():
 
 
 @pytest.mark.django_db
+def test_map_generation_service_draw_river_missing_terrain():
+    """Test _draw_river raises ValueError when River terrain is missing."""
+    savegame = SavegameFactory(map_size=3)
+    service = MapGenerationService(savegame)
+
+    # Clear any existing "River" terrain to simulate missing terrain
+    from apps.city.models import Terrain
+
+    Terrain.objects.filter(name="River").delete()
+
+    # Create initial tiles
+    for x in range(3):
+        for y in range(3):
+            TileFactory(savegame=savegame, x=x, y=y)
+
+    with pytest.raises(ValueError, match="River terrain not found. Please ensure River terrain exists in the database."):
+        service._draw_river()
+
+
+@pytest.mark.django_db
 def test_map_generation_service_process():
     """Test process method creates complete map with river."""
     savegame = SavegameFactory(map_size=3)

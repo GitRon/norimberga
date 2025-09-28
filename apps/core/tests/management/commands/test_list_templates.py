@@ -14,28 +14,30 @@ def test_list_templates_command_handle():
     """Test list_templates command processes templates correctly."""
     command = ListTemplatesCommand()
 
-    with mock.patch("apps.core.management.commands.list_templates.get_app_template_dirs") as mock_get_dirs:
-        with mock.patch.object(command, "list_template_files") as mock_list_files:
-            with mock.patch("apps.core.management.commands.list_templates.settings") as mock_settings:
-                # Setup mocks
-                mock_get_dirs.return_value = ["/app/templates"]
-                mock_settings.TEMPLATES = [{"DIRS": ["/global/templates"]}]
-                mock_list_files.side_effect = [["/app/templates/app.html"], ["/global/templates/base.html"]]
+    with (
+        mock.patch("apps.core.management.commands.list_templates.get_app_template_dirs") as mock_get_dirs,
+        mock.patch.object(command, "list_template_files") as mock_list_files,
+        mock.patch("apps.core.management.commands.list_templates.settings") as mock_settings,
+    ):
+        # Setup mocks
+        mock_get_dirs.return_value = ["/app/templates"]
+        mock_settings.TEMPLATES = [{"DIRS": ["/global/templates"]}]
+        mock_list_files.side_effect = [["/app/templates/app.html"], ["/global/templates/base.html"]]
 
-                with mock.patch.object(command.stdout, "write") as mock_write:
-                    command.handle()
+        with mock.patch.object(command.stdout, "write") as mock_write:
+            command.handle()
 
-                    # Verify app template dirs were retrieved
-                    mock_get_dirs.assert_called_once_with("templates")
+            # Verify app template dirs were retrieved
+            mock_get_dirs.assert_called_once_with("templates")
 
-                    # Verify list_template_files was called for both directories
-                    assert mock_list_files.call_count == 2
-                    mock_list_files.assert_any_call("/app/templates")
-                    mock_list_files.assert_any_call("/global/templates")
+            # Verify list_template_files was called for both directories
+            assert mock_list_files.call_count == 2
+            mock_list_files.assert_any_call("/app/templates")
+            mock_list_files.assert_any_call("/global/templates")
 
-                    # Verify output was written
-                    expected_output = "/app/templates/app.html\n/global/templates/base.html"
-                    mock_write.assert_called_once_with(expected_output)
+            # Verify output was written
+            expected_output = "/app/templates/app.html\n/global/templates/base.html"
+            mock_write.assert_called_once_with(expected_output)
 
 
 def test_list_templates_command_list_template_files():
@@ -94,19 +96,21 @@ def test_list_templates_command_list_template_files_no_templates():
 
 def test_list_templates_command_via_call_command():
     """Test list_templates command can be called via Django's call_command."""
-    with mock.patch("apps.core.management.commands.list_templates.get_app_template_dirs") as mock_get_dirs:
-        with mock.patch("apps.core.management.commands.list_templates.settings") as mock_settings:
-            # Setup mocks
-            mock_get_dirs.return_value = []
-            mock_settings.TEMPLATES = [{"DIRS": []}]
+    with (
+        mock.patch("apps.core.management.commands.list_templates.get_app_template_dirs") as mock_get_dirs,
+        mock.patch("apps.core.management.commands.list_templates.settings") as mock_settings,
+    ):
+        # Setup mocks
+        mock_get_dirs.return_value = []
+        mock_settings.TEMPLATES = [{"DIRS": []}]
 
-            # Capture output
-            out = StringIO()
-            call_command("list_templates", stdout=out)
+        # Capture output
+        out = StringIO()
+        call_command("list_templates", stdout=out)
 
-            # Verify command executed (should produce empty line since there's a \n.join of empty list)
-            output = out.getvalue()
-            assert output == "\n"  # Empty join produces just newline
+        # Verify command executed (should produce empty line since there's a \n.join of empty list)
+        output = out.getvalue()
+        assert output == "\n"  # Empty join produces just newline
 
 
 def test_list_templates_command_inheritance():
@@ -190,8 +194,9 @@ def test_list_templates_integration_with_app_templates():
         (global_template_dir / "base.html").write_text("<html>Base Template</html>")
 
         # Mock both app and global template directories
-        with mock.patch("apps.core.management.commands.list_templates.get_app_template_dirs") as mock_get_dirs:
-            with override_settings(
+        with (
+            mock.patch("apps.core.management.commands.list_templates.get_app_template_dirs") as mock_get_dirs,
+            override_settings(
                 TEMPLATES=[
                     {
                         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -200,14 +205,15 @@ def test_list_templates_integration_with_app_templates():
                         "OPTIONS": {},
                     }
                 ]
-            ):
-                mock_get_dirs.return_value = [str(app_template_dir)]
+            ),
+        ):
+            mock_get_dirs.return_value = [str(app_template_dir)]
 
-                # Run the command
-                out = StringIO()
-                call_command("list_templates", stdout=out)
+            # Run the command
+            out = StringIO()
+            call_command("list_templates", stdout=out)
 
-                # Verify output contains templates from both sources
-                output = out.getvalue()
-                assert "app.html" in output
-                assert "base.html" in output
+            # Verify output contains templates from both sources
+            output = out.getvalue()
+            assert "app.html" in output
+            assert "base.html" in output

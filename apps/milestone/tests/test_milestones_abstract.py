@@ -19,6 +19,7 @@ def test_abstract_milestone_init():
 def test_abstract_milestone_init_nonexistent_savegame():
     """Test AbstractMilestone initialization fails with non-existent savegame_id."""
     from apps.city.models import Savegame
+
     with pytest.raises(Savegame.DoesNotExist):
         AbstractMilestone(savegame_id=99999)
 

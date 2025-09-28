@@ -5,7 +5,7 @@
             {# Tailwind can't detect dynamic classes, therefore, they are safelist-ed #}
             <div class="px-3 py-6 w-12 h-8 border border-gray-50 cursor-pointer {{ tile.color_class }} relative"
                  hx-get="{% url "city:tile-build" tile.id %}" hx-target="#build-container" hx-swap="innerHTML">
-{#                <span class="absolute bottom-0 right-0 m-1 text-xs text-slate-500">{{ tile.x }}/{{ tile.y }}</span>#}
+{# <span class="absolute bottom-0 right-0 m-1 text-xs text-slate-500">{{ tile.x }}/{{ tile.y }}</span> #}
             </div>
         {% endfor %}
     </div>

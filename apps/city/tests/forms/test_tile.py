@@ -71,7 +71,7 @@ def test_tile_building_form_excludes_unique_buildings():
     unique_building = BuildingFactory(building_type=unique_building_type, level=1)
 
     # Place unique building on another tile in same savegame
-    other_tile = TileFactory(savegame=savegame, x=0, y=0, building=unique_building)
+    TileFactory(savegame=savegame, x=0, y=0, building=unique_building)
 
     # Create new tile to test
     tile = TileFactory(savegame=savegame, terrain=terrain, x=1, y=0, building=None)

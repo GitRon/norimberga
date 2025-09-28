@@ -132,16 +132,14 @@ jobs:
 
     - name: Run tests with coverage
       run: |
-        uv run python -m coverage run -m pytest apps/
+        uv run pytest --cov=apps --cov-report=
         ls -la .coverage* || echo "No .coverage files found"
 
     - name: Store coverage data
       uses: actions/upload-artifact@v4
       with:
         name: coverage-data-${{ runner.os }}-py3.13
-        path: |
-          .coverage
-          .coverage.*
+        path: .coverage
         if-no-files-found: ignore
 
   coverage:
@@ -164,6 +162,12 @@ jobs:
           path: ${{ github.workspace }}
           pattern: coverage-data-*
           merge-multiple: true
+
+      - name: List downloaded files
+        run: |
+          echo "Files in workspace:"
+          find . -name ".coverage*" -type f || echo "No .coverage files found"
+          ls -la
 
       - name: Combine coverage and fail if it's <100%
         run: |

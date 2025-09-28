@@ -133,14 +133,17 @@ jobs:
     - name: Run tests with coverage
       run: |
         uv run pytest --cov=apps --cov-report=
+        echo "Coverage files after test:"
         ls -la .coverage* || echo "No .coverage files found"
+        echo "Working directory:"
+        pwd
 
     - name: Store coverage data
       uses: actions/upload-artifact@v4
       with:
-        name: coverage-data-${{ runner.os }}-py3.13
+        name: coverage-data
         path: .coverage
-        if-no-files-found: ignore
+        if-no-files-found: error
 
   coverage:
     name: Coverage
@@ -159,9 +162,8 @@ jobs:
       - name: Download data
         uses: actions/download-artifact@v4
         with:
-          path: ${{ github.workspace }}
-          pattern: coverage-data-*
-          merge-multiple: true
+          name: coverage-data
+          path: .
 
       - name: List downloaded files
         run: |

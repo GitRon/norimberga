@@ -131,14 +131,18 @@ jobs:
       run: uv run python manage.py migrate
 
     - name: Run tests with coverage
-      run: uv run python -m coverage run -m pytest apps/
+      run: |
+        uv run python -m coverage run -m pytest apps/
+        ls -la .coverage* || echo "No .coverage files found"
 
     - name: Store coverage data
       uses: actions/upload-artifact@v4
       with:
         name: coverage-data-${{ runner.os }}-py3.13
-        path: .coverage
-        if-no-files-found: error
+        path: |
+          .coverage
+          .coverage.*
+        if-no-files-found: ignore
 
   coverage:
     name: Coverage

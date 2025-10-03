@@ -66,10 +66,10 @@ def test_map_generation_service_draw_river_y_axis():
     savegame = SavegameFactory(map_size=3)
     service = MapGenerationService(savegame)
 
-    # Clear any existing "River" terrain and create a unique one
+    # Clear any existing water terrains and create a unique one
     from apps.city.models import Terrain
 
-    Terrain.objects.filter(name="River").delete()
+    Terrain.objects.filter(is_water=True).delete()
     river_terrain = RiverTerrainFactory()
 
     # Create initial tiles
@@ -102,10 +102,10 @@ def test_map_generation_service_draw_river_x_axis():
     savegame = SavegameFactory(map_size=3)
     service = MapGenerationService(savegame)
 
-    # Clear any existing "River" terrain and create a unique one
+    # Clear any existing water terrains and create a unique one
     from apps.city.models import Terrain
 
-    Terrain.objects.filter(name="River").delete()
+    Terrain.objects.filter(is_water=True).delete()
     river_terrain = RiverTerrainFactory()
 
     # Create initial tiles
@@ -138,10 +138,10 @@ def test_map_generation_service_draw_river_missing_terrain():
     savegame = SavegameFactory(map_size=3)
     service = MapGenerationService(savegame)
 
-    # Clear any existing "River" terrain to simulate missing terrain
+    # Clear any existing water terrains to simulate missing terrain
     from apps.city.models import Terrain
 
-    Terrain.objects.filter(name="River").delete()
+    Terrain.objects.filter(is_water=True).delete()
 
     # Create initial tiles
     for x in range(3):

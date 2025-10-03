@@ -4,6 +4,7 @@ from django.contrib import messages
 
 from apps.city.events.effects.building.remove_building import RemoveBuilding
 from apps.city.events.effects.savegame.decrease_coins import DecreaseCoins
+from apps.city.events.effects.savegame.decrease_population_absolute import DecreasePopulationAbsolute
 from apps.city.models import Savegame, Tile
 from apps.event.events.events.base_event import BaseEvent
 
@@ -16,6 +17,7 @@ class Event(BaseEvent):
     savegame: Savegame
     initial_coins: int
     lost_coins: int
+    lost_population: int
     affected_tile: Tile | None
     destroyed_building_name: str | None
 
@@ -27,6 +29,10 @@ class Event(BaseEvent):
         # Lose between 10-30% of current coins, minimum 50
         loss_percentage = random.randint(10, 30) / 100
         self.lost_coins = max(int(self.savegame.coins * loss_percentage), 50)
+
+        # Kill between 5-15% of population, minimum 5
+        population_loss_percentage = random.randint(5, 15) / 100
+        self.lost_population = max(int(self.savegame.population * population_loss_percentage), 5)
 
         # Randomly select a building to destroy (excluding walls and unique buildings)
         self.affected_tile = (
@@ -47,6 +53,9 @@ class Event(BaseEvent):
     def _prepare_effect_decrease_coins(self):
         return DecreaseCoins(coins=self.lost_coins)
 
+    def _prepare_effect_decrease_population(self):
+        return DecreasePopulationAbsolute(lost_population=self.lost_population)
+
     def _prepare_effect_remove_building(self):
         if self.affected_tile:
             return RemoveBuilding(tile=self.affected_tile)
@@ -56,7 +65,8 @@ class Event(BaseEvent):
         self.savegame.refresh_from_db()
         message = (
             f"Without a protective wall, raiders pillaged the city! "
-            f"They stole {self.initial_coins - self.savegame.coins} coins."
+            f"They stole {self.initial_coins - self.savegame.coins} coins and killed "
+            f"{self.lost_population} inhabitants."
         )
         if self.affected_tile and self.destroyed_building_name:
             message += f" The {self.destroyed_building_name} at {self.affected_tile} was destroyed during the raid."

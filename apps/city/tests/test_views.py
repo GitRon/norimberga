@@ -14,6 +14,7 @@ from apps.city.tests.factories import (
     UniqueBuildingTypeFactory,
 )
 from apps.city.views import (
+    BalanceView,
     LandingPageView,
     SavegameValueView,
     TileBuildView,
@@ -346,3 +347,112 @@ def test_tile_demolish_view_post_unique_building_via_client(client):
 
     # Verify error response
     assert response.status_code == 400
+
+
+# BalanceView Tests
+@pytest.mark.django_db
+def test_balance_view_get_context_data():
+    """Test BalanceView includes balance data in context."""
+    from apps.city.models import Savegame
+
+    # Clear any existing savegame with id=1
+    Savegame.objects.filter(id=1).delete()
+
+    savegame = SavegameFactory(id=1)
+
+    # Create buildings with known values
+    building1 = BuildingFactory(taxes=30, maintenance_costs=10)
+    building2 = BuildingFactory(taxes=20, maintenance_costs=5)
+
+    TileFactory(savegame=savegame, building=building1)
+    TileFactory(savegame=savegame, building=building2)
+
+    view = BalanceView()
+    context = view.get_context_data()
+
+    assert context["savegame"] == savegame
+    assert context["taxes"] == 50  # 30 + 20
+    assert context["maintenance"] == 15  # 10 + 5
+    assert context["balance"] == 35  # 50 - 15
+
+
+@pytest.mark.django_db
+def test_balance_view_response(client):
+    """Test BalanceView responds correctly."""
+    from apps.city.models import Savegame
+
+    # Clear any existing savegame with id=1
+    Savegame.objects.filter(id=1).delete()
+
+    savegame = SavegameFactory(id=1)
+    building = BuildingFactory(taxes=20, maintenance_costs=10)
+    TileFactory(savegame=savegame, building=building)
+
+    response = client.get(reverse("city:balance"))
+
+    assert response.status_code == 200
+    assert "city/balance.html" in [t.name for t in response.templates]
+
+
+@pytest.mark.django_db
+def test_balance_view_context_with_no_buildings(client):
+    """Test BalanceView handles savegame with no buildings."""
+    from apps.city.models import Savegame
+
+    # Clear any existing savegame with id=1
+    Savegame.objects.filter(id=1).delete()
+
+    savegame = SavegameFactory(id=1)
+    TileFactory(savegame=savegame, building=None)
+
+    response = client.get(reverse("city:balance"))
+
+    assert response.status_code == 200
+    assert response.context["taxes"] == 0
+    assert response.context["maintenance"] == 0
+    assert response.context["balance"] == 0
+
+
+@pytest.mark.django_db
+def test_balance_view_context_positive_balance(client):
+    """Test BalanceView displays positive balance correctly."""
+    from apps.city.models import Savegame
+
+    # Clear any existing savegame with id=1
+    Savegame.objects.filter(id=1).delete()
+
+    savegame = SavegameFactory(id=1)
+    building = BuildingFactory(taxes=100, maintenance_costs=20)
+    TileFactory(savegame=savegame, building=building)
+
+    response = client.get(reverse("city:balance"))
+
+    assert response.status_code == 200
+    assert response.context["balance"] == 80
+    assert response.context["balance"] > 0
+
+
+@pytest.mark.django_db
+def test_balance_view_context_negative_balance(client):
+    """Test BalanceView displays negative balance correctly."""
+    from apps.city.models import Savegame
+
+    # Clear any existing savegame with id=1
+    Savegame.objects.filter(id=1).delete()
+
+    savegame = SavegameFactory(id=1)
+    building = BuildingFactory(taxes=10, maintenance_costs=50)
+    TileFactory(savegame=savegame, building=building)
+
+    response = client.get(reverse("city:balance"))
+
+    assert response.status_code == 200
+    assert response.context["balance"] == -40
+    assert response.context["balance"] < 0
+
+
+@pytest.mark.django_db
+def test_balance_view_template_name():
+    """Test BalanceView uses correct template."""
+    view = BalanceView()
+    assert view.template_name == "city/balance.html"

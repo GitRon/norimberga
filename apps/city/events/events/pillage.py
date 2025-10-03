@@ -1,0 +1,64 @@
+import random
+
+from django.contrib import messages
+
+from apps.city.events.effects.building.remove_building import RemoveBuilding
+from apps.city.events.effects.savegame.decrease_coins import DecreaseCoins
+from apps.city.models import Savegame, Tile
+from apps.event.events.events.base_event import BaseEvent
+
+
+class Event(BaseEvent):
+    PROBABILITY = 85
+    LEVEL = messages.ERROR
+    TITLE = "Pillage"
+
+    savegame: Savegame
+    initial_coins: int
+    lost_coins: int
+    affected_tile: Tile | None
+    destroyed_building_name: str | None
+
+    def __init__(self):
+        super().__init__()
+        self.savegame, _ = Savegame.objects.get_or_create(id=1)
+        self.initial_coins = self.savegame.coins
+
+        # Lose between 10-30% of current coins, minimum 50
+        loss_percentage = random.randint(10, 30) / 100
+        self.lost_coins = max(int(self.savegame.coins * loss_percentage), 50)
+
+        # Randomly select a building to destroy (excluding walls and unique buildings)
+        self.affected_tile = (
+            self.savegame.tiles.filter(building__isnull=False)
+            .exclude(building__building_type__is_wall=True)
+            .exclude(building__building_type__is_unique=True)
+            .order_by("?")
+            .first()
+        )
+
+        # Store building name before it's destroyed
+        self.destroyed_building_name = self.affected_tile.building.building_type.name if self.affected_tile else None
+
+    def get_probability(self):
+        # Only occurs when city is not enclosed by walls
+        return super().get_probability() if not self.savegame.is_enclosed else 0
+
+    def _prepare_effect_decrease_coins(self):
+        return DecreaseCoins(coins=self.lost_coins)
+
+    def _prepare_effect_remove_building(self):
+        if self.affected_tile:
+            return RemoveBuilding(tile=self.affected_tile)
+        return None
+
+    def get_verbose_text(self):
+        self.savegame.refresh_from_db()
+        message = (
+            f"Without a protective wall, raiders pillaged the city! "
+            f"They stole {self.initial_coins - self.savegame.coins} coins."
+        )
+        if self.affected_tile and self.destroyed_building_name:
+            message += f" The {self.destroyed_building_name} at {self.affected_tile} was destroyed during the raid."
+
+        return message

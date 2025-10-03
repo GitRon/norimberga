@@ -13,6 +13,7 @@
 /logs/*
 !/logs/.gitkeep
 *.sqlite3
+*.sqlite3-journal
 *.log
 .coverage*
 .bash_history

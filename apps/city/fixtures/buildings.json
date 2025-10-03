@@ -1,0 +1,314 @@
+[
+  {
+    "model": "city.building",
+    "pk": 1,
+    "fields": {
+      "name": "Small House",
+      "building_type": 1,
+      "level": 1,
+      "taxes": 5,
+      "building_costs": 50,
+      "maintenance_costs": 2,
+      "housing_space": 10
+    }
+  },
+  {
+    "model": "city.building",
+    "pk": 2,
+    "fields": {
+      "name": "Medium House",
+      "building_type": 1,
+      "level": 2,
+      "taxes": 10,
+      "building_costs": 100,
+      "maintenance_costs": 4,
+      "housing_space": 20
+    }
+  },
+  {
+    "model": "city.building",
+    "pk": 3,
+    "fields": {
+      "name": "Large House",
+      "building_type": 1,
+      "level": 3,
+      "taxes": 20,
+      "building_costs": 200,
+      "maintenance_costs": 8,
+      "housing_space": 40
+    }
+  },
+  {
+    "model": "city.building",
+    "pk": 4,
+    "fields": {
+      "name": "Small Workshop",
+      "building_type": 2,
+      "level": 1,
+      "taxes": 10,
+      "building_costs": 80,
+      "maintenance_costs": 3,
+      "housing_space": 0
+    }
+  },
+  {
+    "model": "city.building",
+    "pk": 5,
+    "fields": {
+      "name": "Medium Workshop",
+      "building_type": 2,
+      "level": 2,
+      "taxes": 20,
+      "building_costs": 150,
+      "maintenance_costs": 6,
+      "housing_space": 0
+    }
+  },
+  {
+    "model": "city.building",
+    "pk": 6,
+    "fields": {
+      "name": "Large Workshop",
+      "building_type": 2,
+      "level": 3,
+      "taxes": 40,
+      "building_costs": 300,
+      "maintenance_costs": 12,
+      "housing_space": 0
+    }
+  },
+  {
+    "model": "city.building",
+    "pk": 7,
+    "fields": {
+      "name": "Palisade",
+      "building_type": 3,
+      "level": 1,
+      "taxes": 0,
+      "building_costs": 30,
+      "maintenance_costs": 1,
+      "housing_space": 0
+    }
+  },
+  {
+    "model": "city.building",
+    "pk": 8,
+    "fields": {
+      "name": "Wooden Wall",
+      "building_type": 3,
+      "level": 2,
+      "taxes": 0,
+      "building_costs": 60,
+      "maintenance_costs": 2,
+      "housing_space": 0
+    }
+  },
+  {
+    "model": "city.building",
+    "pk": 9,
+    "fields": {
+      "name": "Stone Wall",
+      "building_type": 3,
+      "level": 3,
+      "taxes": 0,
+      "building_costs": 120,
+      "maintenance_costs": 4,
+      "housing_space": 0
+    }
+  },
+  {
+    "model": "city.building",
+    "pk": 10,
+    "fields": {
+      "name": "Small Market Square",
+      "building_type": 4,
+      "level": 1,
+      "taxes": 15,
+      "building_costs": 150,
+      "maintenance_costs": 5,
+      "housing_space": 0
+    }
+  },
+  {
+    "model": "city.building",
+    "pk": 11,
+    "fields": {
+      "name": "Medium Market Square",
+      "building_type": 4,
+      "level": 2,
+      "taxes": 30,
+      "building_costs": 300,
+      "maintenance_costs": 10,
+      "housing_space": 0
+    }
+  },
+  {
+    "model": "city.building",
+    "pk": 12,
+    "fields": {
+      "name": "Large Market Square",
+      "building_type": 4,
+      "level": 3,
+      "taxes": 60,
+      "building_costs": 600,
+      "maintenance_costs": 20,
+      "housing_space": 0
+    }
+  },
+  {
+    "model": "city.building",
+    "pk": 13,
+    "fields": {
+      "name": "Small Mine",
+      "building_type": 5,
+      "level": 1,
+      "taxes": 12,
+      "building_costs": 100,
+      "maintenance_costs": 5,
+      "housing_space": 0
+    }
+  },
+  {
+    "model": "city.building",
+    "pk": 14,
+    "fields": {
+      "name": "Medium Mine",
+      "building_type": 5,
+      "level": 2,
+      "taxes": 24,
+      "building_costs": 200,
+      "maintenance_costs": 10,
+      "housing_space": 0
+    }
+  },
+  {
+    "model": "city.building",
+    "pk": 15,
+    "fields": {
+      "name": "Large Mine",
+      "building_type": 5,
+      "level": 3,
+      "taxes": 48,
+      "building_costs": 400,
+      "maintenance_costs": 20,
+      "housing_space": 0
+    }
+  },
+  {
+    "model": "city.building",
+    "pk": 16,
+    "fields": {
+      "name": "Small Quarry",
+      "building_type": 6,
+      "level": 1,
+      "taxes": 8,
+      "building_costs": 80,
+      "maintenance_costs": 4,
+      "housing_space": 0
+    }
+  },
+  {
+    "model": "city.building",
+    "pk": 17,
+    "fields": {
+      "name": "Medium Quarry",
+      "building_type": 6,
+      "level": 2,
+      "taxes": 16,
+      "building_costs": 160,
+      "maintenance_costs": 8,
+      "housing_space": 0
+    }
+  },
+  {
+    "model": "city.building",
+    "pk": 18,
+    "fields": {
+      "name": "Large Quarry",
+      "building_type": 6,
+      "level": 3,
+      "taxes": 32,
+      "building_costs": 320,
+      "maintenance_costs": 16,
+      "housing_space": 0
+    }
+  },
+  {
+    "model": "city.building",
+    "pk": 19,
+    "fields": {
+      "name": "Small Lumberjack",
+      "building_type": 7,
+      "level": 1,
+      "taxes": 6,
+      "building_costs": 60,
+      "maintenance_costs": 3,
+      "housing_space": 0
+    }
+  },
+  {
+    "model": "city.building",
+    "pk": 20,
+    "fields": {
+      "name": "Medium Lumberjack",
+      "building_type": 7,
+      "level": 2,
+      "taxes": 12,
+      "building_costs": 120,
+      "maintenance_costs": 6,
+      "housing_space": 0
+    }
+  },
+  {
+    "model": "city.building",
+    "pk": 21,
+    "fields": {
+      "name": "Large Lumberjack",
+      "building_type": 7,
+      "level": 3,
+      "taxes": 24,
+      "building_costs": 240,
+      "maintenance_costs": 12,
+      "housing_space": 0
+    }
+  },
+  {
+    "model": "city.building",
+    "pk": 22,
+    "fields": {
+      "name": "Small Farm",
+      "building_type": 8,
+      "level": 1,
+      "taxes": 4,
+      "building_costs": 40,
+      "maintenance_costs": 2,
+      "housing_space": 0
+    }
+  },
+  {
+    "model": "city.building",
+    "pk": 23,
+    "fields": {
+      "name": "Medium Farm",
+      "building_type": 8,
+      "level": 2,
+      "taxes": 8,
+      "building_costs": 80,
+      "maintenance_costs": 4,
+      "housing_space": 0
+    }
+  },
+  {
+    "model": "city.building",
+    "pk": 24,
+    "fields": {
+      "name": "Large Farm",
+      "building_type": 8,
+      "level": 3,
+      "taxes": 16,
+      "building_costs": 160,
+      "maintenance_costs": 8,
+      "housing_space": 0
+    }
+  }
+]

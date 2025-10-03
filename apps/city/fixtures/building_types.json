@@ -1,0 +1,106 @@
+[
+  {
+    "model": "city.buildingtype",
+    "pk": 1,
+    "fields": {
+      "name": "House",
+      "allowed_terrains": [1, 6],
+      "is_country": false,
+      "is_city": true,
+      "is_house": true,
+      "is_wall": false,
+      "is_unique": false
+    }
+  },
+  {
+    "model": "city.buildingtype",
+    "pk": 2,
+    "fields": {
+      "name": "Workshop",
+      "allowed_terrains": [1, 6],
+      "is_country": false,
+      "is_city": true,
+      "is_house": false,
+      "is_wall": false,
+      "is_unique": false
+    }
+  },
+  {
+    "model": "city.buildingtype",
+    "pk": 3,
+    "fields": {
+      "name": "Wall",
+      "allowed_terrains": [1, 2, 3, 5, 6],
+      "is_country": false,
+      "is_city": false,
+      "is_house": false,
+      "is_wall": true,
+      "is_unique": false
+    }
+  },
+  {
+    "model": "city.buildingtype",
+    "pk": 4,
+    "fields": {
+      "name": "Market Square",
+      "allowed_terrains": [1, 6],
+      "is_country": true,
+      "is_city": true,
+      "is_house": false,
+      "is_wall": false,
+      "is_unique": true
+    }
+  },
+  {
+    "model": "city.buildingtype",
+    "pk": 5,
+    "fields": {
+      "name": "Mine",
+      "allowed_terrains": [3, 5],
+      "is_country": true,
+      "is_city": false,
+      "is_house": false,
+      "is_wall": false,
+      "is_unique": false
+    }
+  },
+  {
+    "model": "city.buildingtype",
+    "pk": 6,
+    "fields": {
+      "name": "Quarry",
+      "allowed_terrains": [3, 5],
+      "is_country": true,
+      "is_city": false,
+      "is_house": false,
+      "is_wall": false,
+      "is_unique": false
+    }
+  },
+  {
+    "model": "city.buildingtype",
+    "pk": 7,
+    "fields": {
+      "name": "Lumberjack",
+      "allowed_terrains": [2],
+      "is_country": true,
+      "is_city": false,
+      "is_house": false,
+      "is_wall": false,
+      "is_unique": false
+    }
+  },
+  {
+    "model": "city.buildingtype",
+    "pk": 8,
+    "fields": {
+      "name": "Farm",
+      "allowed_terrains": [1, 6],
+      "is_country": true,
+      "is_city": false,
+      "is_house": false,
+      "is_wall": false,
+      "is_unique": false
+    }
+  }
+]

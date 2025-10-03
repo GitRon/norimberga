@@ -26,7 +26,9 @@ class Event(BaseEvent):
     def _calculate_maintenance(self):
         result = self.savegame.tiles.aggregate(sum_maintenance=Sum("building__maintenance_costs"))["sum_maintenance"]
         # Return None if there are no buildings with maintenance costs
-        if result is None or (result == 0 and not self.savegame.tiles.filter(building__maintenance_costs__gt=0).exists()):
+        if result is None or (
+            result == 0 and not self.savegame.tiles.filter(building__maintenance_costs__gt=0).exists()
+        ):
             return None
         return result
 

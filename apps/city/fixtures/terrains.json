@@ -1,0 +1,62 @@
+[
+  {
+    "model": "city.terrain",
+    "pk": 1,
+    "fields": {
+      "name": "Grassland",
+      "color_class": "bg-green-500",
+      "probability": 40,
+      "is_water": false
+    }
+  },
+  {
+    "model": "city.terrain",
+    "pk": 2,
+    "fields": {
+      "name": "Forest",
+      "color_class": "bg-green-800",
+      "probability": 25,
+      "is_water": false
+    }
+  },
+  {
+    "model": "city.terrain",
+    "pk": 3,
+    "fields": {
+      "name": "Hills",
+      "color_class": "bg-yellow-700",
+      "probability": 15,
+      "is_water": false
+    }
+  },
+  {
+    "model": "city.terrain",
+    "pk": 4,
+    "fields": {
+      "name": "Water",
+      "color_class": "bg-blue-500",
+      "probability": 10,
+      "is_water": true
+    }
+  },
+  {
+    "model": "city.terrain",
+    "pk": 5,
+    "fields": {
+      "name": "Rocky Ground",
+      "color_class": "bg-gray-600",
+      "probability": 8,
+      "is_water": false
+    }
+  },
+  {
+    "model": "city.terrain",
+    "pk": 6,
+    "fields": {
+      "name": "Fertile Plains",
+      "color_class": "bg-lime-400",
+      "probability": 2,
+      "is_water": false
+    }
+  }
+]

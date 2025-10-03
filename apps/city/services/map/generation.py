@@ -31,8 +31,7 @@ class MapGenerationService:
             start_coordinates = MapCoordinatesService.Coordinates(x=randint(1, self.savegame.map_size - 1), y=0)
 
         # Fetch river terrain
-        # TODO(RV): differentiate between lake and river?
-        terrain_water = Terrain.objects.filter(name="River").first()
+        terrain_water = Terrain.objects.filter(is_water=True).first()
         if not terrain_water:
             raise ValueError("River terrain not found. Please ensure River terrain exists in the database.")
 

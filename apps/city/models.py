@@ -31,7 +31,9 @@ class Terrain(models.Model):
     """
 
     name = models.CharField(max_length=50)
-    color_class = models.CharField(max_length=20)
+    color_class = models.CharField(
+        max_length=20, help_text="Tailwind color for usage in frontend. Example: 'bg-yellow-500'"
+    )
     probability = models.PositiveSmallIntegerField(
         "Probability weight", validators=(MaxValueValidator(100), MinValueValidator(1))
     )

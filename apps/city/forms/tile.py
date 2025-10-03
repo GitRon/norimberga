@@ -9,7 +9,7 @@ from apps.city.models import Building, Tile
 class TileBuildingForm(forms.ModelForm):
     tile = forms.ModelChoiceField(queryset=Tile.objects.all(), disabled=True, required=False)
     current_building = forms.ModelChoiceField(queryset=Building.objects.all(), disabled=True, required=False)
-    building = BuildingModelChoiceField(queryset=Building.objects.none(), required=False)
+    building = BuildingModelChoiceField(queryset=Building.objects.none(), required=False, empty_label=None)
 
     class Meta:
         model = Tile

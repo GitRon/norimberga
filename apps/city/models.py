@@ -2,6 +2,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.template.loader import render_to_string
 
+from apps.city.managers.savegame import SavegameManager
 from apps.city.managers.tile import TileManager
 
 
@@ -17,6 +18,8 @@ class Savegame(models.Model):
 
     is_active = models.BooleanField("Is active", default=False)
     is_enclosed = models.BooleanField("Is enclosed by wall", default=False)
+
+    objects = SavegameManager()
 
     class Meta:
         default_related_name = "savegames"

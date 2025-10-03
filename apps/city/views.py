@@ -6,6 +6,7 @@ from django.views import generic
 
 from apps.city.forms.tile import TileBuildingForm
 from apps.city.models import Savegame, Tile
+from apps.city.selectors.savegame import get_balance_data
 from apps.city.services.building.housing import BuildingHousingService
 from apps.city.services.wall.enclosure import WallEnclosureService
 
@@ -36,6 +37,16 @@ class CityMapView(generic.TemplateView):
 
 class CityMessagesView(generic.TemplateView):
     template_name = "city/partials/city/_messages.html"
+
+
+class BalanceView(generic.TemplateView):
+    template_name = "city/balance.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        balance_data = get_balance_data(savegame_id=1)
+        context.update(balance_data)
+        return context
 
 
 class TileBuildView(generic.UpdateView):

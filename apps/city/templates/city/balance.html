@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="max-w-3xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6">Balance per Round</h1>
+
+        <div class="bg-white border-2 border-gray-800 p-6 mb-4">
+            <h2 class="text-xl font-bold mb-4 border-b-2 border-gray-800 pb-2">Income</h2>
+            <div class="flex justify-between mb-2">
+                <span class="font-medium">Taxes from buildings:</span>
+                <span class="font-bold text-green-700">+{{ taxes }} coins</span>
+            </div>
+        </div>
+
+        <div class="bg-white border-2 border-gray-800 p-6 mb-4">
+            <h2 class="text-xl font-bold mb-4 border-b-2 border-gray-800 pb-2">Expenses</h2>
+            <div class="flex justify-between mb-2">
+                <span class="font-medium">Building maintenance:</span>
+                <span class="font-bold text-red-700">-{{ maintenance }} coins</span>
+            </div>
+        </div>
+
+        <div class="bg-white border-4 border-gray-900 p-6">
+            <div class="flex justify-between items-center">
+                <span class="text-2xl font-bold">Balance per Round:</span>
+                {% if balance >= 0 %}
+                    <span class="text-3xl font-bold text-green-700">+{{ balance }} coins</span>
+                {% else %}
+                    <span class="text-3xl font-bold text-red-700">{{ balance }} coins</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="mt-6 p-4 bg-gray-100 border border-gray-400">
+            <p class="text-sm text-gray-700">
+                This balance shows the net income or loss your city experiences each round.
+                {% if balance > 0 %}
+                    Your city treasury will grow by {{ balance }} coins per round.
+                {% elif balance < 0 %}
+                    Your city treasury will decrease each round.
+                {% else %}
+                    Your income and expenses are balanced.
+                {% endif %}
+            </p>
+        </div>
+    </div>
+{% endblock content %}

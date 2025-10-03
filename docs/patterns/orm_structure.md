@@ -7,21 +7,23 @@ This part covers the way we want to structure our ORM / query-related code.
 * Inherited / overwritten QuerySet class of a given model
 * Are named `class MyModelQuerySet()`
 * Contains atomic queryset methods (only one operation per method)
-  * Take care that complex queries with `Q` or other database operations are still atomic if they do one thing
+    * Take care that complex queries with `Q` or other database operations are still atomic if they do one thing
 * Always return a QuerySet of the same model
 * Examples
-  * `filter(is_active=True)`
-  * `exclude(Q(is_active=False) | Q(end_date__isnull=False))`
+    * `filter(is_active=True)`
+    * `exclude(Q(is_active=False) | Q(end_date__isnull=False))`
 
 ## Managers
 
 * Registered via the model
 * Are named `class MyModelManager()`
 * Contain everything that's query-related to the same model but never queries to other models
-  * Take care: It's allowed to follow foreign-key relations via the double-dunder notation `field__other`
+    * Take care: It's allowed to follow foreign-key relations via the double-dunder notation `field__other`
+* Try to avoid leaking edge cases from the ORM outside, like having an aggregate return 0 and None. Catch this case in
+  the manager method.
 * Examples
-  * `aggreate_hours_spent()`
-  * `create_record()`
+    * `aggreate_hours_spent()`
+    * `create_record()`
 
 ## Selectors
 
@@ -38,11 +40,13 @@ In the past, our models tended to grow huge and include a lot of functionality, 
 model. To restrict the growth of our models, we want to set a couple of rules in place to reduce this tendency.
 
 Model methods can...
+
 * ...be utility functions related to the model instance
 * ...perform calculations or queries (using CQS) on existing data
 * ...extend or overwrite methods of the parent class (e.g. clean, save, ...)
 
 Model methods should not...
+
 * ...require an import from another model
 * ...be static or provide anything unrelated to the instance
 * ...manipulate existing data

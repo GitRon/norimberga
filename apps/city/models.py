@@ -16,6 +16,7 @@ class Savegame(models.Model):
     current_year = models.PositiveSmallIntegerField("Current year", default=1150)
 
     is_active = models.BooleanField("Is active", default=False)
+    is_enclosed = models.BooleanField("Is enclosed by wall", default=False)
 
     class Meta:
         default_related_name = "savegames"
@@ -34,6 +35,7 @@ class Terrain(models.Model):
     probability = models.PositiveSmallIntegerField(
         "Probability weight", validators=(MaxValueValidator(100), MinValueValidator(1))
     )
+    is_water = models.BooleanField("Is water", default=False)
 
     class Meta:
         default_related_name = "terrains"

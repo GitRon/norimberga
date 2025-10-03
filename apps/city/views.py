@@ -7,6 +7,7 @@ from django.views import generic
 from apps.city.forms.tile import TileBuildingForm
 from apps.city.models import Savegame, Tile
 from apps.city.services.building.housing import BuildingHousingService
+from apps.city.services.wall.enclosure import WallEnclosureService
 
 
 class SavegameValueView(generic.DetailView):
@@ -56,6 +57,7 @@ class TileBuildView(generic.UpdateView):
         if form.cleaned_data["building"]:
             savegame, _ = Savegame.objects.get_or_create(id=1)
             savegame.coins -= form.cleaned_data["building"].building_costs
+            savegame.is_enclosed = WallEnclosureService(savegame).process()
             savegame.save()
 
         response = HttpResponse(status=HTTPStatus.OK)
@@ -84,6 +86,11 @@ class TileDemolishView(generic.View):
         if tile.building:
             tile.building = None
             tile.save()
+
+            # Update enclosure status
+            savegame, _ = Savegame.objects.get_or_create(id=1)
+            savegame.is_enclosed = WallEnclosureService(savegame).process()
+            savegame.save()
 
         response = HttpResponse(status=HTTPStatus.OK)
         response["HX-Trigger"] = json.dumps(

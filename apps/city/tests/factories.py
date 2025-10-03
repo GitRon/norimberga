@@ -84,6 +84,12 @@ class BuildingFactory(factory.django.DjangoModelFactory):
 # Specialized factories
 class RiverTerrainFactory(TerrainFactory):
     name = "River"
+    is_water = True
+
+
+class WaterTerrainFactory(TerrainFactory):
+    name = "Water"
+    is_water = True
 
 
 class WallBuildingTypeFactory(BuildingTypeFactory):

@@ -15,7 +15,7 @@ class TileAdmin(admin.ModelAdmin):
 
 @admin.register(Terrain)
 class TerrainAdmin(admin.ModelAdmin):
-    list_display = ("name", "color_class", "probability")
+    list_display = ("name", "color_class", "probability", "is_water")
 
 
 class BuildingInline(admin.TabularInline):

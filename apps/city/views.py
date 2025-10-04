@@ -20,7 +20,7 @@ class SavegameValueView(generic.DetailView):
 
     def get_context_data(self, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)
-        context["max_housing_space"] = BuildingHousingService().calculate_max_space()
+        context["max_housing_space"] = BuildingHousingService(savegame=self.object).calculate_max_space()
         return context
 
 
@@ -30,7 +30,9 @@ class LandingPageView(generic.TemplateView):
     def get_context_data(self, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)
         # TODO(RV): move to context processor
-        context["max_housing_space"] = BuildingHousingService().calculate_max_space()
+        savegame = Savegame.objects.filter(user=self.request.user, is_active=True).first()
+        if savegame:
+            context["max_housing_space"] = BuildingHousingService(savegame=savegame).calculate_max_space()
         return context
 
 
@@ -47,8 +49,10 @@ class BalanceView(generic.TemplateView):
 
     def get_context_data(self, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)
-        balance_data = get_balance_data(savegame_id=1)
-        context.update(balance_data)
+        savegame = Savegame.objects.filter(user=self.request.user, is_active=True).first()
+        if savegame:
+            balance_data = get_balance_data(savegame=savegame)
+            context.update(balance_data)
         return context
 
 
@@ -62,31 +66,17 @@ class TileBuildView(generic.UpdateView):
 
     def get_form_kwargs(self) -> dict:
         kwargs = super().get_form_kwargs()
-        # For backward compatibility with tests that don't use authentication
-        if hasattr(self.request, "user") and self.request.user.is_authenticated:
-            kwargs["savegame"] = Savegame.objects.filter(user=self.request.user, is_active=True).first()
-            if not kwargs["savegame"]:
-                # Create a default savegame if user has none
-                kwargs["savegame"] = Savegame.objects.create(
-                    user=self.request.user, city_name="New City", is_active=True
-                )
-        else:
-            # Fallback for tests
-            kwargs["savegame"], _ = Savegame.objects.get_or_create(
-                id=1, defaults={"user_id": 1, "city_name": "Test City"}
-            )
+        kwargs["savegame"] = Savegame.objects.filter(user=self.request.user, is_active=True).first()
+        if not kwargs["savegame"]:
+            # Create a default savegame if user has none
+            kwargs["savegame"] = Savegame.objects.create(user=self.request.user, city_name="New City", is_active=True)
         return kwargs
 
     def form_valid(self, form) -> HttpResponse:
         super().form_valid(form=form)
 
         if form.cleaned_data["building"]:
-            if hasattr(self.request, "user") and self.request.user.is_authenticated:
-                savegame = Savegame.objects.filter(user=self.request.user, is_active=True).first()
-            else:
-                # Fallback for tests
-                savegame, _ = Savegame.objects.get_or_create(id=1, defaults={"user_id": 1, "city_name": "Test City"})
-
+            savegame = Savegame.objects.filter(user=self.request.user, is_active=True).first()
             if savegame:
                 savegame.coins -= form.cleaned_data["building"].building_costs
                 savegame.is_enclosed = WallEnclosureService(savegame=savegame).process()
@@ -120,12 +110,7 @@ class TileDemolishView(generic.View):
             tile.save()
 
             # Update enclosure status
-            if hasattr(request, "user") and request.user.is_authenticated:
-                savegame = Savegame.objects.filter(user=request.user, is_active=True).first()
-            else:
-                # Fallback for tests
-                savegame, _ = Savegame.objects.get_or_create(id=1, defaults={"user_id": 1, "city_name": "Test City"})
-
+            savegame = Savegame.objects.filter(user=request.user, is_active=True).first()
             if savegame:
                 savegame.is_enclosed = WallEnclosureService(savegame=savegame).process()
                 savegame.save()

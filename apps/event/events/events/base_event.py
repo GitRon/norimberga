@@ -12,6 +12,9 @@ class BaseEvent:
     LEVEL = messages.INFO
     TITLE = "Missing title"
 
+    def __init__(self, *, savegame):
+        self.savegame = savegame
+
     def get_probability(self):
         return self.PROBABILITY
 
@@ -25,6 +28,6 @@ class BaseEvent:
     def process(self) -> str:
         for effect in self.get_effects():
             if effect is not None:
-                effect.process()
+                effect.process(savegame=self.savegame)
 
         return self.get_verbose_text()

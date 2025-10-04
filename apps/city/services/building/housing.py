@@ -4,10 +4,9 @@ from apps.city.models import Savegame
 
 
 class BuildingHousingService:
-    def __init__(self):
+    def __init__(self, *, savegame: Savegame):
         super().__init__()
-
-        self.savegame, _ = Savegame.objects.get_or_create(id=1)
+        self.savegame = savegame
 
     def calculate_max_space(self) -> int | None:
         # TODO(RV): create event that tells the user that the homeless people have moved out of the city or increase

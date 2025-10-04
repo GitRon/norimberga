@@ -34,9 +34,9 @@ class Event(BaseEvent):
     LEVEL = messages.SUCCESS           # Django message level for UI
     TITLE = "Event Name"               # Display title
 
-    def __init__(self):
+    def __init__(self, savegame: Savegame):
         # Initialize event-specific data
-        self.savegame = Savegame.objects.get(id=1)
+        self.savegame = savegame
         self.random_value = random.randint(1, 10)
 
     def get_probability(self):
@@ -91,9 +91,8 @@ class EffectName:
     def __init__(self, parameter: int):
         self.parameter = parameter
 
-    def process(self):
+    def process(self, savegame: Savegame):
         # Perform the actual game state modification
-        savegame = Savegame.objects.get(id=1)
         savegame.field = max(savegame.field - self.parameter, 0)
         savegame.save()
 ```
@@ -127,8 +126,8 @@ class Event(BaseEvent):
     LEVEL = messages.SUCCESS
     TITLE = "Alms"
 
-    def __init__(self):
-        self.savegame, _ = Savegame.objects.get_or_create(id=1)
+    def __init__(self, savegame: Savegame):
+        self.savegame = savegame
         self.initial_unrest = self.savegame.unrest
         self.lost_unrest = random.randint(3, 5)
 
@@ -153,8 +152,8 @@ class Event(BaseEvent):
     LEVEL = messages.ERROR
     TITLE = "Fire"
 
-    def __init__(self):
-        self.savegame, _ = Savegame.objects.get_or_create(id=1)
+    def __init__(self, savegame: Savegame):
+        self.savegame = savegame
         self.initial_population = self.savegame.population
         self.lost_population = random.randint(10, 50)
         self.affected_tile = self.savegame.tiles.filter(

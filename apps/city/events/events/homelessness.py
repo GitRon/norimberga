@@ -13,18 +13,18 @@ class Event(BaseEvent):
     LEVEL = messages.WARNING
     TITLE = "Homelessness"
 
-    savegame: Savegame
     initial_unrest: int
 
-    def __init__(self):
-        self.savegame, _ = Savegame.objects.get_or_create(id=1)
+    def __init__(self, *, savegame: Savegame):
+        super().__init__(savegame=savegame)
         self.initial_unrest = self.savegame.unrest
         self.additional_unrest = random.randint(5, 8)
 
     def get_probability(self):
         return (
             super().get_probability()
-            if self.savegame.population > BuildingHousingService().calculate_max_space() and self.savegame.unrest < 100
+            if self.savegame.population > BuildingHousingService(savegame=self.savegame).calculate_max_space()
+            and self.savegame.unrest < 100
             else 0
         )
 

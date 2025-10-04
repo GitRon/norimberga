@@ -32,6 +32,12 @@ def test_round_view_http_method_names():
 @pytest.mark.django_db
 def test_round_view_post_with_events(request_factory):
     """Test RoundView processes events and adds messages."""
+    from apps.city.tests.factories import SavegameFactory, UserFactory
+
+    # Create user and savegame
+    user = UserFactory()
+    savegame = SavegameFactory(user=user, is_active=True)
+
     # Create mock events
     mock_event1 = mock.Mock()
     mock_event1.process.return_value = "Event 1 happened"
@@ -52,6 +58,7 @@ def test_round_view_post_with_events(request_factory):
 
         # Create request and view
         request = request_factory.post("/")
+        request.user = user  # Add user to request
         view = RoundView()
         view.request = request
 
@@ -59,8 +66,8 @@ def test_round_view_post_with_events(request_factory):
         with mock.patch("apps.round.views.messages") as mock_messages:
             response = view.post(request)
 
-            # Verify service was called
-            mock_service.assert_called_once()
+            # Verify service was called with savegame keyword argument
+            mock_service.assert_called_once_with(savegame=savegame)
             mock_service_instance.process.assert_called_once()
 
             # Verify events were processed
@@ -87,6 +94,12 @@ def test_round_view_post_with_events(request_factory):
 @pytest.mark.django_db
 def test_round_view_post_with_no_events(request_factory):
     """Test RoundView handles case when no events occur."""
+    from apps.city.tests.factories import SavegameFactory, UserFactory
+
+    # Create user and savegame
+    user = UserFactory()
+    savegame = SavegameFactory(user=user, is_active=True)
+
     # Mock EventSelectionService to return empty list
     with mock.patch("apps.round.views.EventSelectionService") as mock_service:
         mock_service_instance = mock_service.return_value
@@ -94,6 +107,7 @@ def test_round_view_post_with_no_events(request_factory):
 
         # Create request and view
         request = request_factory.post("/")
+        request.user = user  # Add user to request
         view = RoundView()
         view.request = request
 
@@ -101,8 +115,8 @@ def test_round_view_post_with_no_events(request_factory):
         with mock.patch("apps.round.views.messages") as mock_messages:
             response = view.post(request)
 
-            # Verify service was called
-            mock_service.assert_called_once()
+            # Verify service was called with savegame keyword argument
+            mock_service.assert_called_once_with(savegame=savegame)
             mock_service_instance.process.assert_called_once()
 
             # Verify quiet year message was added
@@ -121,6 +135,12 @@ def test_round_view_post_with_no_events(request_factory):
 @pytest.mark.django_db
 def test_round_view_post_response_headers(request_factory):
     """Test RoundView sets correct HTMX trigger headers."""
+    from apps.city.tests.factories import SavegameFactory, UserFactory
+
+    # Create user and savegame
+    user = UserFactory()
+    SavegameFactory(user=user, is_active=True)
+
     # Mock EventSelectionService
     with mock.patch("apps.round.views.EventSelectionService") as mock_service:
         mock_service_instance = mock_service.return_value
@@ -128,6 +148,7 @@ def test_round_view_post_response_headers(request_factory):
 
         # Create request and view
         request = request_factory.post("/")
+        request.user = user  # Add user to request
         view = RoundView()
         view.request = request
 
@@ -150,6 +171,15 @@ def test_round_view_post_response_headers(request_factory):
 @pytest.mark.django_db
 def test_round_view_post_via_client(client):
     """Test RoundView responds correctly via Django test client."""
+    from apps.city.tests.factories import SavegameFactory, UserFactory
+
+    # Create user and savegame
+    user = UserFactory()
+    SavegameFactory(user=user, is_active=True)
+
+    # Log in the user
+    client.force_login(user)
+
     # Mock EventSelectionService
     with mock.patch("apps.round.views.EventSelectionService") as mock_service:
         mock_service_instance = mock_service.return_value
@@ -170,6 +200,12 @@ def test_round_view_post_via_client(client):
 @pytest.mark.django_db
 def test_round_view_get_not_allowed(client):
     """Test RoundView rejects GET requests."""
+    from apps.city.tests.factories import UserFactory
+
+    # Create and log in user
+    user = UserFactory()
+    client.force_login(user)
+
     response = client.get(reverse("round:finish"))
     assert response.status_code == 405  # Method Not Allowed
 
@@ -177,6 +213,12 @@ def test_round_view_get_not_allowed(client):
 @pytest.mark.django_db
 def test_round_view_event_processing_order(request_factory):
     """Test RoundView processes events in the order returned by service."""
+    from apps.city.tests.factories import SavegameFactory, UserFactory
+
+    # Create user and savegame
+    user = UserFactory()
+    SavegameFactory(user=user, is_active=True)
+
     # Create mock events with different processing order
     mock_event1 = mock.Mock()
     mock_event1.process.return_value = "First event"
@@ -197,6 +239,7 @@ def test_round_view_event_processing_order(request_factory):
 
         # Create request and view
         request = request_factory.post("/")
+        request.user = user  # Add user to request
         view = RoundView()
         view.request = request
 
@@ -216,6 +259,12 @@ def test_round_view_event_processing_order(request_factory):
 @pytest.mark.django_db
 def test_round_view_single_event(request_factory):
     """Test RoundView handles single event correctly."""
+    from apps.city.tests.factories import SavegameFactory, UserFactory
+
+    # Create user and savegame
+    user = UserFactory()
+    SavegameFactory(user=user, is_active=True)
+
     # Create single mock event
     mock_event = mock.Mock()
     mock_event.process.return_value = "Single event occurred"
@@ -231,6 +280,7 @@ def test_round_view_single_event(request_factory):
 
         # Create request and view
         request = request_factory.post("/")
+        request.user = user  # Add user to request
         view = RoundView()
         view.request = request
 
@@ -251,3 +301,24 @@ def test_round_view_single_event(request_factory):
 
             # Verify response
             assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_round_view_no_active_savegame(request_factory):
+    """Test RoundView returns 400 when no active savegame found."""
+    from apps.city.tests.factories import UserFactory
+
+    # Create user without active savegame
+    user = UserFactory()
+
+    # Create request and view
+    request = request_factory.post("/")
+    request.user = user
+    view = RoundView()
+    view.request = request
+
+    response = view.post(request)
+
+    # Verify error response
+    assert response.status_code == 400
+    assert response.content == b"No active savegame found"

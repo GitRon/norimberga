@@ -11,13 +11,11 @@ class Event(BaseEvent):
     LEVEL = messages.SUCCESS
     TITLE = "Milestone accomplished"
 
-    savegame: Savegame
     accomplish_milestones: list
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *, savegame: Savegame):
+        super().__init__(savegame=savegame)
         self.accomplish_milestones = []
-        self.savegame, _ = Savegame.objects.get_or_create(id=1)
 
         # TODO(RV): build service to get active milestones
         active_milestones = [GrowCityMilestone(savegame_id=self.savegame.id)]

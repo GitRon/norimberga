@@ -7,7 +7,6 @@ class IncreaseUnrestAbsolute:
     def __init__(self, additional_unrest: int):
         self.additional_unrest = additional_unrest
 
-    def process(self):
-        savegame, _ = Savegame.objects.get_or_create(id=1)
+    def process(self, savegame: Savegame):
         savegame.unrest = min(savegame.unrest + self.additional_unrest, 100)
         savegame.save()

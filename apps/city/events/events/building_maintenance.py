@@ -11,11 +11,10 @@ class Event(BaseEvent):
     LEVEL = messages.INFO
     TITLE = "Maintenance"
 
-    savegame: Savegame
     maintenance: int
 
-    def __init__(self):
-        self.savegame, _ = Savegame.objects.get_or_create(id=1)
+    def __init__(self, *, savegame: Savegame):
+        super().__init__(savegame=savegame)
         self.maintenance = self._calculate_maintenance()
 
     def get_probability(self):

@@ -6,15 +6,13 @@ from django.contrib import messages
 from apps.city.events.effects.building.remove_building import RemoveBuilding
 from apps.city.events.effects.savegame.decrease_population_absolute import DecreasePopulationAbsolute
 from apps.city.events.events.fire import Event as FireEvent
-from apps.city.models import Savegame
-from apps.city.tests.factories import BuildingFactory, HouseBuildingTypeFactory, TileFactory
+from apps.city.tests.factories import BuildingFactory, HouseBuildingTypeFactory, SavegameFactory, TileFactory
 
 
 @pytest.mark.django_db
 def test_fire_event_init():
     """Test FireEvent initialization and class attributes."""
-    Savegame.objects.filter(id=1).delete()
-    savegame = Savegame.objects.create(id=1, population=150)
+    savegame = SavegameFactory(population=150)
     house_type = HouseBuildingTypeFactory()
     building = BuildingFactory(building_type=house_type)
     tile = TileFactory(savegame=savegame, building=building)
@@ -22,7 +20,7 @@ def test_fire_event_init():
     with mock.patch("apps.city.events.events.fire.random.randint") as mock_randint:
         mock_randint.return_value = 25
 
-        event = FireEvent()
+        event = FireEvent(savegame=savegame)
 
         assert event.PROBABILITY == 5
         assert event.LEVEL == messages.ERROR
@@ -36,38 +34,35 @@ def test_fire_event_init():
 @pytest.mark.django_db
 def test_fire_event_init_no_house():
     """Test FireEvent initialization when no houses exist."""
-    Savegame.objects.filter(id=1).delete()
-    Savegame.objects.create(id=1, population=100)
+    savegame = SavegameFactory(population=100)
 
     with mock.patch("apps.city.events.events.fire.random.randint") as mock_randint:
         mock_randint.return_value = 30
 
-        event = FireEvent()
+        event = FireEvent(savegame=savegame)
 
         assert event.affected_tile is None
 
 
 @pytest.mark.django_db
 def test_fire_event_init_creates_savegame():
-    """Test FireEvent creates savegame if it doesn't exist."""
-    Savegame.objects.filter(id=1).delete()
+    """Test FireEvent accepts a savegame parameter."""
+    savegame = SavegameFactory()
 
     with mock.patch("apps.city.events.events.fire.random.randint") as mock_randint:
         mock_randint.return_value = 20
 
-        event = FireEvent()
+        event = FireEvent(savegame=savegame)
 
-        savegame = Savegame.objects.get(id=1)
         assert event.savegame.id == savegame.id
 
 
 @pytest.mark.django_db
 def test_fire_event_get_probability_with_population():
     """Test get_probability returns base probability when population > 0."""
-    Savegame.objects.filter(id=1).delete()
-    Savegame.objects.create(id=1, population=80)
+    savegame = SavegameFactory(population=80)
 
-    event = FireEvent()
+    event = FireEvent(savegame=savegame)
 
     probability = event.get_probability()
 
@@ -77,10 +72,9 @@ def test_fire_event_get_probability_with_population():
 @pytest.mark.django_db
 def test_fire_event_get_probability_zero_population():
     """Test get_probability returns 0 when population is zero."""
-    Savegame.objects.filter(id=1).delete()
-    Savegame.objects.create(id=1, population=0)
+    savegame = SavegameFactory(population=0)
 
-    event = FireEvent()
+    event = FireEvent(savegame=savegame)
 
     probability = event.get_probability()
 
@@ -90,13 +84,12 @@ def test_fire_event_get_probability_zero_population():
 @pytest.mark.django_db
 def test_fire_event_prepare_effect_decrease_population():
     """Test _prepare_effect_decrease_population returns correct effect."""
-    Savegame.objects.filter(id=1).delete()
-    Savegame.objects.create(id=1, population=100)
+    savegame = SavegameFactory(population=100)
 
     with mock.patch("apps.city.events.events.fire.random.randint") as mock_randint:
         mock_randint.return_value = 35
 
-        event = FireEvent()
+        event = FireEvent(savegame=savegame)
         effect = event._prepare_effect_decrease_population()
 
         assert isinstance(effect, DecreasePopulationAbsolute)
@@ -106,13 +99,12 @@ def test_fire_event_prepare_effect_decrease_population():
 @pytest.mark.django_db
 def test_fire_event_prepare_effect_remove_building_with_house():
     """Test _prepare_effect_remove_building returns effect when house exists."""
-    Savegame.objects.filter(id=1).delete()
-    savegame = Savegame.objects.create(id=1, population=100)
+    savegame = SavegameFactory(population=100)
     house_type = HouseBuildingTypeFactory()
     building = BuildingFactory(building_type=house_type)
     tile = TileFactory(savegame=savegame, building=building)
 
-    event = FireEvent()
+    event = FireEvent(savegame=savegame)
     effect = event._prepare_effect_remove_building()
 
     assert isinstance(effect, RemoveBuilding)
@@ -122,10 +114,9 @@ def test_fire_event_prepare_effect_remove_building_with_house():
 @pytest.mark.django_db
 def test_fire_event_prepare_effect_remove_building_no_house():
     """Test _prepare_effect_remove_building returns None when no house exists."""
-    Savegame.objects.filter(id=1).delete()
-    Savegame.objects.create(id=1, population=100)
+    savegame = SavegameFactory(population=100)
 
-    event = FireEvent()
+    event = FireEvent(savegame=savegame)
 
     effect = event._prepare_effect_remove_building()
 
@@ -135,8 +126,7 @@ def test_fire_event_prepare_effect_remove_building_no_house():
 @pytest.mark.django_db
 def test_fire_event_get_verbose_text_with_building():
     """Test get_verbose_text returns correct description with building."""
-    Savegame.objects.filter(id=1).delete()
-    savegame = Savegame.objects.create(id=1, population=120)
+    savegame = SavegameFactory(population=120)
     house_type = HouseBuildingTypeFactory()
     building = BuildingFactory(building_type=house_type)
     tile = TileFactory(savegame=savegame, building=building)
@@ -144,7 +134,7 @@ def test_fire_event_get_verbose_text_with_building():
     with mock.patch("apps.city.events.events.fire.random.randint") as mock_randint:
         mock_randint.return_value = 20
 
-        event = FireEvent()
+        event = FireEvent(savegame=savegame)
         initial_population = event.initial_population
 
         # Simulate effect processing (decrease population)
@@ -164,13 +154,12 @@ def test_fire_event_get_verbose_text_with_building():
 @pytest.mark.django_db
 def test_fire_event_get_verbose_text_no_building():
     """Test get_verbose_text returns correct description without building."""
-    Savegame.objects.filter(id=1).delete()
-    savegame = Savegame.objects.create(id=1, population=80)
+    savegame = SavegameFactory(population=80)
 
     with mock.patch("apps.city.events.events.fire.random.randint") as mock_randint:
         mock_randint.return_value = 15
 
-        event = FireEvent()
+        event = FireEvent(savegame=savegame)
         initial_population = event.initial_population
 
         # Simulate effect processing (decrease population)
@@ -189,8 +178,7 @@ def test_fire_event_get_verbose_text_no_building():
 @pytest.mark.django_db
 def test_fire_event_get_effects_with_building():
     """Test get_effects returns both effects when house exists."""
-    Savegame.objects.filter(id=1).delete()
-    savegame = Savegame.objects.create(id=1, population=100)
+    savegame = SavegameFactory(population=100)
     house_type = HouseBuildingTypeFactory()
     building = BuildingFactory(building_type=house_type)
     TileFactory(savegame=savegame, building=building)
@@ -198,7 +186,7 @@ def test_fire_event_get_effects_with_building():
     with mock.patch("apps.city.events.events.fire.random.randint") as mock_randint:
         mock_randint.return_value = 25
 
-        event = FireEvent()
+        event = FireEvent(savegame=savegame)
         effects = event.get_effects()
 
         assert len(effects) == 2
@@ -212,13 +200,12 @@ def test_fire_event_get_effects_with_building():
 @pytest.mark.django_db
 def test_fire_event_get_effects_no_building():
     """Test get_effects returns population effect and None when no house exists."""
-    Savegame.objects.filter(id=1).delete()
-    Savegame.objects.create(id=1, population=100)
+    savegame = SavegameFactory(population=100)
 
     with mock.patch("apps.city.events.events.fire.random.randint") as mock_randint:
         mock_randint.return_value = 30
 
-        event = FireEvent()
+        event = FireEvent(savegame=savegame)
         effects = event.get_effects()
 
         # Should have 2 effects: population effect and None (for building)
@@ -234,8 +221,7 @@ def test_fire_event_get_effects_no_building():
 @pytest.mark.django_db
 def test_fire_event_process():
     """Test full event processing workflow."""
-    Savegame.objects.filter(id=1).delete()
-    savegame = Savegame.objects.create(id=1, population=100)
+    savegame = SavegameFactory(population=100)
     house_type = HouseBuildingTypeFactory()
     building = BuildingFactory(building_type=house_type)
     tile = TileFactory(savegame=savegame, building=building)
@@ -243,7 +229,7 @@ def test_fire_event_process():
     with mock.patch("apps.city.events.events.fire.random.randint") as mock_randint:
         mock_randint.return_value = 20
 
-        event = FireEvent()
+        event = FireEvent(savegame=savegame)
         result_text = event.process()
 
         # Verify population effect was applied

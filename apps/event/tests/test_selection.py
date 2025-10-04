@@ -4,6 +4,7 @@ from unittest import mock
 
 import pytest
 
+from apps.city.tests.factories import SavegameFactory
 from apps.event.services.selection import EventSelectionService
 from apps.event.tests.factories import (
     HighProbabilityEvent,
@@ -19,9 +20,10 @@ class TestEventSelection:
 
     def test_process_returns_list_of_events(self):
         """Test that process() returns a list of BaseEvent instances."""
-        service = EventSelectionService()
+        savegame = SavegameFactory()
+        service = EventSelectionService(savegame=savegame)
 
-        with mock.patch.object(service, "_get_possible_events", return_value=[MockEvent()]):
+        with mock.patch.object(service, "_get_possible_events", return_value=[MockEvent(savegame=savegame)]):
             result = service.process()
 
         assert isinstance(result, list)
@@ -30,7 +32,8 @@ class TestEventSelection:
 
     def test_get_possible_events_with_no_apps(self):
         """Test _get_possible_events when no local apps are configured."""
-        service = EventSelectionService()
+        savegame = SavegameFactory()
+        service = EventSelectionService(savegame=savegame)
 
         with mock.patch("django.conf.settings.LOCAL_APPS", []):
             result = service._get_possible_events()
@@ -39,7 +42,8 @@ class TestEventSelection:
 
     def test_get_possible_events_with_no_event_directories(self):
         """Test _get_possible_events when apps have no events/events directories."""
-        service = EventSelectionService()
+        savegame = SavegameFactory()
+        service = EventSelectionService(savegame=savegame)
 
         with (
             mock.patch("django.conf.settings.LOCAL_APPS", ["apps.nonexistent"]),
@@ -52,7 +56,8 @@ class TestEventSelection:
 
     def test_get_possible_events_with_empty_event_directory(self):
         """Test _get_possible_events when events directory exists but is empty."""
-        service = EventSelectionService()
+        savegame = SavegameFactory()
+        service = EventSelectionService(savegame=savegame)
 
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_path = Path(temp_dir)
@@ -70,7 +75,8 @@ class TestEventSelection:
 
     def test_get_possible_events_ignores_dunder_files(self):
         """Test that _get_possible_events ignores __pycache__ and __init__.py files."""
-        service = EventSelectionService()
+        savegame = SavegameFactory()
+        service = EventSelectionService(savegame=savegame)
 
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_path = Path(temp_dir)
@@ -93,7 +99,8 @@ class TestEventSelection:
 
     def test_get_possible_events_handles_import_errors(self):
         """Test that _get_possible_events propagates import errors (current behavior)."""
-        service = EventSelectionService()
+        savegame = SavegameFactory()
+        service = EventSelectionService(savegame=savegame)
 
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_path = Path(temp_dir)
@@ -116,7 +123,8 @@ class TestEventSelection:
 
     def test_get_possible_events_handles_missing_event_class(self):
         """Test that _get_possible_events handles modules without Event class."""
-        service = EventSelectionService()
+        savegame = SavegameFactory()
+        service = EventSelectionService(savegame=savegame)
 
         mock_module = mock.MagicMock()
         del mock_module.Event  # Remove Event attribute to trigger AttributeError
@@ -134,7 +142,8 @@ class TestEventSelection:
 
     def test_get_possible_events_handles_non_base_event_classes(self):
         """Test that _get_possible_events ignores classes that aren't BaseEvent instances."""
-        service = EventSelectionService()
+        savegame = SavegameFactory()
+        service = EventSelectionService(savegame=savegame)
 
         class NotAnEvent:
             pass
@@ -156,11 +165,12 @@ class TestEventSelection:
     @mock.patch("random.randint")
     def test_get_possible_events_probability_filtering_high_probability(self, mock_random):
         """Test that events with high probability are included."""
-        service = EventSelectionService()
+        savegame = SavegameFactory()
+        service = EventSelectionService(savegame=savegame)
         mock_random.return_value = 50  # Random roll of 50
 
         mock_module = mock.MagicMock()
-        mock_module.Event.return_value = HighProbabilityEvent()  # Probability 90
+        mock_module.Event = lambda savegame: HighProbabilityEvent(savegame=savegame)  # Probability 90
 
         with (
             mock.patch("django.conf.settings.LOCAL_APPS", ["apps.test"]),
@@ -177,11 +187,12 @@ class TestEventSelection:
     @mock.patch("random.randint")
     def test_get_possible_events_probability_filtering_low_probability(self, mock_random):
         """Test that events with low probability are excluded when random roll is high."""
-        service = EventSelectionService()
+        savegame = SavegameFactory()
+        service = EventSelectionService(savegame=savegame)
         mock_random.return_value = 50  # Random roll of 50
 
         mock_module = mock.MagicMock()
-        mock_module.Event.return_value = LowProbabilityEvent()  # Probability 10
+        mock_module.Event = lambda savegame: LowProbabilityEvent(savegame=savegame)  # Probability 10
 
         with (
             mock.patch("django.conf.settings.LOCAL_APPS", ["apps.test"]),
@@ -197,11 +208,12 @@ class TestEventSelection:
     @mock.patch("random.randint")
     def test_get_possible_events_probability_filtering_zero_probability(self, mock_random):
         """Test that events with zero probability are never included."""
-        service = EventSelectionService()
+        savegame = SavegameFactory()
+        service = EventSelectionService(savegame=savegame)
         mock_random.return_value = 1  # Even lowest random roll
 
         mock_module = mock.MagicMock()
-        mock_module.Event.return_value = ZeroProbabilityEvent()  # Probability 0
+        mock_module.Event = lambda savegame: ZeroProbabilityEvent(savegame=savegame)  # Probability 0
 
         with (
             mock.patch("django.conf.settings.LOCAL_APPS", ["apps.test"]),
@@ -217,14 +229,15 @@ class TestEventSelection:
     @mock.patch("random.randint")
     def test_get_possible_events_multiple_events_mixed_probabilities(self, mock_random):
         """Test probability filtering with multiple events of different probabilities."""
-        service = EventSelectionService()
+        savegame = SavegameFactory()
+        service = EventSelectionService(savegame=savegame)
         mock_random.return_value = 50  # Random roll of 50
 
         high_prob_module = mock.MagicMock()
-        high_prob_module.Event.return_value = HighProbabilityEvent()
+        high_prob_module.Event = lambda savegame: HighProbabilityEvent(savegame=savegame)
 
         low_prob_module = mock.MagicMock()
-        low_prob_module.Event.return_value = LowProbabilityEvent()
+        low_prob_module.Event = lambda savegame: LowProbabilityEvent(savegame=savegame)
 
         def mock_import(module_name):
             if "high" in module_name:
@@ -248,7 +261,8 @@ class TestEventSelection:
 
     def test_get_possible_events_file_path_construction(self):
         """Test that file paths are correctly constructed for module importing."""
-        service = EventSelectionService()
+        savegame = SavegameFactory()
+        service = EventSelectionService(savegame=savegame)
 
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_path = Path(temp_dir)
@@ -273,14 +287,15 @@ class TestEventSelection:
     @mock.patch("random.randint")
     def test_process_end_to_end_integration(self, mock_random):
         """Test the complete process method with real-world scenario simulation."""
-        service = EventSelectionService()
+        savegame = SavegameFactory()
+        service = EventSelectionService(savegame=savegame)
         mock_random.return_value = 25  # Random roll of 25
 
         # Create mock events with different probabilities
         mock_events = [
-            HighProbabilityEvent(),  # 90% - should be included
-            MockEvent(),  # 50% - should be included
-            LowProbabilityEvent(),  # 10% - should be excluded
+            HighProbabilityEvent(savegame=savegame),  # 90% - should be included
+            MockEvent(savegame=savegame),  # 50% - should be included
+            LowProbabilityEvent(savegame=savegame),  # 10% - should be excluded
         ]
 
         with mock.patch.object(service, "_get_possible_events", return_value=mock_events):

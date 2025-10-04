@@ -7,15 +7,19 @@ from apps.city.events.effects.building.remove_building import RemoveBuilding
 from apps.city.events.effects.savegame.decrease_coins import DecreaseCoins
 from apps.city.events.effects.savegame.decrease_population_absolute import DecreasePopulationAbsolute
 from apps.city.events.events.pillage import Event as PillageEvent
-from apps.city.models import Savegame
-from apps.city.tests.factories import BuildingFactory, BuildingTypeFactory, TileFactory, WallBuildingTypeFactory
+from apps.city.tests.factories import (
+    BuildingFactory,
+    BuildingTypeFactory,
+    SavegameFactory,
+    TileFactory,
+    WallBuildingTypeFactory,
+)
 
 
 @pytest.mark.django_db
 def test_pillage_event_init():
     """Test PillageEvent initialization and class attributes."""
-    Savegame.objects.filter(id=1).delete()
-    savegame = Savegame.objects.create(id=1, coins=1000, population=100, is_enclosed=False)
+    savegame = SavegameFactory(coins=1000, population=100, is_enclosed=False)
     building_type = BuildingTypeFactory()
     building = BuildingFactory(building_type=building_type)
     tile = TileFactory(savegame=savegame, building=building)
@@ -23,7 +27,7 @@ def test_pillage_event_init():
     with mock.patch("apps.city.events.events.pillage.random.randint") as mock_randint:
         mock_randint.side_effect = [20, 10]  # 20% coins, 10% population
 
-        event = PillageEvent()
+        event = PillageEvent(savegame=savegame)
 
         assert event.PROBABILITY == 85
         assert event.LEVEL == messages.ERROR
@@ -38,13 +42,12 @@ def test_pillage_event_init():
 @pytest.mark.django_db
 def test_pillage_event_init_minimum_coins():
     """Test PillageEvent uses minimum loss of 50 coins when calculated loss is lower."""
-    Savegame.objects.filter(id=1).delete()
-    Savegame.objects.create(id=1, coins=100, population=20, is_enclosed=False)
+    savegame = SavegameFactory(coins=100, population=20, is_enclosed=False)
 
     with mock.patch("apps.city.events.events.pillage.random.randint") as mock_randint:
         mock_randint.side_effect = [10, 10]  # 10% coins, 10% population
 
-        event = PillageEvent()
+        event = PillageEvent(savegame=savegame)
 
         # 10% of 100 is 10, but minimum is 50
         assert event.lost_coins == 50
@@ -55,13 +58,12 @@ def test_pillage_event_init_minimum_coins():
 @pytest.mark.django_db
 def test_pillage_event_init_no_buildings():
     """Test PillageEvent initialization when no buildings exist."""
-    Savegame.objects.filter(id=1).delete()
-    Savegame.objects.create(id=1, coins=500, is_enclosed=False)
+    savegame = SavegameFactory(coins=500, is_enclosed=False)
 
     with mock.patch("apps.city.events.events.pillage.random.randint") as mock_randint:
         mock_randint.return_value = 15
 
-        event = PillageEvent()
+        event = PillageEvent(savegame=savegame)
 
         assert event.affected_tile is None
 
@@ -69,38 +71,35 @@ def test_pillage_event_init_no_buildings():
 @pytest.mark.django_db
 def test_pillage_event_init_excludes_walls():
     """Test PillageEvent excludes wall buildings from destruction."""
-    Savegame.objects.filter(id=1).delete()
-    savegame = Savegame.objects.create(id=1, coins=800, is_enclosed=False)
+    savegame = SavegameFactory(coins=800, is_enclosed=False)
     wall_type = WallBuildingTypeFactory()
     wall_building = BuildingFactory(building_type=wall_type)
     TileFactory(savegame=savegame, building=wall_building)
 
-    event = PillageEvent()
+    event = PillageEvent(savegame=savegame)
 
     assert event.affected_tile is None
 
 
 @pytest.mark.django_db
 def test_pillage_event_init_creates_savegame():
-    """Test PillageEvent creates savegame if it doesn't exist."""
-    Savegame.objects.filter(id=1).delete()
+    """Test PillageEvent accepts a savegame parameter."""
+    savegame = SavegameFactory()
 
     with mock.patch("apps.city.events.events.pillage.random.randint") as mock_randint:
         mock_randint.return_value = 25
 
-        event = PillageEvent()
+        event = PillageEvent(savegame=savegame)
 
-        savegame = Savegame.objects.get(id=1)
         assert event.savegame.id == savegame.id
 
 
 @pytest.mark.django_db
 def test_pillage_event_get_probability_not_enclosed():
     """Test get_probability returns base probability when city is not enclosed."""
-    Savegame.objects.filter(id=1).delete()
-    Savegame.objects.create(id=1, is_enclosed=False)
+    savegame = SavegameFactory(is_enclosed=False)
 
-    event = PillageEvent()
+    event = PillageEvent(savegame=savegame)
 
     probability = event.get_probability()
 
@@ -110,10 +109,9 @@ def test_pillage_event_get_probability_not_enclosed():
 @pytest.mark.django_db
 def test_pillage_event_get_probability_enclosed():
     """Test get_probability returns 0 when city is enclosed."""
-    Savegame.objects.filter(id=1).delete()
-    Savegame.objects.create(id=1, is_enclosed=True)
+    savegame = SavegameFactory(is_enclosed=True)
 
-    event = PillageEvent()
+    event = PillageEvent(savegame=savegame)
 
     probability = event.get_probability()
 
@@ -123,13 +121,12 @@ def test_pillage_event_get_probability_enclosed():
 @pytest.mark.django_db
 def test_pillage_event_prepare_effect_decrease_coins():
     """Test _prepare_effect_decrease_coins returns correct effect."""
-    Savegame.objects.filter(id=1).delete()
-    Savegame.objects.create(id=1, coins=1000, population=100, is_enclosed=False)
+    savegame = SavegameFactory(coins=1000, population=100, is_enclosed=False)
 
     with mock.patch("apps.city.events.events.pillage.random.randint") as mock_randint:
         mock_randint.side_effect = [30, 15]  # 30% coins, 15% population
 
-        event = PillageEvent()
+        event = PillageEvent(savegame=savegame)
         effect = event._prepare_effect_decrease_coins()
 
         assert isinstance(effect, DecreaseCoins)
@@ -139,13 +136,12 @@ def test_pillage_event_prepare_effect_decrease_coins():
 @pytest.mark.django_db
 def test_pillage_event_prepare_effect_decrease_population():
     """Test _prepare_effect_decrease_population returns correct effect."""
-    Savegame.objects.filter(id=1).delete()
-    Savegame.objects.create(id=1, coins=1000, population=200, is_enclosed=False)
+    savegame = SavegameFactory(coins=1000, population=200, is_enclosed=False)
 
     with mock.patch("apps.city.events.events.pillage.random.randint") as mock_randint:
         mock_randint.side_effect = [20, 10]  # 20% coins, 10% population
 
-        event = PillageEvent()
+        event = PillageEvent(savegame=savegame)
         effect = event._prepare_effect_decrease_population()
 
         assert isinstance(effect, DecreasePopulationAbsolute)
@@ -155,13 +151,12 @@ def test_pillage_event_prepare_effect_decrease_population():
 @pytest.mark.django_db
 def test_pillage_event_prepare_effect_remove_building_with_building():
     """Test _prepare_effect_remove_building returns effect when building exists."""
-    Savegame.objects.filter(id=1).delete()
-    savegame = Savegame.objects.create(id=1, coins=500, is_enclosed=False)
+    savegame = SavegameFactory(coins=500, is_enclosed=False)
     building_type = BuildingTypeFactory()
     building = BuildingFactory(building_type=building_type)
     tile = TileFactory(savegame=savegame, building=building)
 
-    event = PillageEvent()
+    event = PillageEvent(savegame=savegame)
     effect = event._prepare_effect_remove_building()
 
     assert isinstance(effect, RemoveBuilding)
@@ -171,10 +166,9 @@ def test_pillage_event_prepare_effect_remove_building_with_building():
 @pytest.mark.django_db
 def test_pillage_event_prepare_effect_remove_building_no_building():
     """Test _prepare_effect_remove_building returns None when no building exists."""
-    Savegame.objects.filter(id=1).delete()
-    Savegame.objects.create(id=1, coins=500, is_enclosed=False)
+    savegame = SavegameFactory(coins=500, is_enclosed=False)
 
-    event = PillageEvent()
+    event = PillageEvent(savegame=savegame)
 
     effect = event._prepare_effect_remove_building()
 
@@ -184,8 +178,7 @@ def test_pillage_event_prepare_effect_remove_building_no_building():
 @pytest.mark.django_db
 def test_pillage_event_get_verbose_text_with_building():
     """Test get_verbose_text returns correct description with building."""
-    Savegame.objects.filter(id=1).delete()
-    savegame = Savegame.objects.create(id=1, coins=800, population=150, is_enclosed=False)
+    savegame = SavegameFactory(coins=800, population=150, is_enclosed=False)
     building_type = BuildingTypeFactory()
     building = BuildingFactory(building_type=building_type)
     tile = TileFactory(savegame=savegame, building=building)
@@ -193,7 +186,7 @@ def test_pillage_event_get_verbose_text_with_building():
     with mock.patch("apps.city.events.events.pillage.random.randint") as mock_randint:
         mock_randint.side_effect = [25, 10]  # 25% coins, 10% population
 
-        event = PillageEvent()
+        event = PillageEvent(savegame=savegame)
         initial_coins = event.initial_coins
         lost_population = event.lost_population
         destroyed_building_name = event.destroyed_building_name
@@ -216,13 +209,12 @@ def test_pillage_event_get_verbose_text_with_building():
 @pytest.mark.django_db
 def test_pillage_event_get_verbose_text_no_building():
     """Test get_verbose_text returns correct description without building."""
-    Savegame.objects.filter(id=1).delete()
-    savegame = Savegame.objects.create(id=1, coins=600, population=100, is_enclosed=False)
+    savegame = SavegameFactory(coins=600, population=100, is_enclosed=False)
 
     with mock.patch("apps.city.events.events.pillage.random.randint") as mock_randint:
         mock_randint.side_effect = [20, 12]  # 20% coins, 12% population
 
-        event = PillageEvent()
+        event = PillageEvent(savegame=savegame)
         initial_coins = event.initial_coins
         lost_population = event.lost_population
 
@@ -243,8 +235,7 @@ def test_pillage_event_get_verbose_text_no_building():
 @pytest.mark.django_db
 def test_pillage_event_get_effects_with_building():
     """Test get_effects returns all effects when building exists."""
-    Savegame.objects.filter(id=1).delete()
-    savegame = Savegame.objects.create(id=1, coins=1000, population=200, is_enclosed=False)
+    savegame = SavegameFactory(coins=1000, population=200, is_enclosed=False)
     building_type = BuildingTypeFactory()
     building = BuildingFactory(building_type=building_type)
     TileFactory(savegame=savegame, building=building)
@@ -252,7 +243,7 @@ def test_pillage_event_get_effects_with_building():
     with mock.patch("apps.city.events.events.pillage.random.randint") as mock_randint:
         mock_randint.side_effect = [15, 10]  # 15% coins, 10% population
 
-        event = PillageEvent()
+        event = PillageEvent(savegame=savegame)
         effects = event.get_effects()
 
         assert len(effects) == 3
@@ -268,13 +259,12 @@ def test_pillage_event_get_effects_with_building():
 @pytest.mark.django_db
 def test_pillage_event_get_effects_no_building():
     """Test get_effects returns coin and population effects when no building exists."""
-    Savegame.objects.filter(id=1).delete()
-    Savegame.objects.create(id=1, coins=500, population=80, is_enclosed=False)
+    savegame = SavegameFactory(coins=500, population=80, is_enclosed=False)
 
     with mock.patch("apps.city.events.events.pillage.random.randint") as mock_randint:
         mock_randint.side_effect = [20, 8]  # 20% coins, 8% population
 
-        event = PillageEvent()
+        event = PillageEvent(savegame=savegame)
         effects = event.get_effects()
 
         # Should have 3 effects: coin effect, population effect, and None (for building)
@@ -292,8 +282,7 @@ def test_pillage_event_get_effects_no_building():
 @pytest.mark.django_db
 def test_pillage_event_process():
     """Test full event processing workflow."""
-    Savegame.objects.filter(id=1).delete()
-    savegame = Savegame.objects.create(id=1, coins=1000, population=100, is_enclosed=False)
+    savegame = SavegameFactory(coins=1000, population=100, is_enclosed=False)
     building_type = BuildingTypeFactory()
     building = BuildingFactory(building_type=building_type)
     tile = TileFactory(savegame=savegame, building=building)
@@ -301,7 +290,7 @@ def test_pillage_event_process():
     with mock.patch("apps.city.events.events.pillage.random.randint") as mock_randint:
         mock_randint.side_effect = [25, 10]  # 25% coins, 10% population
 
-        event = PillageEvent()
+        event = PillageEvent(savegame=savegame)
         result_text = event.process()
 
         # Verify coin effect was applied

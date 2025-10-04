@@ -11,7 +11,7 @@ class AccomplishMilestone:
         self.milestone = milestone
         self.current_year = current_year
 
-    def process(self):
+    def process(self, savegame=None):
         MilestoneLog.objects.create(
             savegame_id=self.savegame_id,
             milestone=self.milestone,

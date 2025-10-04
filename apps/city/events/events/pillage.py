@@ -14,16 +14,14 @@ class Event(BaseEvent):
     LEVEL = messages.ERROR
     TITLE = "Pillage"
 
-    savegame: Savegame
     initial_coins: int
     lost_coins: int
     lost_population: int
     affected_tile: Tile | None
     destroyed_building_name: str | None
 
-    def __init__(self):
-        super().__init__()
-        self.savegame, _ = Savegame.objects.get_or_create(id=1)
+    def __init__(self, *, savegame: Savegame):
+        super().__init__(savegame=savegame)
         self.initial_coins = self.savegame.coins
 
         # Lose between 10-30% of current coins, minimum 50

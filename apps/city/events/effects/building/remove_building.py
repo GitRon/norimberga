@@ -7,6 +7,6 @@ class RemoveBuilding:
     def __init__(self, tile: Tile):
         self.tile = tile
 
-    def process(self):
+    def process(self, savegame=None):
         self.tile.building = None
         self.tile.save()

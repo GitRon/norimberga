@@ -7,8 +7,8 @@ class MockEvent(BaseEvent):
     PROBABILITY = 50
     TITLE = "Mock Event"
 
-    def __init__(self, probability=None):
-        super().__init__()
+    def __init__(self, *, savegame, probability=None):
+        super().__init__(savegame=savegame)
         if probability is not None:
             self.PROBABILITY = probability
 
@@ -22,6 +22,9 @@ class HighProbabilityEvent(BaseEvent):
     PROBABILITY = 90
     TITLE = "High Probability Event"
 
+    def __init__(self, *, savegame):
+        super().__init__(savegame=savegame)
+
     def get_verbose_text(self):
         return "High probability event occurred"
 
@@ -32,6 +35,9 @@ class LowProbabilityEvent(BaseEvent):
     PROBABILITY = 10
     TITLE = "Low Probability Event"
 
+    def __init__(self, *, savegame):
+        super().__init__(savegame=savegame)
+
     def get_verbose_text(self):
         return "Low probability event occurred"
 
@@ -41,6 +47,9 @@ class ZeroProbabilityEvent(BaseEvent):
 
     PROBABILITY = 0
     TITLE = "Zero Probability Event"
+
+    def __init__(self, *, savegame):
+        super().__init__(savegame=savegame)
 
     def get_verbose_text(self):
         return "Zero probability event occurred"

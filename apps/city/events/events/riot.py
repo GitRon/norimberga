@@ -13,12 +13,11 @@ class Event(BaseEvent):
     LEVEL = messages.WARNING
     TITLE = "Riots"
 
-    savegame: Savegame
     initial_population: int
     lost_population: int
 
-    def __init__(self):
-        self.savegame, _ = Savegame.objects.get_or_create(id=1)
+    def __init__(self, *, savegame: Savegame):
+        super().__init__(savegame=savegame)
         self.initial_population = self.savegame.population
         self.lost_population = ceil((random.randint(5, 10) / 100) * self.initial_population)
 

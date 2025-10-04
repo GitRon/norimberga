@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.http import HttpResponse
 from django.views import generic
 
+from apps.city.models import Savegame
 from apps.event.services.selection import EventSelectionService
 
 
@@ -12,7 +13,11 @@ class RoundView(generic.View):
     http_method_names = ("post",)
 
     def post(self, request, *args, **kwargs) -> HttpResponse:
-        events = EventSelectionService().process()
+        savegame = Savegame.objects.filter(user=request.user, is_active=True).first()
+        if not savegame:
+            return HttpResponse("No active savegame found", status=400)
+
+        events = EventSelectionService(savegame=savegame).process()
         for event in events:
             message = event.process()
             messages.add_message(self.request, event.LEVEL, message, extra_tags=event.TITLE)

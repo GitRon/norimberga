@@ -15,17 +15,18 @@ class Event(BaseEvent):
 
     YEARLY_POP_INCREASE_FACTOR = 0.05
 
-    savegame: Savegame
     new_population: int
 
-    def __init__(self):
-        self.savegame, _ = Savegame.objects.get_or_create(id=1)
+    def __init__(self, *, savegame: Savegame):
+        super().__init__(savegame=savegame)
         self.initial_population = self.savegame.population
         self.new_population = max(ceil(self.savegame.population * self.YEARLY_POP_INCREASE_FACTOR), 1)
 
     def get_probability(self):
         return (
-            super().get_probability() if self.initial_population < BuildingHousingService().calculate_max_space() else 0
+            super().get_probability()
+            if self.initial_population < BuildingHousingService(savegame=self.savegame).calculate_max_space()
+            else 0
         )
 
     def get_effects(self):

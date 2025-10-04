@@ -11,20 +11,14 @@ from apps.city.tests.factories import SavegameFactory
 @pytest.mark.django_db
 def test_generate_map_command_handle():
     """Test generate_map command creates and processes map."""
-    # Clear any existing savegame with id=1
-    from apps.city.models import Savegame
-
-    Savegame.objects.filter(id=1).delete()
-
-    # Create savegame with id=1
-    savegame = SavegameFactory(id=1)
+    savegame = SavegameFactory()
 
     command = GenerateMapCommand()
 
     with mock.patch("apps.city.management.commands.generate_map.MapGenerationService") as mock_service_class:
         mock_service = mock_service_class.return_value
 
-        command.handle()
+        command.handle(savegame_id=savegame.id)
 
         # Verify service was created with correct savegame
         mock_service_class.assert_called_once_with(savegame=savegame)
@@ -34,22 +28,26 @@ def test_generate_map_command_handle():
 
 @pytest.mark.django_db
 def test_generate_map_command_creates_savegame():
-    """Test generate_map command creates savegame if doesn't exist."""
+    """Test generate_map command creates savegame when no ID is provided."""
+    from apps.city.models import Savegame
+
     command = GenerateMapCommand()
+
+    initial_count = Savegame.objects.count()
 
     with mock.patch("apps.city.management.commands.generate_map.MapGenerationService") as mock_service_class:
         mock_service = mock_service_class.return_value
 
-        command.handle()
+        command.handle(savegame_id=None)
 
         # Verify savegame was created
-        from apps.city.models import Savegame
+        assert Savegame.objects.count() == initial_count + 1
 
-        savegame = Savegame.objects.get(id=1)
-        assert savegame is not None
-
-        # Verify service was called with the savegame
-        mock_service_class.assert_called_once_with(savegame=savegame)
+        # Verify service was called with a savegame
+        mock_service_class.assert_called_once()
+        call_args = mock_service_class.call_args
+        assert "savegame" in call_args.kwargs
+        assert isinstance(call_args.kwargs["savegame"], Savegame)
         mock_service.process.assert_called_once()
 
 
@@ -97,6 +95,8 @@ def test_generate_map_integration():
     # Create regular terrain for get_terrain() calls
     terrain = TerrainFactory()
 
+    initial_savegame_count = Savegame.objects.count()
+
     with mock.patch("apps.city.services.map.generation.MapGenerationService.get_terrain") as mock_get_terrain:
         mock_get_terrain.return_value = terrain
 
@@ -104,8 +104,9 @@ def test_generate_map_integration():
         out = StringIO()
         call_command("generate_map", stdout=out)
 
-        # Verify savegame was created
-        savegame = Savegame.objects.get(id=1)
+        # Verify a savegame was created
+        assert Savegame.objects.count() == initial_savegame_count + 1
+        savegame = Savegame.objects.last()
         assert savegame is not None
 
         # Verify tiles were created (depends on implementation)

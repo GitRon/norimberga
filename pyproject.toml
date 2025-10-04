@@ -167,8 +167,8 @@ exclude = []
     "PBR002",
 ]
 "*/effects/**/*.py" = [
-    # Effect classes have simple apply() method, not process()
     "PBR001",
+    # Effect classes have simple apply() method, not process()
     "PBR005",
 ]
 "*/services/**/*.py" = [

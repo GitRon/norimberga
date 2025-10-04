@@ -12,11 +12,10 @@ class Event(BaseEvent):
     LEVEL = messages.ERROR
     TITLE = "Plague"
 
-    savegame: Savegame
     lost_population_percentage: float
 
-    def __init__(self):
-        self.savegame, _ = Savegame.objects.get_or_create(id=1)
+    def __init__(self, *, savegame: Savegame):
+        super().__init__(savegame=savegame)
         self.lost_population_percentage = random.randint(10, 25) / 100
 
     def get_probability(self):

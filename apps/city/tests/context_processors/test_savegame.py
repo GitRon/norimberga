@@ -2,7 +2,7 @@ import pytest
 from django.test import RequestFactory
 
 from apps.city.context_processors.savegame import get_current_savegame
-from apps.city.tests.factories import SavegameFactory
+from apps.city.tests.factories import SavegameFactory, UserFactory
 
 
 @pytest.fixture
@@ -13,16 +13,13 @@ def request_factory():
 
 @pytest.mark.django_db
 def test_get_current_savegame_returns_existing_savegame(request_factory):
-    """Test get_current_savegame returns existing savegame."""
-    # Clear any existing savegame with id=1
-    from apps.city.models import Savegame
-
-    Savegame.objects.filter(id=1).delete()
-
-    # Create existing savegame with id=1
-    existing_savegame = SavegameFactory(id=1, city_name="Test City")
+    """Test get_current_savegame returns existing active savegame for authenticated user."""
+    user = UserFactory()
+    existing_savegame = SavegameFactory(user=user, city_name="Test City", is_active=True)
 
     request = request_factory.get("/")
+    request.user = user
+
     result = get_current_savegame(request)
 
     assert "savegame" in result
@@ -32,19 +29,28 @@ def test_get_current_savegame_returns_existing_savegame(request_factory):
 
 @pytest.mark.django_db
 def test_get_current_savegame_creates_new_savegame(request_factory):
-    """Test get_current_savegame creates new savegame if doesn't exist."""
+    """Test get_current_savegame creates new savegame if user has none."""
+    user = UserFactory()
+
     request = request_factory.get("/")
+    request.user = user
+
     result = get_current_savegame(request)
 
     assert "savegame" in result
     assert result["savegame"] is not None
-    assert result["savegame"].id == 1
+    assert result["savegame"].user == user
+    assert result["savegame"].city_name == "New City"
+    assert result["savegame"].is_active is True
 
 
 @pytest.mark.django_db
 def test_get_current_savegame_consistent_results(request_factory):
-    """Test get_current_savegame returns same savegame across calls."""
+    """Test get_current_savegame returns same savegame across calls for same user."""
+    user = UserFactory()
+
     request = request_factory.get("/")
+    request.user = user
 
     # First call should create savegame
     result1 = get_current_savegame(request)
@@ -59,24 +65,13 @@ def test_get_current_savegame_consistent_results(request_factory):
 
 
 @pytest.mark.django_db
-def test_get_current_savegame_request_type_independence(request_factory):
-    """Test get_current_savegame works with different request types."""
-    # Test with GET request
-    get_request = request_factory.get("/")
-    get_result = get_current_savegame(get_request)
-
-    # Test with POST request
-    post_request = request_factory.post("/")
-    post_result = get_current_savegame(post_request)
-
-    # Should return same savegame regardless of request type
-    assert get_result["savegame"] == post_result["savegame"]
-
-
-@pytest.mark.django_db
 def test_get_current_savegame_return_structure(request_factory):
     """Test get_current_savegame returns correct dictionary structure."""
+    user = UserFactory()
+
     request = request_factory.get("/")
+    request.user = user
+
     result = get_current_savegame(request)
 
     # Should be a dictionary with 'savegame' key

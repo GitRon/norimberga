@@ -125,13 +125,23 @@ def test_savegame_list_view_displays_user_savegames(authenticated_client, user):
 
 
 @pytest.mark.django_db
-def test_savegame_list_view_displays_no_savegames_message(authenticated_client):
-    """Test SavegameListView displays message when user has no savegames."""
+def test_savegame_list_view_displays_no_savegames_message(authenticated_client, user):
+    """Test SavegameListView displays message when user has no savegames initially.
+
+    Note: The context processor creates a default savegame if none exists,
+    so we expect exactly 1 savegame (the auto-created one).
+    """
+    # Delete any savegames
+    Savegame.objects.filter(user=user).delete()
+
     response = authenticated_client.get(reverse("city:savegame-list"))
 
     assert response.status_code == 200
     savegames = list(response.context["savegames"])
-    assert len(savegames) == 0
+    # The context processor creates a default savegame if none exists
+    assert len(savegames) == 1
+    assert savegames[0].city_name == "New City"
+    assert savegames[0].is_active is True
 
 
 @pytest.mark.django_db

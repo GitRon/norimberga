@@ -11,11 +11,10 @@ class Event(BaseEvent):
     LEVEL = messages.INFO
     TITLE = "Taxes"
 
-    savegame: Savegame
     taxes: int
 
-    def __init__(self):
-        self.savegame, _ = Savegame.objects.get_or_create(id=1)
+    def __init__(self, *, savegame: Savegame):
+        super().__init__(savegame=savegame)
         self.taxes = self._calculate_taxes()
 
     def get_probability(self):

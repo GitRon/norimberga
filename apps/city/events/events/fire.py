@@ -13,14 +13,12 @@ class Event(BaseEvent):
     LEVEL = messages.ERROR
     TITLE = "Fire"
 
-    savegame: Savegame
     initial_population: int
     lost_population: int
     affected_tile: Tile
 
-    def __init__(self):
-        super().__init__()
-        self.savegame, _ = Savegame.objects.get_or_create(id=1)
+    def __init__(self, *, savegame: Savegame):
+        super().__init__(savegame=savegame)
         self.initial_population = self.savegame.population
 
         self.lost_population = random.randint(10, 50)

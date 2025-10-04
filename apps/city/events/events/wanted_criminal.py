@@ -13,7 +13,8 @@ class Event(BaseEvent):
 
     bounty: int
 
-    def __init__(self):
+    def __init__(self, *, savegame):
+        super().__init__(savegame=savegame)
         self.bounty = random.randint(100, 300)
 
     def _prepare_effect_increase_coins(self):

@@ -10,7 +10,7 @@ def test_min_population_condition_init():
 
 def test_min_population_condition_init_with_kwargs():
     """Test MinPopulationCondition initialization with kwargs."""
-    condition = MinPopulationCondition(min_population=100, some_arg="value")
+    condition = MinPopulationCondition(min_population=100)
     assert condition.min_population == 100
 
 

@@ -8,6 +8,7 @@ import sys
 def main():
     """Run administrative tasks."""
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "apps.config.settings")
+    os.environ["DJANGO_RUNSERVER_HIDE_WARNING"] = "true"
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

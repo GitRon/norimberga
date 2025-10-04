@@ -178,7 +178,6 @@ exclude = []
 "*/context_processors/*.py" = [
     # Context processors follow Django patterns
     "PBR001",
-    "PBR002",
 ]
 "*/management/**/*.py" = [
     # Management commands have their own structure
@@ -186,7 +185,6 @@ exclude = []
     "PBR002",
     "PBR005",
 ]
-
 "*/forms*.py" = [
     # Django forms have their own structure
     "PBR001",

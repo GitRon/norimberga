@@ -207,6 +207,10 @@ exclude = []
     "PBR001",
     "PBR006",
 ]
+"*/migrations/*.py" = [
+    # Migration classes have their own structure
+    "PBR001",
+]
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "apps.config.settings"

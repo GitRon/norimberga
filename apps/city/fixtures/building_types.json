@@ -102,5 +102,18 @@
       "is_wall": false,
       "is_unique": false
     }
+  },
+  {
+    "model": "city.buildingtype",
+    "pk": 9,
+    "fields": {
+      "name": "Fishery",
+      "allowed_terrains": [4, 7],
+      "is_country": true,
+      "is_city": false,
+      "is_house": false,
+      "is_wall": false,
+      "is_unique": false
+    }
   }
 ]

@@ -15,7 +15,7 @@ class MapGenerationService:
         terrain = None
         while terrain is None:
             dice = randint(1, 100)
-            terrain = Terrain.objects.filter(probability__gte=dice).order_by("?").first()
+            terrain = Terrain.objects.filter(probability__gte=dice).exclude(name="River").order_by("?").first()
         return terrain
 
     def _draw_river(self):
@@ -31,8 +31,8 @@ class MapGenerationService:
             start_coordinates = MapCoordinatesService.Coordinates(x=randint(1, self.savegame.map_size - 1), y=0)
 
         # Fetch river terrain
-        terrain_water = Terrain.objects.filter(is_water=True).first()
-        if not terrain_water:
+        terrain_river = Terrain.objects.filter(name="River").first()
+        if not terrain_river:
             raise ValueError("River terrain not found. Please ensure River terrain exists in the database.")
 
         iter_coordinates = start_coordinates
@@ -40,7 +40,7 @@ class MapGenerationService:
             # Create river tile
             Tile.objects.filter_savegame(savegame=self.savegame).filter(
                 x=iter_coordinates.x, y=iter_coordinates.y
-            ).update(terrain=terrain_water)
+            ).update(terrain=terrain_river)
 
             # If we have reached the other end of the map, we are done
             if iter_coordinates.x == self.savegame.map_size - 1 or iter_coordinates.y == self.savegame.map_size - 1:

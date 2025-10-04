@@ -51,6 +51,7 @@ def test_map_generation_service_get_terrain_retry():
         with mock.patch("apps.city.models.Terrain.objects.filter") as mock_filter:
             mock_queryset = mock.Mock()
             mock_filter.return_value = mock_queryset
+            mock_queryset.exclude.return_value = mock_queryset
             mock_queryset.order_by.return_value = mock_queryset
             mock_queryset.first.side_effect = [None, terrain]
 

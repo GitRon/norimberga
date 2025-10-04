@@ -310,5 +310,44 @@
       "maintenance_costs": 8,
       "housing_space": 0
     }
+  },
+  {
+    "model": "city.building",
+    "pk": 25,
+    "fields": {
+      "name": "Small Fishery",
+      "building_type": 9,
+      "level": 1,
+      "taxes": 5,
+      "building_costs": 50,
+      "maintenance_costs": 2,
+      "housing_space": 0
+    }
+  },
+  {
+    "model": "city.building",
+    "pk": 26,
+    "fields": {
+      "name": "Medium Fishery",
+      "building_type": 9,
+      "level": 2,
+      "taxes": 10,
+      "building_costs": 100,
+      "maintenance_costs": 4,
+      "housing_space": 0
+    }
+  },
+  {
+    "model": "city.building",
+    "pk": 27,
+    "fields": {
+      "name": "Large Fishery",
+      "building_type": 9,
+      "level": 3,
+      "taxes": 20,
+      "building_costs": 200,
+      "maintenance_costs": 8,
+      "housing_space": 0
+    }
   }
 ]

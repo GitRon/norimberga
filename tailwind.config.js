@@ -50,6 +50,7 @@ module.exports = {
         "bg-green-800",
         "bg-yellow-700",
         "bg-blue-500",
+        "bg-blue-600",
         "bg-gray-600",
         "bg-lime-400",
         "bg-red-100",

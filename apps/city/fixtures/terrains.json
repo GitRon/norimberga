@@ -33,9 +33,9 @@
     "model": "city.terrain",
     "pk": 4,
     "fields": {
-      "name": "Water",
+      "name": "Lake",
       "color_class": "bg-blue-500",
-      "probability": 10,
+      "probability": 5,
       "is_water": true
     }
   },
@@ -57,6 +57,16 @@
       "color_class": "bg-lime-400",
       "probability": 2,
       "is_water": false
+    }
+  },
+  {
+    "model": "city.terrain",
+    "pk": 7,
+    "fields": {
+      "name": "River",
+      "color_class": "bg-blue-600",
+      "probability": 100,
+      "is_water": true
     }
   }
 ]

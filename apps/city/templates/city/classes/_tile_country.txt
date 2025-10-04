@@ -1,1 +1,1 @@
-pattern-rhombus pattern-yellow-500 pattern-bg-white pattern-size-6 pattern-opacity-20
+bg-yellow-100 border border-yellow-600

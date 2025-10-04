@@ -1,1 +1,1 @@
-bg-gray-400
+bg-gray-300 border border-gray-500

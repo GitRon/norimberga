@@ -52,12 +52,16 @@ module.exports = {
         "bg-blue-500",
         "bg-gray-600",
         "bg-lime-400",
+        "bg-red-100",
+        "bg-yellow-100",
+        "bg-blue-100",
+        "bg-gray-500",
+        "border-red-500",
+        "border-yellow-600",
+        "border-blue-500",
+        "border-gray-700",
         "aria-disabled",
         "aria-readonly",
-        "pattern-zigzag",
-        "pattern-red-500",
-        "pattern-rhombus",
-        "pattern-yellow-500",
     ],
     variants: {
         extend: {
@@ -72,6 +76,5 @@ module.exports = {
     },
     plugins: [
         require('@tailwindcss/forms'),
-        require('tailwindcss-bg-patterns'),
     ],
 }

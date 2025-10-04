@@ -35,21 +35,21 @@ class TileBuildingForm(forms.ModelForm):
         unique_buildings = Building.objects.filter(
             tiles__savegame=self.instance.savegame, building_type__is_unique=True
         )
-        building_qs = Building.objects.filter(building_type__allowed_terrains=self.instance.terrain, level=1).exclude(
+        buildings = Building.objects.filter(building_type__allowed_terrains=self.instance.terrain, level=1).exclude(
             id__in=unique_buildings
         )
 
         # If this tile is not adjacent to a city-tile, we can't build city-buildings
         if not self.instance.is_adjacent_to_city_building():
-            building_qs = building_qs.exclude(building_type__is_city=True, building_type__is_country=False)
+            buildings = buildings.exclude(building_type__is_city=True, building_type__is_country=False)
 
         # If we already have a building, we allow level 2 buildings of the same type
         if self.instance.building:
-            building_qs = building_qs.exclude(id=self.instance.building.id) | Building.objects.filter(
+            buildings = buildings.exclude(id=self.instance.building.id) | Building.objects.filter(
                 building_type=self.instance.building.building_type, level=self.instance.building.level + 1
             )
 
-        self.fields["building"].queryset = building_qs.distinct()
+        self.fields["building"].queryset = buildings.distinct()
 
     def clean_building(self):
         building = self.cleaned_data["building"]

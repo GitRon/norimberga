@@ -43,12 +43,12 @@ def test_round_view_post_with_events(request_factory):
     mock_event2.LEVEL = messages.WARNING
     mock_event2.TITLE = "Event 2"
 
-    event_list = [mock_event1, mock_event2]
+    events = [mock_event1, mock_event2]
 
     # Mock EventSelectionService
     with mock.patch("apps.round.views.EventSelectionService") as mock_service:
         mock_service_instance = mock_service.return_value
-        mock_service_instance.process.return_value = event_list
+        mock_service_instance.process.return_value = events
 
         # Create request and view
         request = request_factory.post("/")
@@ -188,12 +188,12 @@ def test_round_view_event_processing_order(request_factory):
     mock_event2.LEVEL = messages.INFO
     mock_event2.TITLE = "Second"
 
-    event_list = [mock_event1, mock_event2]
+    events = [mock_event1, mock_event2]
 
     # Mock EventSelectionService
     with mock.patch("apps.round.views.EventSelectionService") as mock_service:
         mock_service_instance = mock_service.return_value
-        mock_service_instance.process.return_value = event_list
+        mock_service_instance.process.return_value = events
 
         # Create request and view
         request = request_factory.post("/")
@@ -222,12 +222,12 @@ def test_round_view_single_event(request_factory):
     mock_event.LEVEL = messages.SUCCESS
     mock_event.TITLE = "Single Event"
 
-    event_list = [mock_event]
+    events = [mock_event]
 
     # Mock EventSelectionService
     with mock.patch("apps.round.views.EventSelectionService") as mock_service:
         mock_service_instance = mock_service.return_value
-        mock_service_instance.process.return_value = event_list
+        mock_service_instance.process.return_value = events
 
         # Create request and view
         request = request_factory.post("/")

@@ -71,12 +71,12 @@ def _get_tax_by_building_type(savegame) -> dict:
     # Convert to final structure with subtotals
     result = {}
     for building_type_name, buildings in sorted(grouped.items()):
-        building_list = []
+        buildings_data = []
         subtotal = 0
         for building_name, data in sorted(buildings.items()):
             total = data["count"] * data["taxes"]
             subtotal += total
-            building_list.append(
+            buildings_data.append(
                 {
                     "name": building_name,
                     "level": data["level"],
@@ -86,7 +86,7 @@ def _get_tax_by_building_type(savegame) -> dict:
                 }
             )
         result[building_type_name] = {
-            "buildings": building_list,
+            "buildings": buildings_data,
             "subtotal": subtotal,
         }
 
@@ -126,12 +126,12 @@ def _get_maintenance_by_building_type(savegame) -> dict:
     # Convert to final structure with subtotals
     result = {}
     for building_type_name, buildings in sorted(grouped.items()):
-        building_list = []
+        buildings_data = []
         subtotal = 0
         for building_name, data in sorted(buildings.items()):
             total = data["count"] * data["maintenance"]
             subtotal += total
-            building_list.append(
+            buildings_data.append(
                 {
                     "name": building_name,
                     "level": data["level"],
@@ -141,7 +141,7 @@ def _get_maintenance_by_building_type(savegame) -> dict:
                 }
             )
         result[building_type_name] = {
-            "buildings": building_list,
+            "buildings": buildings_data,
             "subtotal": subtotal,
         }
 

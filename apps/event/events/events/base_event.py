@@ -16,8 +16,8 @@ class BaseEvent:
         return self.PROBABILITY
 
     def get_effects(self):
-        method_list = inspect.getmembers(self, predicate=inspect.ismethod)
-        return [getattr(self, method[0])() for method in method_list if method[0].startswith("_prepare_effect")]
+        methods = inspect.getmembers(self, predicate=inspect.ismethod)
+        return [getattr(self, method[0])() for method in methods if method[0].startswith("_prepare_effect")]
 
     def get_verbose_text(self):
         raise NotImplementedError

@@ -57,12 +57,11 @@ repos:
           )$
         stages: [ pre-push ]
 
-# TODO: enable boa linter
-#  - repo: https://github.com/ambient-innovation/boa-restrictor
-#    rev: v1.10.6
-#    hooks:
-#      - id: boa-restrictor
-#        args: [ --config=pyproject.toml ]
+  - repo: https://github.com/ambient-innovation/boa-restrictor
+    rev: v1.12.1
+    hooks:
+      - id: boa-restrictor
+        args: [ --config=pyproject.toml ]
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0

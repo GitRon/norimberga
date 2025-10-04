@@ -1,3 +1,4 @@
+{% load humanize %}
 <div class="flex" hx-trigger="updateNavbarValues from:body" hx-get="{% url "city:savegame-value" savegame.id %}">
     <!-- Coins -->
     <div class="flex mx-2">
@@ -9,7 +10,7 @@
             </svg>
         </div>
         <div class="flex-auto ml-2">
-            <div class="{% if savegame.coins < 0 %}text-red-800{% endif %}">{{ savegame.coins }}</div>
+            <div class="{% if savegame.coins < 0 %}text-red-800{% endif %}">{{ savegame.coins|floatformat:0|intcomma }}</div>
         </div>
     </div>
     <!-- Population -->

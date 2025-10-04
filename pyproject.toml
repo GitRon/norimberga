@@ -151,6 +151,8 @@ exclude = []
     "PBR001",
     # Avoid requiring return type hints in tests (conftest fixtures)
     "PBR002",
+    # Some services don't follow strict service pattern (e.g., utility classes)
+    "PBR005",
     # Loops in tests are sometimes necessary (e.g., parametrized data)
     "PBR008",
 ]
@@ -184,6 +186,7 @@ exclude = []
     "PBR002",
     "PBR005",
 ]
+
 "*/forms*.py" = [
     # Django forms have their own structure
     "PBR001",

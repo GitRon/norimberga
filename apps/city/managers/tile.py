@@ -10,10 +10,10 @@ if typing.TYPE_CHECKING:
 
 
 class TileQuerySet(models.QuerySet):
-    def filter_savegame(self, savegame: "Savegame"):
+    def filter_savegame(self, *, savegame: "Savegame") -> models.QuerySet:
         return self.filter(savegame=savegame)
 
-    def filter_adjacent_tiles(self, tile: "Tile"):
+    def filter_adjacent_tiles(self, *, tile: "Tile") -> models.QuerySet:
         service = MapCoordinatesService(map_size=tile.savegame.map_size)
         adjacent_coordinates = service.get_adjacent_coordinates(x=tile.x, y=tile.y)
         filter_condition = Q(id=-1)
@@ -22,7 +22,7 @@ class TileQuerySet(models.QuerySet):
 
         return self.filter(filter_condition)
 
-    def filter_city_building(self):
+    def filter_city_building(self) -> models.QuerySet:
         return self.filter(building__building_type__is_city=True)
 
 

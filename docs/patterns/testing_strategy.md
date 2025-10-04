@@ -36,3 +36,5 @@ Here are a few rules to keep in mind when writing unittests:
   maintainers some peace of mind when updating packages.
 * Avoid testing the framework. It's not our job to do that but the persons in charge of maintaining any third-party
   package. Therefore, avoid testing `apps.py` or admin classes which don't implement any custom code.
+* Never test model manager or CQS methods directly (`MyManager().my_method()`), always go through the model
+  (`MyModel.objects.my_method()`)

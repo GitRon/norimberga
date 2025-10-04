@@ -18,8 +18,8 @@ def get_balance_data(*, savegame_id: int) -> dict:
     savegame = Savegame.objects.get(id=savegame_id)
 
     # Use manager methods for aggregations
-    taxes = Savegame.objects.aggregate_taxes(savegame)
-    maintenance = Savegame.objects.aggregate_maintenance_costs(savegame)
+    taxes = Savegame.objects.aggregate_taxes(savegame=savegame)
+    maintenance = Savegame.objects.aggregate_maintenance_costs(savegame=savegame)
 
     # Get detailed breakdown by building type and building
     tax_by_building_type = _get_tax_by_building_type(savegame=savegame)

@@ -14,7 +14,7 @@ from apps.event.tests.factories import (
 
 
 @pytest.mark.django_db
-class TestEventSelectionService:
+class TestEventSelection:
     """Test suite for EventSelectionService."""
 
     def test_process_returns_list_of_events(self):

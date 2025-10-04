@@ -80,7 +80,10 @@ ruff check
 # Format with ruff
 ruff format
 
-# Pre-commit hooks
+# Run boa-restrictor linter (custom Python and Django linter)
+pre-commit run --all-files boa-restrictor
+
+# Run all pre-commit hooks
 pre-commit run --all-files
 ```
 ## Architecture
@@ -165,6 +168,7 @@ Uses PyTest exclusively for backend testing. Key guidelines:
 
 ### Development Tools
 - Ruff for linting and formatting (configured with extensive rule set)
+- Boa-restrictor for Python and Django linting
 - Pre-commit hooks with django-upgrade, djhtml for template formatting
 - Import-linter for architecture enforcement (referenced but not configured)
 

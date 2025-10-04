@@ -8,7 +8,7 @@ from apps.city.services.map.coordinates import MapCoordinatesService
 class MapGenerationService:
     savegame: Savegame
 
-    def __init__(self, savegame: Savegame):
+    def __init__(self, *, savegame: Savegame):
         self.savegame = savegame
 
     def get_terrain(self) -> Terrain:

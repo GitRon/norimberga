@@ -68,7 +68,7 @@ class TileBuildView(generic.UpdateView):
         if form.cleaned_data["building"]:
             savegame, _ = Savegame.objects.get_or_create(id=1)
             savegame.coins -= form.cleaned_data["building"].building_costs
-            savegame.is_enclosed = WallEnclosureService(savegame).process()
+            savegame.is_enclosed = WallEnclosureService(savegame=savegame).process()
             savegame.save()
 
         response = HttpResponse(status=HTTPStatus.OK)
@@ -100,7 +100,7 @@ class TileDemolishView(generic.View):
 
             # Update enclosure status
             savegame, _ = Savegame.objects.get_or_create(id=1)
-            savegame.is_enclosed = WallEnclosureService(savegame).process()
+            savegame.is_enclosed = WallEnclosureService(savegame=savegame).process()
             savegame.save()
 
         response = HttpResponse(status=HTTPStatus.OK)

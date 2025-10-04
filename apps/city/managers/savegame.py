@@ -7,13 +7,13 @@ class SavegameQuerySet(models.QuerySet):
 
 
 class SavegameManager(models.Manager):
-    def aggregate_taxes(self, savegame):
+    def aggregate_taxes(self, *, savegame) -> int:
         """Aggregate total tax income from all buildings in the savegame."""
         result = savegame.tiles.aggregate(sum_taxes=Sum("building__taxes"))["sum_taxes"]
         # Avoid leaking None from ORM
         return result if result is not None else 0
 
-    def aggregate_maintenance_costs(self, savegame):
+    def aggregate_maintenance_costs(self, *, savegame) -> int:
         """Aggregate total maintenance costs from all buildings in the savegame."""
         result = savegame.tiles.aggregate(sum_maintenance=Sum("building__maintenance_costs"))["sum_maintenance"]
         # Avoid leaking None from ORM

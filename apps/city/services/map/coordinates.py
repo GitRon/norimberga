@@ -9,7 +9,7 @@ class MapCoordinatesService:
         x: int
         y: int
 
-    def __init__(self, map_size: int):
+    def __init__(self, *, map_size: int):
         self.map_size = map_size
 
     def _get_valid_coordinates(
@@ -24,7 +24,7 @@ class MapCoordinatesService:
 
         return adjacent_coordinates
 
-    def get_adjacent_coordinates(self, x: int, y: int) -> list[Coordinates]:
+    def get_adjacent_coordinates(self, *, x: int, y: int) -> list[Coordinates]:
         min_x = max(0, x - 1)
         max_x = min(x + 1, self.map_size - 1)  # Coordinates start at zero
 
@@ -33,7 +33,7 @@ class MapCoordinatesService:
 
         return self._get_valid_coordinates(start_x=x, start_y=y, min_x=min_x, max_x=max_x, min_y=min_y, max_y=max_y)
 
-    def get_forward_adjacent_fields(self, x: int, y: int) -> list[Coordinates]:
+    def get_forward_adjacent_fields(self, *, x: int, y: int) -> list[Coordinates]:
         """
         Looking from the 0/0 field, get adjacent fields in the "forward" direction
         """

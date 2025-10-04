@@ -200,10 +200,6 @@ exclude = []
     "PBR001",
     "PBR002",
 ]
-"*/selectors/*.py" = [
-    # Selectors are query functions, not services
-    "PBR001",
-]
 "*/models.py" = [
     # Django models have their own structure
     "PBR002",

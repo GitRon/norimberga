@@ -3,7 +3,7 @@ from collections import defaultdict
 from apps.city.models import Savegame
 
 
-def get_balance_data(savegame_id: int) -> dict:
+def get_balance_data(*, savegame_id: int) -> dict:
     """
     Calculate the balance per round for a savegame with detailed breakdown.
 
@@ -22,8 +22,8 @@ def get_balance_data(savegame_id: int) -> dict:
     maintenance = Savegame.objects.aggregate_maintenance_costs(savegame)
 
     # Get detailed breakdown by building type and building
-    tax_by_building_type = _get_tax_by_building_type(savegame)
-    maintenance_by_building_type = _get_maintenance_by_building_type(savegame)
+    tax_by_building_type = _get_tax_by_building_type(savegame=savegame)
+    maintenance_by_building_type = _get_maintenance_by_building_type(savegame=savegame)
 
     # Calculate balance
     balance = taxes - maintenance
@@ -38,7 +38,7 @@ def get_balance_data(savegame_id: int) -> dict:
     }
 
 
-def _get_tax_by_building_type(savegame) -> dict:
+def _get_tax_by_building_type(*, savegame) -> dict:
     """
     Get tax income grouped by building type and then by individual buildings.
 
@@ -93,7 +93,7 @@ def _get_tax_by_building_type(savegame) -> dict:
     return result
 
 
-def _get_maintenance_by_building_type(savegame) -> dict:
+def _get_maintenance_by_building_type(*, savegame) -> dict:
     """
     Get maintenance costs grouped by building type and then by individual buildings.
 

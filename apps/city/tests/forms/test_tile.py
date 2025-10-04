@@ -270,6 +270,51 @@ def test_tile_building_form_clean_building_demolish_unique():
 
 
 @pytest.mark.django_db
+def test_tile_building_form_clean_building_upgrade_unique():
+    """Test form validation passes when upgrading unique building."""
+    savegame = SavegameFactory(coins=100)
+    terrain = TerrainFactory()
+
+    # Create unique building type with level 1 and 2
+    unique_building_type = UniqueBuildingTypeFactory()
+    level1_unique = BuildingFactory(building_type=unique_building_type, level=1, building_costs=50)
+    level2_unique = BuildingFactory(building_type=unique_building_type, level=2, building_costs=50)
+
+    tile = TileFactory(savegame=savegame, terrain=terrain, building=level1_unique)
+
+    form = TileBuildingForm(savegame=savegame, instance=tile)
+    form.cleaned_data = {"building": level2_unique}  # Upgrading to level 2
+
+    result = form.clean_building()
+    assert result == level2_unique
+
+
+@pytest.mark.django_db
+def test_tile_building_form_clean_building_replace_unique_different_type():
+    """Test form validation fails when trying to replace unique building with different type."""
+    savegame = SavegameFactory(coins=100)
+    terrain = TerrainFactory()
+
+    # Create unique building
+    unique_building_type = UniqueBuildingTypeFactory()
+    unique_building = BuildingFactory(building_type=unique_building_type, level=1)
+
+    # Create different building type
+    other_building_type = BuildingTypeFactory(is_unique=False)
+    other_building = BuildingFactory(building_type=other_building_type, level=1, building_costs=50)
+
+    tile = TileFactory(savegame=savegame, terrain=terrain, building=unique_building)
+
+    form = TileBuildingForm(savegame=savegame, instance=tile)
+    form.cleaned_data = {"building": other_building}  # Trying to replace with different type
+
+    with pytest.raises(ValidationError) as exc_info:
+        form.clean_building()
+
+    assert "You can't demolish a unique building." in str(exc_info.value)
+
+
+@pytest.mark.django_db
 def test_tile_building_form_clean_building_demolish_non_unique():
     """Test form validation passes when demolishing non-unique building."""
     savegame = SavegameFactory()

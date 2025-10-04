@@ -417,3 +417,44 @@ def test_wall_enclosure_service_mixed_water_and_walls():
     result = service.process()
 
     assert result is True
+
+
+@pytest.mark.django_db
+def test_wall_enclosure_service_with_missing_tiles():
+    """Test that service handles missing tiles gracefully (Tile.DoesNotExist exception)."""
+    savegame = SavegameFactory(map_size=5)
+    terrain = TerrainFactory()
+
+    # Create building types
+    wall_type = WallBuildingTypeFactory(allowed_terrains=[terrain])
+    city_type = BuildingTypeFactory(is_city=True, is_wall=False, allowed_terrains=[terrain])
+
+    # Create incomplete map with city building in center, walls around it, but some tiles missing
+    # W W W W W
+    # W C C C W
+    # W C C C W  <- tile at (3, 2) is missing from database
+    # W C C C W
+    # W W W W W
+
+    for x in range(5):
+        for y in range(5):
+            # Skip creating tile at (3, 2) to trigger Tile.DoesNotExist
+            if x == 3 and y == 2:
+                continue
+
+            # Walls on the edges
+            if x == 0 or x == 4 or y == 0 or y == 4:
+                wall = BuildingFactory(building_type=wall_type)
+                TileFactory(savegame=savegame, x=x, y=y, terrain=terrain, building=wall)
+            # City building in center
+            elif x == 2 and y == 2:
+                city = BuildingFactory(building_type=city_type)
+                TileFactory(savegame=savegame, x=x, y=y, terrain=terrain, building=city)
+            else:
+                TileFactory(savegame=savegame, x=x, y=y, terrain=terrain, building=None)
+
+    service = WallEnclosureService(savegame)
+    result = service.process()
+
+    # The missing tile should be skipped, and enclosure should still be detected
+    assert result is True

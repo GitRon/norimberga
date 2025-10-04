@@ -117,11 +117,16 @@ def test_city_messages_view_response(client):
 def test_tile_build_view_get_form_kwargs(request_factory):
     """Test TileBuildView adds savegame to form kwargs."""
     # Clear any existing savegame with id=1
+    from django.contrib.auth.models import User
+
     from apps.city.models import Savegame
+
+    # Ensure user with id=1 exists
+    user, _ = User.objects.get_or_create(id=1, defaults={"username": "testuser"})
 
     Savegame.objects.filter(id=1).delete()
 
-    savegame = SavegameFactory(id=1)
+    savegame = SavegameFactory(id=1, user=user)
     tile = TileFactory()
 
     request = request_factory.get("/")
@@ -139,7 +144,12 @@ def test_tile_build_view_get_form_kwargs(request_factory):
 def test_tile_build_view_get_form_kwargs_creates_savegame(request_factory):
     """Test TileBuildView creates savegame if doesn't exist."""
     # Clear any existing savegame with id=1
+    from django.contrib.auth.models import User
+
     from apps.city.models import Savegame
+
+    # Ensure user with id=1 exists
+    User.objects.get_or_create(id=1, defaults={"username": "testuser"})
 
     Savegame.objects.filter(id=1).delete()
 
@@ -157,14 +167,19 @@ def test_tile_build_view_get_form_kwargs_creates_savegame(request_factory):
 
 
 @pytest.mark.django_db
-def test_tile_build_view_form_valid_with_building():
+def test_tile_build_view_form_valid_with_building(request_factory):
     """Test TileBuildView deducts coins when building is selected."""
     # Clear any existing savegame with id=1
+    from django.contrib.auth.models import User
+
     from apps.city.models import Savegame
+
+    # Ensure user with id=1 exists
+    user, _ = User.objects.get_or_create(id=1, defaults={"username": "testuser"})
 
     Savegame.objects.filter(id=1).delete()
 
-    savegame = SavegameFactory(id=1, coins=100)
+    savegame = SavegameFactory(id=1, user=user, coins=100)
     tile = TileFactory()
     building = BuildingFactory(building_costs=50)
 
@@ -174,6 +189,7 @@ def test_tile_build_view_form_valid_with_building():
 
     view = TileBuildView()
     view.object = tile
+    view.request = request_factory.get("/")
 
     with mock.patch("apps.city.views.generic.UpdateView.form_valid") as mock_super_form_valid:
         mock_super_form_valid.return_value = mock.Mock()
@@ -256,6 +272,11 @@ def test_tile_build_view_post_request(client):
 @pytest.mark.django_db
 def test_tile_demolish_view_post_success():
     """Test TileDemolishView successfully demolishes building."""
+    from django.contrib.auth.models import User
+
+    # Ensure user with id=1 exists
+    User.objects.get_or_create(id=1, defaults={"username": "testuser"})
+
     building_type = BuildingTypeFactory(is_unique=False)
     building = BuildingFactory(building_type=building_type)
     tile = TileFactory(building=building)

@@ -14,4 +14,10 @@ urlpatterns = [
     path("tile/<int:pk>/demolish", views.TileDemolishView.as_view(), name="tile-demolish"),
     # Savegame
     path("savegame/<int:pk>/values", views.SavegameValueView.as_view(), name="savegame-value"),
+    path("savegames/", views.SavegameListView.as_view(), name="savegame-list"),
+    path("savegame/<int:pk>/load", views.SavegameLoadView.as_view(), name="savegame-load"),
+    path("savegame/<int:pk>/delete", views.SavegameDeleteView.as_view(), name="savegame-delete"),
+    # Authentication
+    path("login/", views.UserLoginView.as_view(), name="login"),
+    path("logout/", views.UserLogoutView.as_view(), name="logout"),
 ]

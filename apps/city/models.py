@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.template.loader import render_to_string
@@ -7,6 +8,7 @@ from apps.city.managers.tile import TileManager
 
 
 class Savegame(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     city_name = models.CharField(max_length=100)
     map_size = models.PositiveSmallIntegerField(default=5)
     coins = models.SmallIntegerField("Coins", default=0)

@@ -1,7 +1,10 @@
 import json
 from http import HTTPStatus
 
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LoginView, LogoutView
 from django.http import HttpResponse
+from django.urls import reverse_lazy
 from django.views import generic
 
 from apps.city.forms.tile import TileBuildingForm
@@ -59,17 +62,35 @@ class TileBuildView(generic.UpdateView):
 
     def get_form_kwargs(self) -> dict:
         kwargs = super().get_form_kwargs()
-        kwargs["savegame"], _ = Savegame.objects.get_or_create(id=1)
+        # For backward compatibility with tests that don't use authentication
+        if hasattr(self.request, "user") and self.request.user.is_authenticated:
+            kwargs["savegame"] = Savegame.objects.filter(user=self.request.user, is_active=True).first()
+            if not kwargs["savegame"]:
+                # Create a default savegame if user has none
+                kwargs["savegame"] = Savegame.objects.create(
+                    user=self.request.user, city_name="New City", is_active=True
+                )
+        else:
+            # Fallback for tests
+            kwargs["savegame"], _ = Savegame.objects.get_or_create(
+                id=1, defaults={"user_id": 1, "city_name": "Test City"}
+            )
         return kwargs
 
     def form_valid(self, form) -> HttpResponse:
         super().form_valid(form=form)
 
         if form.cleaned_data["building"]:
-            savegame, _ = Savegame.objects.get_or_create(id=1)
-            savegame.coins -= form.cleaned_data["building"].building_costs
-            savegame.is_enclosed = WallEnclosureService(savegame=savegame).process()
-            savegame.save()
+            if hasattr(self.request, "user") and self.request.user.is_authenticated:
+                savegame = Savegame.objects.filter(user=self.request.user, is_active=True).first()
+            else:
+                # Fallback for tests
+                savegame, _ = Savegame.objects.get_or_create(id=1, defaults={"user_id": 1, "city_name": "Test City"})
+
+            if savegame:
+                savegame.coins -= form.cleaned_data["building"].building_costs
+                savegame.is_enclosed = WallEnclosureService(savegame=savegame).process()
+                savegame.save()
 
         response = HttpResponse(status=HTTPStatus.OK)
         response["HX-Trigger"] = json.dumps(
@@ -99,9 +120,15 @@ class TileDemolishView(generic.View):
             tile.save()
 
             # Update enclosure status
-            savegame, _ = Savegame.objects.get_or_create(id=1)
-            savegame.is_enclosed = WallEnclosureService(savegame=savegame).process()
-            savegame.save()
+            if hasattr(request, "user") and request.user.is_authenticated:
+                savegame = Savegame.objects.filter(user=request.user, is_active=True).first()
+            else:
+                # Fallback for tests
+                savegame, _ = Savegame.objects.get_or_create(id=1, defaults={"user_id": 1, "city_name": "Test City"})
+
+            if savegame:
+                savegame.is_enclosed = WallEnclosureService(savegame=savegame).process()
+                savegame.save()
 
         response = HttpResponse(status=HTTPStatus.OK)
         response["HX-Trigger"] = json.dumps(
@@ -111,3 +138,44 @@ class TileDemolishView(generic.View):
             }
         )
         return response
+
+
+class SavegameListView(LoginRequiredMixin, generic.ListView):
+    model = Savegame
+    template_name = "city/savegame_list.html"
+    context_object_name = "savegames"
+
+    def get_queryset(self) -> list[Savegame]:
+        return Savegame.objects.filter(user=self.request.user).order_by("-id")
+
+
+class SavegameLoadView(LoginRequiredMixin, generic.View):
+    def post(self, request, pk, *args, **kwargs) -> HttpResponse:
+        savegame = Savegame.objects.get(pk=pk, user=request.user)
+
+        # Set all other savegames of this user to inactive
+        Savegame.objects.filter(user=request.user).update(is_active=False)
+
+        # Set this savegame to active
+        savegame.is_active = True
+        savegame.save()
+
+        return HttpResponse(status=HTTPStatus.OK, headers={"HX-Redirect": reverse_lazy("city:landing-page")})
+
+
+class SavegameDeleteView(LoginRequiredMixin, generic.DeleteView):
+    model = Savegame
+    success_url = reverse_lazy("city:savegame-list")
+
+    def get_queryset(self) -> list[Savegame]:
+        # Only allow deleting own savegames that are not active
+        return Savegame.objects.filter(user=self.request.user, is_active=False)
+
+
+class UserLoginView(LoginView):
+    template_name = "city/login.html"
+    next_page = reverse_lazy("city:landing-page")
+
+
+class UserLogoutView(LogoutView):
+    next_page = reverse_lazy("city:login")

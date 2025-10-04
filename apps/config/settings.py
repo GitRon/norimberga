@@ -65,6 +65,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django.contrib.auth.middleware.LoginRequiredMiddleware",
 ]
 
 ROOT_URLCONF = "apps.config.urls"
@@ -155,3 +156,18 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
 CRISPY_TEMPLATE_PACK = "tailwind"
+
+# Authentication
+
+LOGIN_URL = "city:login"
+LOGIN_REDIRECT_URL = "city:landing-page"
+
+# URLs that don't require authentication
+LOGIN_REQUIRED_IGNORE_PATHS = [
+    r"^/city/login/$",
+    r"^/admin/",
+]
+
+LOGIN_REQUIRED_IGNORE_VIEW_NAMES = [
+    "city:login",
+]

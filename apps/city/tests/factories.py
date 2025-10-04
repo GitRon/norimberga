@@ -18,6 +18,7 @@ class SavegameFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Savegame
 
+    user = factory.SubFactory(UserFactory)
     city_name = factory.Faker("city")
     map_size = 5
     coins = 100

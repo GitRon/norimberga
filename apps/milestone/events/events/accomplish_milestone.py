@@ -25,10 +25,10 @@ class Event(BaseEvent):
                 self.accomplish_milestones.append(milestone)
                 self.PROBABILITY = 100
 
-    def get_probability(self):
+    def get_probability(self) -> int:
         return self.PROBABILITY
 
-    def _prepare_effect_accomplish_milestone(self):
+    def _prepare_effect_accomplish_milestone(self) -> AccomplishMilestone | None:
         # For now, only one milestone per round can be accomplished
         for milestone in self.accomplish_milestones:
             return AccomplishMilestone(
@@ -37,8 +37,9 @@ class Event(BaseEvent):
                 milestone=str(milestone),
                 current_year=self.savegame.current_year,
             )
+        return None
 
-    def get_verbose_text(self):
+    def get_verbose_text(self) -> str:
         # TODO(RV): make this more pretty
         milestones = ", ".join(str(milestone) for milestone in self.accomplish_milestones).strip()
         return f'Your prosperous city has accomplished a new milestone! Rejoice that "{milestones}" has been achieved.'

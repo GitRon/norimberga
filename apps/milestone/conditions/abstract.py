@@ -1,11 +1,11 @@
+import abc
+
 from apps.city.models import Savegame
 
 
-class AbstractCondition:
+class AbstractCondition(abc.ABC):
     savegame_id: int
 
-    def __init__(self, **kwargs) -> None:
-        pass
-
-    def is_valid(self, savegame: Savegame) -> bool:
+    @abc.abstractmethod
+    def is_valid(self, *, savegame: Savegame) -> bool:
         raise NotImplementedError

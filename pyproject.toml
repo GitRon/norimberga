@@ -194,16 +194,6 @@ exclude = []
     # Django custom fields have their own structure
     "PBR001",
 ]
-"*/conditions/*.py" = [
-    # Condition classes have their own structure
-    "PBR001",
-    "PBR006",
-]
-"*/milestones/*.py" = [
-    # Milestone classes have their own structure
-    "PBR001",
-    "PBR006",
-]
 "*/migrations/*.py" = [
     # Migration classes have their own structure
     "PBR001",

@@ -18,13 +18,13 @@ class Event(BaseEvent):
         super().__init__(savegame=savegame)
         self.lost_population_percentage = random.randint(10, 25) / 100
 
-    def get_probability(self):
+    def get_probability(self) -> int | float:
         return super().get_probability() if self.savegame.population > 0 else 0
 
-    def get_effects(self):
+    def get_effects(self) -> tuple[DecreasePopulationRelative]:
         return (DecreasePopulationRelative(lost_population_percentage=self.lost_population_percentage),)
 
-    def get_verbose_text(self):
+    def get_verbose_text(self) -> str:
         localized_percentage = round(self.lost_population_percentage * 10)
         return (
             f"A horrific plague hit the city in its most vulnerable time. {localized_percentage}% of the population "

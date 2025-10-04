@@ -20,7 +20,7 @@ class Event(BaseEvent):
         self.initial_unrest = self.savegame.unrest
         self.additional_unrest = random.randint(5, 8)
 
-    def get_probability(self):
+    def get_probability(self) -> int | float:
         return (
             super().get_probability()
             if self.savegame.population > BuildingHousingService(savegame=self.savegame).calculate_max_space()
@@ -28,10 +28,10 @@ class Event(BaseEvent):
             else 0
         )
 
-    def _prepare_effect_decrease_population(self):
+    def _prepare_effect_decrease_population(self) -> IncreaseUnrestAbsolute:
         return IncreaseUnrestAbsolute(additional_unrest=self.additional_unrest)
 
-    def get_verbose_text(self):
+    def get_verbose_text(self) -> str:
         self.savegame.refresh_from_db()
         return (
             f"Beggars and homeless folk are crowding the streets. The situation grows tenser by the day. The citys "

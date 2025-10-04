@@ -44,22 +44,22 @@ class Event(BaseEvent):
         # Store building name before it's destroyed
         self.destroyed_building_name = self.affected_tile.building.building_type.name if self.affected_tile else None
 
-    def get_probability(self):
+    def get_probability(self) -> int | float:
         # Only occurs when city is not enclosed by walls
         return super().get_probability() if not self.savegame.is_enclosed else 0
 
-    def _prepare_effect_decrease_coins(self):
+    def _prepare_effect_decrease_coins(self) -> DecreaseCoins:
         return DecreaseCoins(coins=self.lost_coins)
 
-    def _prepare_effect_decrease_population(self):
+    def _prepare_effect_decrease_population(self) -> DecreasePopulationAbsolute:
         return DecreasePopulationAbsolute(lost_population=self.lost_population)
 
-    def _prepare_effect_remove_building(self):
+    def _prepare_effect_remove_building(self) -> RemoveBuilding | None:
         if self.affected_tile:
             return RemoveBuilding(tile=self.affected_tile)
         return None
 
-    def get_verbose_text(self):
+    def get_verbose_text(self) -> str:
         self.savegame.refresh_from_db()
         message = (
             f"Without a protective wall, raiders pillaged the city! "

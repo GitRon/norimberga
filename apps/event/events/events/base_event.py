@@ -15,10 +15,10 @@ class BaseEvent:
     def __init__(self, *, savegame):
         self.savegame = savegame
 
-    def get_probability(self):
+    def get_probability(self) -> int | float:
         return self.PROBABILITY
 
-    def get_effects(self):
+    def get_effects(self) -> list:
         methods = inspect.getmembers(self, predicate=inspect.ismethod)
         return [getattr(self, method[0])() for method in methods if method[0].startswith("_prepare_effect")]
 

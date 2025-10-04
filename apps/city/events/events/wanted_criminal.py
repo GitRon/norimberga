@@ -13,13 +13,14 @@ class Event(BaseEvent):
 
     bounty: int
 
-    def __init__(self):
+    def __init__(self, *, savegame):
+        super().__init__(savegame=savegame)
         self.bounty = random.randint(100, 300)
 
-    def _prepare_effect_increase_coins(self):
+    def _prepare_effect_increase_coins(self) -> IncreaseCoins:
         return IncreaseCoins(coins=self.bounty)
 
-    def get_verbose_text(self):
+    def get_verbose_text(self) -> str:
         return (
             f"The magistrate caught a wanted criminal. The malefactor was handed over to the Kings guard, rewarding "
             f"you with {self.bounty} coin."

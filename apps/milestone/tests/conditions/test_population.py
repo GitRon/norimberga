@@ -10,7 +10,7 @@ def test_min_population_condition_init():
 
 def test_min_population_condition_init_with_kwargs():
     """Test MinPopulationCondition initialization with kwargs."""
-    condition = MinPopulationCondition(min_population=100, some_arg="value")
+    condition = MinPopulationCondition(min_population=100)
     assert condition.min_population == 100
 
 
@@ -19,7 +19,7 @@ def test_min_population_condition_is_valid_true():
     condition = MinPopulationCondition(min_population=100)
     savegame = SavegameFactory.build(population=150)
 
-    assert condition.is_valid(savegame) is True
+    assert condition.is_valid(savegame=savegame) is True
 
 
 def test_min_population_condition_is_valid_true_exact():
@@ -27,7 +27,7 @@ def test_min_population_condition_is_valid_true_exact():
     condition = MinPopulationCondition(min_population=100)
     savegame = SavegameFactory.build(population=100)
 
-    assert condition.is_valid(savegame) is True
+    assert condition.is_valid(savegame=savegame) is True
 
 
 def test_min_population_condition_is_valid_false():
@@ -35,7 +35,7 @@ def test_min_population_condition_is_valid_false():
     condition = MinPopulationCondition(min_population=100)
     savegame = SavegameFactory.build(population=50)
 
-    assert condition.is_valid(savegame) is False
+    assert condition.is_valid(savegame=savegame) is False
 
 
 def test_min_population_condition_is_valid_zero_population():
@@ -43,7 +43,7 @@ def test_min_population_condition_is_valid_zero_population():
     condition = MinPopulationCondition(min_population=1)
     savegame = SavegameFactory.build(population=0)
 
-    assert condition.is_valid(savegame) is False
+    assert condition.is_valid(savegame=savegame) is False
 
 
 def test_min_population_condition_is_valid_zero_minimum():
@@ -51,4 +51,4 @@ def test_min_population_condition_is_valid_zero_minimum():
     condition = MinPopulationCondition(min_population=0)
     savegame = SavegameFactory.build(population=5)
 
-    assert condition.is_valid(savegame) is True
+    assert condition.is_valid(savegame=savegame) is True

@@ -3,7 +3,7 @@ from collections import defaultdict
 from apps.city.models import Savegame
 
 
-def get_balance_data(*, savegame_id: int) -> dict:
+def get_balance_data(*, savegame: Savegame) -> dict:
     """
     Calculate the balance per round for a savegame with detailed breakdown.
 
@@ -15,7 +15,6 @@ def get_balance_data(*, savegame_id: int) -> dict:
     - tax_by_building_type: Dict mapping building type names to lists of building tax data
     - maintenance_by_building_type: Dict mapping building type names to lists of building maintenance data
     """
-    savegame = Savegame.objects.get(id=savegame_id)
 
     # Use manager methods for aggregations
     taxes = Savegame.objects.aggregate_taxes(savegame=savegame)

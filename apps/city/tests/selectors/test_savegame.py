@@ -1,6 +1,5 @@
 import pytest
 
-from apps.city.models import Savegame
 from apps.city.selectors.savegame import get_balance_data
 from apps.city.tests.factories import BuildingFactory, SavegameFactory, TileFactory
 
@@ -8,10 +7,7 @@ from apps.city.tests.factories import BuildingFactory, SavegameFactory, TileFact
 @pytest.mark.django_db
 def test_get_balance_data_with_buildings():
     """Test get_balance_data calculates balance correctly with buildings."""
-    # Clear any existing savegame with id=1
-    Savegame.objects.filter(id=1).delete()
-
-    savegame = SavegameFactory(id=1)
+    savegame = SavegameFactory()
 
     # Create buildings with taxes and maintenance costs
     building1 = BuildingFactory(taxes=20, maintenance_costs=5)
@@ -22,7 +18,7 @@ def test_get_balance_data_with_buildings():
     TileFactory(savegame=savegame, building=building2)
     TileFactory(savegame=savegame, building=building3)
 
-    result = get_balance_data(savegame_id=1)
+    result = get_balance_data(savegame=savegame)
 
     assert result["savegame"] == savegame
     assert result["taxes"] == 65  # 20 + 30 + 15
@@ -33,16 +29,13 @@ def test_get_balance_data_with_buildings():
 @pytest.mark.django_db
 def test_get_balance_data_no_buildings():
     """Test get_balance_data returns zero balance when no buildings exist."""
-    # Clear any existing savegame with id=1
-    Savegame.objects.filter(id=1).delete()
-
-    savegame = SavegameFactory(id=1)
+    savegame = SavegameFactory()
 
     # Create tiles without buildings
     TileFactory(savegame=savegame, building=None)
     TileFactory(savegame=savegame, building=None)
 
-    result = get_balance_data(savegame_id=1)
+    result = get_balance_data(savegame=savegame)
 
     assert result["savegame"] == savegame
     assert result["taxes"] == 0
@@ -53,12 +46,9 @@ def test_get_balance_data_no_buildings():
 @pytest.mark.django_db
 def test_get_balance_data_empty_savegame():
     """Test get_balance_data returns zero balance for savegame with no tiles."""
-    # Clear any existing savegame with id=1
-    Savegame.objects.filter(id=1).delete()
+    savegame = SavegameFactory()
 
-    savegame = SavegameFactory(id=1)
-
-    result = get_balance_data(savegame_id=1)
+    result = get_balance_data(savegame=savegame)
 
     assert result["savegame"] == savegame
     assert result["taxes"] == 0
@@ -69,16 +59,13 @@ def test_get_balance_data_empty_savegame():
 @pytest.mark.django_db
 def test_get_balance_data_positive_balance():
     """Test get_balance_data returns positive balance when taxes exceed maintenance."""
-    # Clear any existing savegame with id=1
-    Savegame.objects.filter(id=1).delete()
-
-    savegame = SavegameFactory(id=1)
+    savegame = SavegameFactory()
 
     # Create buildings with higher taxes than maintenance
     building = BuildingFactory(taxes=50, maintenance_costs=10)
     TileFactory(savegame=savegame, building=building)
 
-    result = get_balance_data(savegame_id=1)
+    result = get_balance_data(savegame=savegame)
 
     assert result["balance"] == 40
     assert result["balance"] > 0
@@ -87,16 +74,13 @@ def test_get_balance_data_positive_balance():
 @pytest.mark.django_db
 def test_get_balance_data_negative_balance():
     """Test get_balance_data returns negative balance when maintenance exceeds taxes."""
-    # Clear any existing savegame with id=1
-    Savegame.objects.filter(id=1).delete()
-
-    savegame = SavegameFactory(id=1)
+    savegame = SavegameFactory()
 
     # Create buildings with higher maintenance than taxes
     building = BuildingFactory(taxes=10, maintenance_costs=50)
     TileFactory(savegame=savegame, building=building)
 
-    result = get_balance_data(savegame_id=1)
+    result = get_balance_data(savegame=savegame)
 
     assert result["balance"] == -40
     assert result["balance"] < 0
@@ -105,10 +89,7 @@ def test_get_balance_data_negative_balance():
 @pytest.mark.django_db
 def test_get_balance_data_mixed_tiles():
     """Test get_balance_data with mix of tiles with and without buildings."""
-    # Clear any existing savegame with id=1
-    Savegame.objects.filter(id=1).delete()
-
-    savegame = SavegameFactory(id=1)
+    savegame = SavegameFactory()
 
     # Create mix of tiles
     building1 = BuildingFactory(taxes=25, maintenance_costs=10)
@@ -119,7 +100,7 @@ def test_get_balance_data_mixed_tiles():
     TileFactory(savegame=savegame, building=building2)
     TileFactory(savegame=savegame, building=None)
 
-    result = get_balance_data(savegame_id=1)
+    result = get_balance_data(savegame=savegame)
 
     assert result["taxes"] == 60  # 25 + 35
     assert result["maintenance"] == 25  # 10 + 15
@@ -129,16 +110,13 @@ def test_get_balance_data_mixed_tiles():
 @pytest.mark.django_db
 def test_get_balance_data_zero_values():
     """Test get_balance_data handles buildings with zero taxes and maintenance."""
-    # Clear any existing savegame with id=1
-    Savegame.objects.filter(id=1).delete()
-
-    savegame = SavegameFactory(id=1)
+    savegame = SavegameFactory()
 
     # Create buildings with zero values
     building = BuildingFactory(taxes=0, maintenance_costs=0)
     TileFactory(savegame=savegame, building=building)
 
-    result = get_balance_data(savegame_id=1)
+    result = get_balance_data(savegame=savegame)
 
     assert result["taxes"] == 0
     assert result["maintenance"] == 0
@@ -148,16 +126,13 @@ def test_get_balance_data_zero_values():
 @pytest.mark.django_db
 def test_get_balance_data_only_taxes():
     """Test get_balance_data with buildings that only have taxes."""
-    # Clear any existing savegame with id=1
-    Savegame.objects.filter(id=1).delete()
-
-    savegame = SavegameFactory(id=1)
+    savegame = SavegameFactory()
 
     # Create buildings with taxes but no maintenance
     building = BuildingFactory(taxes=40, maintenance_costs=0)
     TileFactory(savegame=savegame, building=building)
 
-    result = get_balance_data(savegame_id=1)
+    result = get_balance_data(savegame=savegame)
 
     assert result["taxes"] == 40
     assert result["maintenance"] == 0
@@ -167,16 +142,13 @@ def test_get_balance_data_only_taxes():
 @pytest.mark.django_db
 def test_get_balance_data_only_maintenance():
     """Test get_balance_data with buildings that only have maintenance costs."""
-    # Clear any existing savegame with id=1
-    Savegame.objects.filter(id=1).delete()
-
-    savegame = SavegameFactory(id=1)
+    savegame = SavegameFactory()
 
     # Create buildings with maintenance but no taxes
     building = BuildingFactory(taxes=0, maintenance_costs=30)
     TileFactory(savegame=savegame, building=building)
 
-    result = get_balance_data(savegame_id=1)
+    result = get_balance_data(savegame=savegame)
 
     assert result["taxes"] == 0
     assert result["maintenance"] == 30
@@ -186,11 +158,8 @@ def test_get_balance_data_only_maintenance():
 @pytest.mark.django_db
 def test_get_balance_data_multiple_savegames():
     """Test get_balance_data only returns data for specified savegame."""
-    # Clear any existing savegames
-    Savegame.objects.filter(id__in=[1, 2]).delete()
-
-    savegame1 = SavegameFactory(id=1)
-    savegame2 = SavegameFactory(id=2)
+    savegame1 = SavegameFactory()
+    savegame2 = SavegameFactory()
 
     # Create buildings for savegame1
     building1 = BuildingFactory(taxes=20, maintenance_costs=10)
@@ -201,7 +170,7 @@ def test_get_balance_data_multiple_savegames():
     TileFactory(savegame=savegame2, building=building2)
 
     # Get data for savegame1
-    result = get_balance_data(savegame_id=1)
+    result = get_balance_data(savegame=savegame1)
 
     assert result["savegame"] == savegame1
     assert result["taxes"] == 20
@@ -212,14 +181,11 @@ def test_get_balance_data_multiple_savegames():
 @pytest.mark.django_db
 def test_get_balance_data_returns_dict_with_all_keys():
     """Test get_balance_data returns dictionary with all expected keys."""
-    # Clear any existing savegame with id=1
-    Savegame.objects.filter(id=1).delete()
-
-    savegame = SavegameFactory(id=1)
+    savegame = SavegameFactory()
     building = BuildingFactory()
     TileFactory(savegame=savegame, building=building)
 
-    result = get_balance_data(savegame_id=1)
+    result = get_balance_data(savegame=savegame)
 
     # Verify all expected keys are present
     assert "savegame" in result
@@ -241,17 +207,14 @@ def test_get_balance_data_returns_dict_with_all_keys():
 @pytest.mark.django_db
 def test_get_balance_data_large_numbers():
     """Test get_balance_data handles larger numbers correctly."""
-    # Clear any existing savegame with id=1
-    Savegame.objects.filter(id=1).delete()
-
-    savegame = SavegameFactory(id=1)
+    savegame = SavegameFactory()
 
     # Create multiple buildings with various values
     for _ in range(10):
         building = BuildingFactory(taxes=100, maintenance_costs=75)
         TileFactory(savegame=savegame, building=building)
 
-    result = get_balance_data(savegame_id=1)
+    result = get_balance_data(savegame=savegame)
 
     assert result["taxes"] == 1000  # 100 * 10
     assert result["maintenance"] == 750  # 75 * 10
@@ -261,10 +224,7 @@ def test_get_balance_data_large_numbers():
 @pytest.mark.django_db
 def test_get_balance_data_tax_grouping_by_building_type():
     """Test tax breakdown is grouped by building type and then by building."""
-    # Clear any existing savegame with id=1
-    Savegame.objects.filter(id=1).delete()
-
-    savegame = SavegameFactory(id=1)
+    savegame = SavegameFactory()
 
     # Create building types
     from apps.city.tests.factories import BuildingTypeFactory
@@ -285,7 +245,7 @@ def test_get_balance_data_tax_grouping_by_building_type():
     TileFactory(savegame=savegame, building=house2)  # 1x Large House
     TileFactory(savegame=savegame, building=workshop1)  # 1x Blacksmith
 
-    result = get_balance_data(savegame_id=1)
+    result = get_balance_data(savegame=savegame)
 
     # Verify tax grouping structure
     tax_by_type = result["tax_by_building_type"]
@@ -332,10 +292,7 @@ def test_get_balance_data_tax_grouping_by_building_type():
 @pytest.mark.django_db
 def test_get_balance_data_maintenance_grouping_by_building_type():
     """Test maintenance breakdown is grouped by building type and then by building."""
-    # Clear any existing savegame with id=1
-    Savegame.objects.filter(id=1).delete()
-
-    savegame = SavegameFactory(id=1)
+    savegame = SavegameFactory()
 
     # Create building types
     from apps.city.tests.factories import BuildingTypeFactory
@@ -354,7 +311,7 @@ def test_get_balance_data_maintenance_grouping_by_building_type():
     TileFactory(savegame=savegame, building=wall1)
     TileFactory(savegame=savegame, building=wall1)  # 2x Stone Wall
 
-    result = get_balance_data(savegame_id=1)
+    result = get_balance_data(savegame=savegame)
 
     # Verify maintenance grouping structure
     maint_by_type = result["maintenance_by_building_type"]
@@ -393,10 +350,7 @@ def test_get_balance_data_maintenance_grouping_by_building_type():
 @pytest.mark.django_db
 def test_get_balance_data_excludes_zero_tax_buildings_from_tax_grouping():
     """Test buildings with zero taxes are excluded from tax grouping."""
-    # Clear any existing savegame with id=1
-    Savegame.objects.filter(id=1).delete()
-
-    savegame = SavegameFactory(id=1)
+    savegame = SavegameFactory()
 
     from apps.city.tests.factories import BuildingTypeFactory
 
@@ -406,7 +360,7 @@ def test_get_balance_data_excludes_zero_tax_buildings_from_tax_grouping():
     building = BuildingFactory(name="House", building_type=house_type, level=1, taxes=0, maintenance_costs=10)
     TileFactory(savegame=savegame, building=building)
 
-    result = get_balance_data(savegame_id=1)
+    result = get_balance_data(savegame=savegame)
 
     # Should not appear in tax grouping
     assert result["tax_by_building_type"] == {}
@@ -417,10 +371,7 @@ def test_get_balance_data_excludes_zero_tax_buildings_from_tax_grouping():
 @pytest.mark.django_db
 def test_get_balance_data_excludes_zero_maintenance_buildings_from_maintenance_grouping():
     """Test buildings with zero maintenance are excluded from maintenance grouping."""
-    # Clear any existing savegame with id=1
-    Savegame.objects.filter(id=1).delete()
-
-    savegame = SavegameFactory(id=1)
+    savegame = SavegameFactory()
 
     from apps.city.tests.factories import BuildingTypeFactory
 
@@ -430,7 +381,7 @@ def test_get_balance_data_excludes_zero_maintenance_buildings_from_maintenance_g
     building = BuildingFactory(name="House", building_type=house_type, level=1, taxes=20, maintenance_costs=0)
     TileFactory(savegame=savegame, building=building)
 
-    result = get_balance_data(savegame_id=1)
+    result = get_balance_data(savegame=savegame)
 
     # Should appear in tax grouping
     assert "House" in result["tax_by_building_type"]
@@ -441,13 +392,10 @@ def test_get_balance_data_excludes_zero_maintenance_buildings_from_maintenance_g
 @pytest.mark.django_db
 def test_get_balance_data_groups_empty_when_no_buildings():
     """Test grouping dictionaries are empty when no buildings exist."""
-    # Clear any existing savegame with id=1
-    Savegame.objects.filter(id=1).delete()
-
-    savegame = SavegameFactory(id=1)
+    savegame = SavegameFactory()
     TileFactory(savegame=savegame, building=None)
 
-    result = get_balance_data(savegame_id=1)
+    result = get_balance_data(savegame=savegame)
 
     assert result["tax_by_building_type"] == {}
     assert result["maintenance_by_building_type"] == {}
@@ -456,10 +404,7 @@ def test_get_balance_data_groups_empty_when_no_buildings():
 @pytest.mark.django_db
 def test_get_balance_data_grouping_sorted_alphabetically():
     """Test building types and buildings are sorted alphabetically."""
-    # Clear any existing savegame with id=1
-    Savegame.objects.filter(id=1).delete()
-
-    savegame = SavegameFactory(id=1)
+    savegame = SavegameFactory()
 
     from apps.city.tests.factories import BuildingTypeFactory
 
@@ -477,7 +422,7 @@ def test_get_balance_data_grouping_sorted_alphabetically():
     TileFactory(savegame=savegame, building=a_building)
     TileFactory(savegame=savegame, building=m_building)
 
-    result = get_balance_data(savegame_id=1)
+    result = get_balance_data(savegame=savegame)
 
     # Check that keys are sorted
     type_names = list(result["tax_by_building_type"].keys())
@@ -487,10 +432,7 @@ def test_get_balance_data_grouping_sorted_alphabetically():
 @pytest.mark.django_db
 def test_get_balance_data_subtotals_calculated_correctly():
     """Test that subtotals are calculated correctly for each building type."""
-    # Clear any existing savegame with id=1
-    Savegame.objects.filter(id=1).delete()
-
-    savegame = SavegameFactory(id=1)
+    savegame = SavegameFactory()
 
     from apps.city.tests.factories import BuildingTypeFactory
 
@@ -507,7 +449,7 @@ def test_get_balance_data_subtotals_calculated_correctly():
     TileFactory(savegame=savegame, building=house2)
     TileFactory(savegame=savegame, building=house2)  # 2x Large House
 
-    result = get_balance_data(savegame_id=1)
+    result = get_balance_data(savegame=savegame)
 
     # Check tax subtotal: (3 * 10) + (2 * 25) = 30 + 50 = 80
     assert result["tax_by_building_type"]["House"]["subtotal"] == 80

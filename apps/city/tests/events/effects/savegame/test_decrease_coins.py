@@ -1,7 +1,7 @@
 import pytest
 
 from apps.city.events.effects.savegame.decrease_coins import DecreaseCoins
-from apps.city.models import Savegame
+from apps.city.tests.factories import SavegameFactory
 
 
 @pytest.mark.django_db
@@ -15,12 +15,10 @@ def test_decrease_coins_init():
 @pytest.mark.django_db
 def test_decrease_coins_process_normal_decrease():
     """Test process decreases coins by specified amount."""
-    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={"coins": 200})
-    savegame.coins = 200
-    savegame.save()
+    savegame = SavegameFactory(coins=200)
     effect = DecreaseCoins(coins=75)
 
-    effect.process()
+    effect.process(savegame=savegame)
 
     savegame.refresh_from_db()
     assert savegame.coins == 125
@@ -29,12 +27,10 @@ def test_decrease_coins_process_normal_decrease():
 @pytest.mark.django_db
 def test_decrease_coins_process_negative_balance():
     """Test process allows coins to go negative."""
-    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={"coins": 30})
-    savegame.coins = 30
-    savegame.save()
+    savegame = SavegameFactory(coins=30)
     effect = DecreaseCoins(coins=50)
 
-    effect.process()
+    effect.process(savegame=savegame)
 
     savegame.refresh_from_db()
     assert savegame.coins == -20
@@ -43,12 +39,10 @@ def test_decrease_coins_process_negative_balance():
 @pytest.mark.django_db
 def test_decrease_coins_process_exact_zero():
     """Test process handles exact zero coins correctly."""
-    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={"coins": 80})
-    savegame.coins = 80
-    savegame.save()
+    savegame = SavegameFactory(coins=80)
     effect = DecreaseCoins(coins=80)
 
-    effect.process()
+    effect.process(savegame=savegame)
 
     savegame.refresh_from_db()
     assert savegame.coins == 0
@@ -56,26 +50,23 @@ def test_decrease_coins_process_exact_zero():
 
 @pytest.mark.django_db
 def test_decrease_coins_process_creates_savegame():
-    """Test process creates savegame if it doesn't exist."""
-    # Ensure no savegame exists
-    Savegame.objects.filter(id=1).delete()
+    """Test process works with newly created savegame."""
+    savegame = SavegameFactory(coins=0)
     effect = DecreaseCoins(coins=25)
 
-    effect.process()
+    effect.process(savegame=savegame)
 
-    savegame = Savegame.objects.get(id=1)
+    savegame.refresh_from_db()
     assert savegame.coins == 0 - 25  # Default coins (0) - decreased amount
 
 
 @pytest.mark.django_db
 def test_decrease_coins_process_zero_decrease():
     """Test process with zero decrease amount."""
-    savegame, _ = Savegame.objects.get_or_create(id=1, defaults={"coins": 150})
-    savegame.coins = 150
-    savegame.save()
+    savegame = SavegameFactory(coins=150)
     effect = DecreaseCoins(coins=0)
 
-    effect.process()
+    effect.process(savegame=savegame)
 
     savegame.refresh_from_db()
     assert savegame.coins == 150

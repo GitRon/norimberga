@@ -11,19 +11,18 @@ class Event(BaseEvent):
     LEVEL = messages.INFO
     TITLE = "Maintenance"
 
-    savegame: Savegame
     maintenance: int
 
-    def __init__(self):
-        self.savegame, _ = Savegame.objects.get_or_create(id=1)
+    def __init__(self, *, savegame: Savegame):
+        super().__init__(savegame=savegame)
         self.maintenance = self._calculate_maintenance()
 
-    def get_probability(self):
+    def get_probability(self) -> int | float:
         return (
             super().get_probability() if self.savegame.tiles.filter(building__maintenance_costs__gt=0).exists() else 0
         )
 
-    def _calculate_maintenance(self):
+    def _calculate_maintenance(self) -> int | None:
         result = self.savegame.tiles.aggregate(sum_maintenance=Sum("building__maintenance_costs"))["sum_maintenance"]
         # Return None if there are no buildings with maintenance costs
         if result is None or (
@@ -32,8 +31,8 @@ class Event(BaseEvent):
             return None
         return result
 
-    def get_effects(self):
+    def get_effects(self) -> tuple[DecreaseCoins]:
         return (DecreaseCoins(coins=self.maintenance),)
 
-    def get_verbose_text(self):
+    def get_verbose_text(self) -> str:
         return f"The treasury was set back by {self.maintenance} coin to maintain the citys buildings."

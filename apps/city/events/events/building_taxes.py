@@ -11,27 +11,26 @@ class Event(BaseEvent):
     LEVEL = messages.INFO
     TITLE = "Taxes"
 
-    savegame: Savegame
     taxes: int
 
-    def __init__(self):
-        self.savegame, _ = Savegame.objects.get_or_create(id=1)
+    def __init__(self, *, savegame: Savegame):
+        super().__init__(savegame=savegame)
         self.taxes = self._calculate_taxes()
 
-    def get_probability(self):
+    def get_probability(self) -> int | float:
         return super().get_probability() if self.savegame.tiles.filter(building__taxes__gt=0).exists() else 0
 
-    def _calculate_taxes(self):
+    def _calculate_taxes(self) -> int | None:
         result = self.savegame.tiles.aggregate(sum_taxes=Sum("building__taxes"))["sum_taxes"]
         # Return None if there are no buildings with taxes
         if result == 0 and not self.savegame.tiles.filter(building__taxes__gt=0).exists():
             return None
         return result
 
-    def get_effects(self):
+    def get_effects(self) -> tuple[IncreaseCoins]:
         return (IncreaseCoins(coins=self.taxes),)
 
-    def get_verbose_text(self):
+    def get_verbose_text(self) -> str:
         return (
             f"Your loyal subjects were delighted to pay their fair amount of {self.taxes} coins as taxes to your city."
         )

@@ -13,31 +13,29 @@ class Event(BaseEvent):
     LEVEL = messages.ERROR
     TITLE = "Fire"
 
-    savegame: Savegame
     initial_population: int
     lost_population: int
     affected_tile: Tile
 
-    def __init__(self):
-        super().__init__()
-        self.savegame, _ = Savegame.objects.get_or_create(id=1)
+    def __init__(self, *, savegame: Savegame):
+        super().__init__(savegame=savegame)
         self.initial_population = self.savegame.population
 
         self.lost_population = random.randint(10, 50)
         self.affected_tile = self.savegame.tiles.filter(building__building_type__is_house=True).first()
 
-    def get_probability(self):
+    def get_probability(self) -> int | float:
         return super().get_probability() if self.savegame.population > 0 else 0
 
-    def _prepare_effect_decrease_population(self):
+    def _prepare_effect_decrease_population(self) -> DecreasePopulationAbsolute:
         return DecreasePopulationAbsolute(lost_population=self.lost_population)
 
-    def _prepare_effect_remove_building(self):
+    def _prepare_effect_remove_building(self) -> RemoveBuilding | None:
         if self.affected_tile:
             return RemoveBuilding(tile=self.affected_tile)
         return None
 
-    def get_verbose_text(self):
+    def get_verbose_text(self) -> str:
         self.savegame.refresh_from_db()
         message = (
             f"Due to general neglect, a fire raged throughout the city, killing "

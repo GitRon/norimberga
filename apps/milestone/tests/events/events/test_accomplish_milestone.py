@@ -12,27 +12,31 @@ from apps.milestone.models import MilestoneLog
 class TestAccomplishMilestoneEvent:
     def test_event_constants(self):
         # Arrange & Act
-        event = Event()
+        savegame = SavegameFactory()
+        event = Event(savegame=savegame)
 
         # Assert
         assert event.LEVEL == messages.SUCCESS
         assert event.TITLE == "Milestone accomplished"
 
-    def test_event_initialization_creates_savegame(self):
+    @patch("apps.milestone.milestones.grow_city.GrowCityMilestone.is_accomplished")
+    def test_event_initialization_creates_savegame(self, mock_is_accomplished):
         # Arrange & Act
-        event = Event()
+        mock_is_accomplished.return_value = False
+        savegame = SavegameFactory()
+        event = Event(savegame=savegame)
 
         # Assert
         assert event.savegame is not None
-        assert event.savegame.id == 1
+        assert event.savegame.id == savegame.id
         assert event.accomplish_milestones == []
 
     def test_event_initialization_with_existing_savegame(self):
         # Arrange
-        existing_savegame = SavegameFactory(id=1)
+        existing_savegame = SavegameFactory()
 
         # Act
-        event = Event()
+        event = Event(savegame=existing_savegame)
 
         # Assert
         assert event.savegame.id == existing_savegame.id
@@ -43,7 +47,8 @@ class TestAccomplishMilestoneEvent:
         mock_is_accomplished.return_value = False
 
         # Act
-        event = Event()
+        savegame = SavegameFactory()
+        event = Event(savegame=savegame)
 
         # Assert
         assert event.get_probability() == 0
@@ -55,7 +60,8 @@ class TestAccomplishMilestoneEvent:
         mock_is_accomplished.return_value = True
 
         # Act
-        event = Event()
+        savegame = SavegameFactory()
+        event = Event(savegame=savegame)
 
         # Assert
         assert event.get_probability() == 100
@@ -65,7 +71,8 @@ class TestAccomplishMilestoneEvent:
     def test_prepare_effect_accomplish_milestone_returns_none_when_no_milestones(self, mock_is_accomplished):
         # Arrange
         mock_is_accomplished.return_value = False
-        event = Event()
+        savegame = SavegameFactory()
+        event = Event(savegame=savegame)
 
         # Act
         result = event._prepare_effect_accomplish_milestone()
@@ -77,8 +84,8 @@ class TestAccomplishMilestoneEvent:
     def test_prepare_effect_accomplish_milestone_returns_effect_when_milestone_exists(self, mock_is_accomplished):
         # Arrange
         mock_is_accomplished.return_value = True
-        savegame = SavegameFactory(id=1, current_year=1200)
-        event = Event()
+        savegame = SavegameFactory(current_year=1200)
+        event = Event(savegame=savegame)
 
         # Act
         result = event._prepare_effect_accomplish_milestone()
@@ -93,7 +100,8 @@ class TestAccomplishMilestoneEvent:
     def test_get_verbose_text_with_no_milestones(self, mock_is_accomplished):
         # Arrange
         mock_is_accomplished.return_value = False
-        event = Event()
+        savegame = SavegameFactory()
+        event = Event(savegame=savegame)
 
         # Act
         result = event.get_verbose_text()
@@ -106,7 +114,8 @@ class TestAccomplishMilestoneEvent:
     def test_get_verbose_text_with_milestone(self, mock_is_accomplished):
         # Arrange
         mock_is_accomplished.return_value = True
-        event = Event()
+        savegame = SavegameFactory()
+        event = Event(savegame=savegame)
 
         # Act
         result = event.get_verbose_text()
@@ -120,7 +129,8 @@ class TestAccomplishMilestoneEvent:
     def test_get_effects_returns_empty_list_when_no_milestones(self, mock_is_accomplished):
         # Arrange
         mock_is_accomplished.return_value = False
-        event = Event()
+        savegame = SavegameFactory()
+        event = Event(savegame=savegame)
 
         # Act
         effects = event.get_effects()
@@ -132,8 +142,8 @@ class TestAccomplishMilestoneEvent:
     def test_get_effects_returns_accomplish_milestone_effect_when_milestone_exists(self, mock_is_accomplished):
         # Arrange
         mock_is_accomplished.return_value = True
-        SavegameFactory(id=1)
-        event = Event()
+        savegame = SavegameFactory()
+        event = Event(savegame=savegame)
 
         # Act
         effects = event.get_effects()
@@ -147,8 +157,8 @@ class TestAccomplishMilestoneEvent:
     def test_process_creates_milestone_log_when_milestone_accomplished(self, mock_is_accomplished):
         # Arrange
         mock_is_accomplished.return_value = True
-        savegame = SavegameFactory(id=1, current_year=1200)
-        event = Event()
+        savegame = SavegameFactory(current_year=1200)
+        event = Event(savegame=savegame)
 
         # Act
         result = event.process()
@@ -165,8 +175,8 @@ class TestAccomplishMilestoneEvent:
     def test_process_does_not_create_milestone_log_when_no_milestone_accomplished(self, mock_is_accomplished):
         # Arrange
         mock_is_accomplished.return_value = False
-        SavegameFactory(id=1)
-        event = Event()
+        savegame = SavegameFactory()
+        event = Event(savegame=savegame)
 
         # Act
         result = event.process()

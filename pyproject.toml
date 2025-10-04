@@ -81,7 +81,7 @@ ignore = [
 #    'N999', # Project name contains underscore, not fixable
 #    'A003', # Django attributes shadow python builtins
 #    'DJ012', # Odd ordering of Django model methods
-#    'RUF012', # Mutable class attributes should be annotated with `typing.ClassVar`
+    'RUF012', # Mutable class attributes should be annotated with `typing.ClassVar`
 #    'PERF401', # Use a list comprehension to create a transformed list
     'TD003', # To-Do issue links
 ]
@@ -163,12 +163,9 @@ exclude = []
 "*/events/**/*.py" = [
     # Event classes don't follow service pattern
     "PBR005",
-    # Event methods often need multiple return points
-    "PBR002",
 ]
 "*/effects/**/*.py" = [
     # Effect classes have simple apply() method, not process()
-    "PBR001",
     "PBR005",
 ]
 "*/services/**/*.py" = [
@@ -196,16 +193,6 @@ exclude = []
 "*/templatetags/*.py" = [
     # Django custom fields have their own structure
     "PBR001",
-]
-"*/conditions/*.py" = [
-    # Condition classes have their own structure
-    "PBR001",
-    "PBR006",
-]
-"*/milestones/*.py" = [
-    # Milestone classes have their own structure
-    "PBR001",
-    "PBR006",
 ]
 "*/migrations/*.py" = [
     # Migration classes have their own structure

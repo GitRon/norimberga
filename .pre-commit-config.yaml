@@ -16,7 +16,6 @@ repos:
     hooks:
       - id: django-upgrade
         args: [--target-version, "4.2"]
-        stages: [ pre-push ]
 
   - repo: https://github.com/adamchainz/djade-pre-commit
     rev: 1.6.0
@@ -35,7 +34,6 @@ repos:
       - id: djhtml
         # Indent only HTML files in template directories
         files: .*/?templates/.*\.html$
-        stages: [ pre-push ]
         exclude: |
           (?x)^(
               .*/node_modules/.*|
@@ -48,14 +46,12 @@ repos:
           )$
         # Run this hook only on SCSS files (CSS and SCSS is the default)
         types: [ scss ]
-        stages: [ pre-push ]
       - id: djjs
         # Exclude JavaScript files in vendor directories
         exclude: |
           (?x)^(
               .*/node_modules/.*|
           )$
-        stages: [ pre-push ]
 
   - repo: https://github.com/ambient-innovation/boa-restrictor
     rev: v1.12.1

@@ -9,6 +9,9 @@ from apps.event.events.events.base_event import BaseEvent
 
 
 class EventSelectionService:
+    def __init__(self, *, savegame):
+        self.savegame = savegame
+
     def _get_possible_events(self) -> list[BaseEvent]:
         # Get base dir and locally installed apps
         root_dir = settings.ROOT_DIR
@@ -41,7 +44,7 @@ class EventSelectionService:
 
                 # Get event class
                 try:
-                    event: BaseEvent = module.Event()
+                    event: BaseEvent = module.Event(savegame=self.savegame)
                 except AttributeError:
                     continue
 

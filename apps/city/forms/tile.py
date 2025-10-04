@@ -51,7 +51,7 @@ class TileBuildingForm(forms.ModelForm):
 
         self.fields["building"].queryset = buildings.distinct()
 
-    def clean_building(self):
+    def clean_building(self) -> Building | None:
         building = self.cleaned_data["building"]
 
         if building and building.building_costs > self.savegame.coins:

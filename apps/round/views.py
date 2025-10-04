@@ -11,7 +11,7 @@ from apps.event.services.selection import EventSelectionService
 class RoundView(generic.View):
     http_method_names = ("post",)
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs) -> HttpResponse:
         events = EventSelectionService().process()
         for event in events:
             message = event.process()

@@ -4,7 +4,7 @@ import dataclasses
 class MapCoordinatesService:
     map_size: int
 
-    @dataclasses.dataclass
+    @dataclasses.dataclass(kw_only=True)
     class Coordinates:
         x: int
         y: int
@@ -33,7 +33,7 @@ class MapCoordinatesService:
 
         return self._get_valid_coordinates(start_x=x, start_y=y, min_x=min_x, max_x=max_x, min_y=min_y, max_y=max_y)
 
-    def get_forward_adjacent_fields(self, x: int, y: int):
+    def get_forward_adjacent_fields(self, x: int, y: int) -> list[Coordinates]:
         """
         Looking from the 0/0 field, get adjacent fields in the "forward" direction
         """

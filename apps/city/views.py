@@ -15,7 +15,7 @@ class SavegameValueView(generic.DetailView):
     model = Savegame
     template_name = "savegame/partials/_nav_values.html"
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)
         context["max_housing_space"] = BuildingHousingService().calculate_max_space()
         return context
@@ -24,7 +24,7 @@ class SavegameValueView(generic.DetailView):
 class LandingPageView(generic.TemplateView):
     template_name = "city/landing_page.html"
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)
         # TODO(RV): move to context processor
         context["max_housing_space"] = BuildingHousingService().calculate_max_space()
@@ -42,7 +42,7 @@ class CityMessagesView(generic.TemplateView):
 class BalanceView(generic.TemplateView):
     template_name = "city/balance.html"
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)
         balance_data = get_balance_data(savegame_id=1)
         context.update(balance_data)
@@ -54,15 +54,15 @@ class TileBuildView(generic.UpdateView):
     form_class = TileBuildingForm
     template_name = "city/partials/tile/update_tile.html"
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs) -> HttpResponse:
         return super().post(request, *args, **kwargs)
 
-    def get_form_kwargs(self):
+    def get_form_kwargs(self) -> dict:
         kwargs = super().get_form_kwargs()
         kwargs["savegame"], _ = Savegame.objects.get_or_create(id=1)
         return kwargs
 
-    def form_valid(self, form):
+    def form_valid(self, form) -> HttpResponse:
         super().form_valid(form=form)
 
         if form.cleaned_data["building"]:
@@ -80,12 +80,12 @@ class TileBuildView(generic.UpdateView):
         )
         return response
 
-    def get_success_url(self):
+    def get_success_url(self) -> None:
         return None
 
 
 class TileDemolishView(generic.View):
-    def post(self, request, pk, *args, **kwargs):
+    def post(self, request, pk, *args, **kwargs) -> HttpResponse:
         tile = Tile.objects.get(pk=pk)
 
         # Check if building can be demolished

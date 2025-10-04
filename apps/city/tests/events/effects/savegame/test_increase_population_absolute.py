@@ -3,7 +3,6 @@ from unittest import mock
 import pytest
 
 from apps.city.events.effects.savegame.increase_population_absolute import IncreasePopulationAbsolute
-from apps.city.models import Savegame
 from apps.city.tests.factories import SavegameFactory
 
 

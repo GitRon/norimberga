@@ -322,3 +322,69 @@ def test_round_view_no_active_savegame(request_factory):
     # Verify error response
     assert response.status_code == 400
     assert response.content == b"No active savegame found"
+
+
+@pytest.mark.django_db
+def test_round_view_increments_year(request_factory):
+    """Test RoundView increments the current year."""
+    from apps.city.tests.factories import SavegameFactory, UserFactory
+
+    # Create user and savegame with initial year
+    user = UserFactory()
+    savegame = SavegameFactory(user=user, is_active=True, current_year=1150)
+
+    # Mock EventSelectionService
+    with mock.patch("apps.round.views.EventSelectionService") as mock_service:
+        mock_service_instance = mock_service.return_value
+        mock_service_instance.process.return_value = []
+
+        # Create request and view
+        request = request_factory.post("/")
+        request.user = user
+        view = RoundView()
+        view.request = request
+
+        # Mock messages framework
+        with mock.patch("apps.round.views.messages"):
+            response = view.post(request)
+
+            # Verify year was incremented
+            savegame.refresh_from_db()
+            assert savegame.current_year == 1151
+
+            # Verify successful response
+            assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_round_view_triggers_navbar_update(request_factory):
+    """Test RoundView triggers navbar update event."""
+    from apps.city.tests.factories import SavegameFactory, UserFactory
+
+    # Create user and savegame with initial year
+    user = UserFactory()
+    savegame = SavegameFactory(user=user, is_active=True, current_year=1150)
+
+    # Mock EventSelectionService
+    with mock.patch("apps.round.views.EventSelectionService") as mock_service:
+        mock_service_instance = mock_service.return_value
+        mock_service_instance.process.return_value = []
+
+        # Create request and view
+        request = request_factory.post("/")
+        request.user = user
+        view = RoundView()
+        view.request = request
+
+        # Mock messages framework
+        with mock.patch("apps.round.views.messages"):
+            response = view.post(request)
+
+            # Verify year was incremented
+            savegame.refresh_from_db()
+            assert savegame.current_year == 1151
+
+            # Verify updateNavbarValues event is triggered
+            assert response.status_code == 200
+            hx_trigger = json.loads(response["HX-Trigger"])
+            assert "updateNavbarValues" in hx_trigger

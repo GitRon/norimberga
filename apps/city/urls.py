@@ -9,6 +9,7 @@ urlpatterns = [
     path("map/", views.CityMapView.as_view(), name="city-map"),
     path("messages/", views.CityMessagesView.as_view(), name="city-messages"),
     path("balance/", views.BalanceView.as_view(), name="balance"),
+    path("navbar-values/", views.NavbarValuesView.as_view(), name="navbar-values"),
     # Tiles
     path("tile/<int:pk>/build", views.TileBuildView.as_view(), name="tile-build"),
     path("tile/<int:pk>/demolish", views.TileDemolishView.as_view(), name="tile-demolish"),

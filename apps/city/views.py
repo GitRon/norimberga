@@ -24,6 +24,16 @@ class SavegameValueView(generic.DetailView):
         return context
 
 
+class NavbarValuesView(generic.TemplateView):
+    template_name = "partials/_navbar_values.html"
+
+    def get_context_data(self, **kwargs) -> dict:
+        context = super().get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            context["savegame"] = Savegame.objects.filter(user=self.request.user, is_active=True).first()
+        return context
+
+
 class LandingPageView(generic.TemplateView):
     template_name = "city/landing_page.html"
 
@@ -75,12 +85,11 @@ class TileBuildView(generic.UpdateView):
     def form_valid(self, form) -> HttpResponse:
         super().form_valid(form=form)
 
-        if form.cleaned_data["building"]:
-            savegame = Savegame.objects.filter(user=self.request.user, is_active=True).first()
-            if savegame:
-                savegame.coins -= form.cleaned_data["building"].building_costs
-                savegame.is_enclosed = WallEnclosureService(savegame=savegame).process()
-                savegame.save()
+        savegame = Savegame.objects.filter(user=self.request.user, is_active=True).first()
+        if form.cleaned_data["building"] and savegame:
+            savegame.coins -= form.cleaned_data["building"].building_costs
+            savegame.is_enclosed = WallEnclosureService(savegame=savegame).process()
+            savegame.save()
 
         response = HttpResponse(status=HTTPStatus.OK)
         response["HX-Trigger"] = json.dumps(

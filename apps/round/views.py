@@ -17,6 +17,10 @@ class RoundView(generic.View):
         if not savegame:
             return HttpResponse("No active savegame found", status=400)
 
+        # Increment the year
+        savegame.current_year += 1
+        savegame.save()
+
         events = EventSelectionService(savegame=savegame).process()
         for event in events:
             message = event.process()

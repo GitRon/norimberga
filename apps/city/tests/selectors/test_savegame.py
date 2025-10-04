@@ -1,6 +1,5 @@
 import pytest
 
-from apps.city.models import Savegame
 from apps.city.selectors.savegame import get_balance_data
 from apps.city.tests.factories import BuildingFactory, SavegameFactory, TileFactory
 

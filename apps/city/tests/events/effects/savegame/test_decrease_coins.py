@@ -1,7 +1,6 @@
 import pytest
 
 from apps.city.events.effects.savegame.decrease_coins import DecreaseCoins
-from apps.city.models import Savegame
 from apps.city.tests.factories import SavegameFactory
 
 

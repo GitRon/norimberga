@@ -16,6 +16,7 @@ from apps.city.tests.factories import (
 from apps.city.views import (
     BalanceView,
     LandingPageView,
+    NavbarValuesView,
     SavegameValueView,
     TileBuildView,
     TileDemolishView,
@@ -68,6 +69,58 @@ def test_savegame_value_view_response(client):
 
         assert response.status_code == 200
         assert "savegame/partials/_nav_values.html" in [t.name for t in response.templates]
+
+
+# NavbarValuesView Tests
+@pytest.mark.django_db
+def test_navbar_values_view_get_context_data_authenticated(request_factory):
+    """Test NavbarValuesView includes savegame in context for authenticated user."""
+    from apps.city.tests.factories import UserFactory
+
+    user = UserFactory()
+    savegame = SavegameFactory(user=user, is_active=True)
+
+    request = request_factory.get("/")
+    request.user = user
+
+    view = NavbarValuesView()
+    view.request = request
+
+    context = view.get_context_data()
+
+    assert "savegame" in context
+    assert context["savegame"] == savegame
+
+
+@pytest.mark.django_db
+def test_navbar_values_view_get_context_data_unauthenticated(request_factory):
+    """Test NavbarValuesView doesn't include savegame for unauthenticated user."""
+    from django.contrib.auth.models import AnonymousUser
+
+    request = request_factory.get("/")
+    request.user = AnonymousUser()
+
+    view = NavbarValuesView()
+    view.request = request
+
+    context = view.get_context_data()
+
+    assert "savegame" not in context or context.get("savegame") is None
+
+
+@pytest.mark.django_db
+def test_navbar_values_view_response(client):
+    """Test NavbarValuesView returns correct template."""
+    from apps.city.tests.factories import UserFactory
+
+    user = UserFactory()
+    SavegameFactory(user=user, is_active=True)
+
+    client.force_login(user)
+    response = client.get(reverse("city:navbar-values"))
+
+    assert response.status_code == 200
+    assert "partials/_navbar_values.html" in [t.name for t in response.templates]
 
 
 # LandingPageView Tests
@@ -219,17 +272,23 @@ def test_tile_build_view_form_valid_with_building(request_factory):
 
 
 @pytest.mark.django_db
-def test_tile_build_view_form_valid_without_building():
+def test_tile_build_view_form_valid_without_building(request_factory):
     """Test TileBuildView doesn't deduct coins when no building selected."""
-    savegame = SavegameFactory(coins=100)
+    from apps.city.tests.factories import UserFactory
+
+    user = UserFactory()
+    savegame = SavegameFactory(user=user, is_active=True, coins=100)
     tile = TileFactory()
 
     # Create mock form with no building
     mock_form = mock.Mock()
     mock_form.cleaned_data = {"building": None}
 
+    request = request_factory.get("/")
+    request.user = user
     view = TileBuildView()
     view.object = tile
+    view.request = request
 
     with mock.patch("apps.city.views.generic.UpdateView.form_valid") as mock_super_form_valid:
         mock_super_form_valid.return_value = mock.Mock()

@@ -1,7 +1,6 @@
 import pytest
 
 from apps.city.events.effects.savegame.increase_unrest_absolute import IncreaseUnrestAbsolute
-from apps.city.models import Savegame
 from apps.city.tests.factories import SavegameFactory
 
 

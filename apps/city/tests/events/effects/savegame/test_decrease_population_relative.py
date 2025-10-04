@@ -1,7 +1,6 @@
 import pytest
 
 from apps.city.events.effects.savegame.decrease_population_relative import DecreasePopulationRelative
-from apps.city.models import Savegame
 from apps.city.tests.factories import SavegameFactory
 
 

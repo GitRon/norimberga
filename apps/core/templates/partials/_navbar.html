@@ -27,7 +27,9 @@
             {% endif %}
         </div>
 
-        {# todo: add next round button again #}
+        {% if user.is_authenticated and savegame %}
+            {% include "partials/_navbar_values.html" %}
+        {% endif %}
 
         {% if user.is_authenticated %}
             <div class="relative group">

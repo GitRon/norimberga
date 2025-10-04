@@ -1,47 +1,187 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="max-w-3xl mx-auto">
-        <h1 class="text-3xl font-bold mb-6">Balance per Round</h1>
+    <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h1 class="text-4xl font-bold mb-8 text-gray-900">Balance per Round</h1>
 
-        <div class="bg-white border-2 border-gray-800 p-6 mb-4">
-            <h2 class="text-xl font-bold mb-4 border-b-2 border-gray-800 pb-2">Income</h2>
-            <div class="flex justify-between mb-2">
-                <span class="font-medium">Taxes from buildings:</span>
-                <span class="font-bold text-green-700">+{{ taxes }} coins</span>
+        <!-- Income and Expenses Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <!-- Income Section -->
+            <div class="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
+                <div class="bg-gradient-to-r from-green-600 to-green-700 px-4 py-3">
+                    <h2 class="text-xl font-bold text-white flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Income
+                    </h2>
+                </div>
+
+                <div class="p-4">
+                    {% if tax_by_building_type %}
+                        {% for building_type, data in tax_by_building_type.items %}
+                            <div class="mb-6 last:mb-0">
+                                <h3 class="font-bold text-lg mb-3 text-gray-800 border-l-4 border-green-500 pl-2">{{ building_type }}</h3>
+
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-sm">
+                                        <thead>
+                                            <tr class="bg-gray-50 border-b border-gray-200">
+                                                <th class="text-left py-2 px-2 font-semibold text-gray-700 text-xs uppercase">Building</th>
+                                                <th class="text-left py-2 px-2 font-semibold text-gray-700 text-xs uppercase">Lvl</th>
+                                                <th class="text-center py-2 px-2 font-semibold text-gray-700 text-xs uppercase">Qty</th>
+                                                <th class="text-right py-2 px-2 font-semibold text-gray-700 text-xs uppercase">Per Round</th>
+                                                <th class="text-right py-2 px-2 font-semibold text-gray-700 text-xs uppercase">Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-gray-100">
+                                            {% for building in data.buildings %}
+                                                <tr class="hover:bg-green-50 transition-colors duration-150">
+                                                    <td class="py-2 px-2 text-gray-800">{{ building.name }}</td>
+                                                    <td class="py-2 px-2">
+                                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                            {{ building.level }}
+                                                        </span>
+                                                    </td>
+                                                    <td class="py-2 px-2 text-center">
+                                                        <span class="font-medium text-gray-700">{{ building.count }}×</span>
+                                                    </td>
+                                                    <td class="py-2 px-2 text-right text-gray-600">{{ building.taxes_per_building }}</td>
+                                                    <td class="py-2 px-2 text-right font-bold text-green-700">+{{ building.total }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                        <tfoot>
+                                            <tr class="bg-green-50 border-t-2 border-green-200">
+                                                <td colspan="4" class="py-2 px-2 text-right font-bold text-gray-700 text-xs uppercase">Subtotal:</td>
+                                                <td class="py-2 px-2 text-right font-bold text-green-700">+{{ data.subtotal }}</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                        <div class="flex justify-between items-center mt-4 pt-4 border-t-4 border-green-600 bg-green-50 -mx-4 -mb-4 px-4 py-3 rounded-b-lg">
+                            <span class="font-bold text-lg text-gray-800">Total:</span>
+                            <span class="font-bold text-xl text-green-700">+{{ taxes }}</span>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-8">
+                            <svg class="mx-auto h-10 w-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <p class="mt-2 text-gray-500 italic text-sm">No tax-generating buildings yet</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Expenses Section -->
+            <div class="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
+                <div class="bg-gradient-to-r from-red-600 to-red-700 px-4 py-3">
+                    <h2 class="text-xl font-bold text-white flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Expenses
+                    </h2>
+                </div>
+
+                <div class="p-4">
+                    {% if maintenance_by_building_type %}
+                        {% for building_type, data in maintenance_by_building_type.items %}
+                            <div class="mb-6 last:mb-0">
+                                <h3 class="font-bold text-lg mb-3 text-gray-800 border-l-4 border-red-500 pl-2">{{ building_type }}</h3>
+
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-sm">
+                                        <thead>
+                                            <tr class="bg-gray-50 border-b border-gray-200">
+                                                <th class="text-left py-2 px-2 font-semibold text-gray-700 text-xs uppercase">Building</th>
+                                                <th class="text-left py-2 px-2 font-semibold text-gray-700 text-xs uppercase">Lvl</th>
+                                                <th class="text-center py-2 px-2 font-semibold text-gray-700 text-xs uppercase">Qty</th>
+                                                <th class="text-right py-2 px-2 font-semibold text-gray-700 text-xs uppercase">Per Round</th>
+                                                <th class="text-right py-2 px-2 font-semibold text-gray-700 text-xs uppercase">Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-gray-100">
+                                            {% for building in data.buildings %}
+                                                <tr class="hover:bg-red-50 transition-colors duration-150">
+                                                    <td class="py-2 px-2 text-gray-800">{{ building.name }}</td>
+                                                    <td class="py-2 px-2">
+                                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                            {{ building.level }}
+                                                        </span>
+                                                    </td>
+                                                    <td class="py-2 px-2 text-center">
+                                                        <span class="font-medium text-gray-700">{{ building.count }}×</span>
+                                                    </td>
+                                                    <td class="py-2 px-2 text-right text-gray-600">{{ building.maintenance_per_building }}</td>
+                                                    <td class="py-2 px-2 text-right font-bold text-red-700">-{{ building.total }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                        <tfoot>
+                                            <tr class="bg-red-50 border-t-2 border-red-200">
+                                                <td colspan="4" class="py-2 px-2 text-right font-bold text-gray-700 text-xs uppercase">Subtotal:</td>
+                                                <td class="py-2 px-2 text-right font-bold text-red-700">-{{ data.subtotal }}</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                        <div class="flex justify-between items-center mt-4 pt-4 border-t-4 border-red-600 bg-red-50 -mx-4 -mb-4 px-4 py-3 rounded-b-lg">
+                            <span class="font-bold text-lg text-gray-800">Total:</span>
+                            <span class="font-bold text-xl text-red-700">-{{ maintenance }}</span>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-8">
+                            <svg class="mx-auto h-10 w-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                            </svg>
+                            <p class="mt-2 text-gray-500 italic text-sm">No buildings with maintenance costs yet</p>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
         </div>
 
-        <div class="bg-white border-2 border-gray-800 p-6 mb-4">
-            <h2 class="text-xl font-bold mb-4 border-b-2 border-gray-800 pb-2">Expenses</h2>
-            <div class="flex justify-between mb-2">
-                <span class="font-medium">Building maintenance:</span>
-                <span class="font-bold text-red-700">-{{ maintenance }} coins</span>
+        <!-- Net Balance Section -->
+        <div class="bg-white rounded-lg shadow-xl border-2 {% if balance >= 0 %}border-green-600{% else %}border-red-600{% endif %} overflow-hidden">
+            <div class="{% if balance >= 0 %}bg-gradient-to-r from-green-600 to-green-700{% else %}bg-gradient-to-r from-red-600 to-red-700{% endif %} px-6 py-5">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div class="flex items-center">
+                        <svg class="w-7 h-7 mr-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                        </svg>
+                        <span class="text-xl sm:text-2xl font-bold text-white">Balance per Round:</span>
+                    </div>
+                    {% if balance >= 0 %}
+                        <span class="text-3xl sm:text-4xl font-bold text-white">+{{ balance }} coins</span>
+                    {% else %}
+                        <span class="text-3xl sm:text-4xl font-bold text-white">{{ balance }} coins</span>
+                    {% endif %}
+                </div>
             </div>
-        </div>
-
-        <div class="bg-white border-4 border-gray-900 p-6">
-            <div class="flex justify-between items-center">
-                <span class="text-2xl font-bold">Balance per Round:</span>
-                {% if balance >= 0 %}
-                    <span class="text-3xl font-bold text-green-700">+{{ balance }} coins</span>
-                {% else %}
-                    <span class="text-3xl font-bold text-red-700">{{ balance }} coins</span>
-                {% endif %}
+            <div class="{% if balance >= 0 %}bg-green-50{% elif balance < 0 %}bg-red-50{% else %}bg-gray-50{% endif %} px-6 py-4 border-t {% if balance >= 0 %}border-green-200{% else %}border-red-200{% endif %}">
+                <div class="flex items-start">
+                    <svg class="w-5 h-5 mt-0.5 mr-2 flex-shrink-0 {% if balance >= 0 %}text-green-600{% elif balance < 0 %}text-red-600{% else %}text-gray-600{% endif %}" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                    </svg>
+                    <p class="text-sm {% if balance >= 0 %}text-green-800{% elif balance < 0 %}text-red-800{% else %}text-gray-700{% endif %}">
+                        {% if balance > 0 %}
+                            Your city treasury will <strong>grow by {{ balance }} coins</strong> each round. Keep building to increase your income!
+                        {% elif balance < 0 %}
+                            <strong>Warning:</strong> Your city treasury will <strong>decrease by {{ balance|slice:"1:" }} coins</strong> each round. Consider reducing expenses or increasing income.
+                        {% else %}
+                            Your income and expenses are perfectly balanced. Consider expanding to grow your treasury.
+                        {% endif %}
+                    </p>
+                </div>
             </div>
-        </div>
-
-        <div class="mt-6 p-4 bg-gray-100 border border-gray-400">
-            <p class="text-sm text-gray-700">
-                This balance shows the net income or loss your city experiences each round.
-                {% if balance > 0 %}
-                    Your city treasury will grow by {{ balance }} coins per round.
-                {% elif balance < 0 %}
-                    Your city treasury will decrease each round.
-                {% else %}
-                    Your income and expenses are balanced.
-                {% endif %}
-            </p>
         </div>
     </div>
 {% endblock content %}

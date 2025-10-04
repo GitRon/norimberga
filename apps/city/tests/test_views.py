@@ -374,6 +374,8 @@ def test_balance_view_get_context_data():
     assert context["taxes"] == 50  # 30 + 20
     assert context["maintenance"] == 15  # 10 + 5
     assert context["balance"] == 35  # 50 - 15
+    assert "tax_by_building_type" in context
+    assert "maintenance_by_building_type" in context
 
 
 @pytest.mark.django_db

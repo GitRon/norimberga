@@ -3,14 +3,16 @@ from http import HTTPStatus
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, LogoutView
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views import generic
 
+from apps.city.forms.savegame import SavegameCreateForm
 from apps.city.forms.tile import TileBuildingForm
 from apps.city.models import Savegame, Tile
 from apps.city.selectors.savegame import get_balance_data
 from apps.city.services.building.housing import BuildingHousingService
+from apps.city.services.map.generation import MapGenerationService
 from apps.city.services.wall.enclosure import WallEnclosureService
 
 
@@ -155,6 +157,33 @@ class SavegameLoadView(LoginRequiredMixin, generic.View):
         savegame.save()
 
         return HttpResponse(status=HTTPStatus.OK, headers={"HX-Redirect": reverse_lazy("city:landing-page")})
+
+
+class SavegameCreateView(LoginRequiredMixin, generic.CreateView):
+    model = Savegame
+    form_class = SavegameCreateForm
+    template_name = "city/savegame_create.html"
+
+    def form_valid(self, form) -> HttpResponse:
+        # Set user before saving
+        form.instance.user = self.request.user
+
+        # Save the savegame
+        self.object = form.save()
+
+        # Generate map using the service
+        service = MapGenerationService(savegame=self.object)
+        service.process()
+
+        # Set this as the active savegame
+        Savegame.objects.filter(user=self.request.user).update(is_active=False)
+        self.object.is_active = True
+        self.object.save()
+
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self) -> str:
+        return reverse_lazy("city:landing-page")
 
 
 class SavegameDeleteView(LoginRequiredMixin, generic.DeleteView):

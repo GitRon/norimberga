@@ -41,7 +41,6 @@ python manage.py runserver
 python manage.py makemigrations
 
 # Custom management commands
-python manage.py generate_map  # Generate game map
 python manage.py list_templates  # List template files for Tailwind
 ```
 

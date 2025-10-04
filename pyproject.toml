@@ -81,7 +81,7 @@ ignore = [
 #    'N999', # Project name contains underscore, not fixable
 #    'A003', # Django attributes shadow python builtins
 #    'DJ012', # Odd ordering of Django model methods
-#    'RUF012', # Mutable class attributes should be annotated with `typing.ClassVar`
+    'RUF012', # Mutable class attributes should be annotated with `typing.ClassVar`
 #    'PERF401', # Use a list comprehension to create a transformed list
     'TD003', # To-Do issue links
 ]

@@ -25,7 +25,7 @@ def test_increase_population_relative_process_percentage_increase():
     ) as mock_service:
         mock_service.return_value.calculate_max_space.return_value = 300
 
-        effect.process(savegame)
+        effect.process(savegame=savegame)
 
         savegame.refresh_from_db()
         assert savegame.population == 120  # 100 * (1 + 0.2) = 120
@@ -42,7 +42,7 @@ def test_increase_population_relative_process_rounding():
     ) as mock_service:
         mock_service.return_value.calculate_max_space.return_value = 200
 
-        effect.process(savegame)
+        effect.process(savegame=savegame)
 
         savegame.refresh_from_db()
         assert savegame.population == 85  # round(77 * 1.1) = round(84.7) = 85
@@ -59,7 +59,7 @@ def test_increase_population_relative_process_housing_limit():
     ) as mock_service:
         mock_service.return_value.calculate_max_space.return_value = 100  # Housing limit
 
-        effect.process(savegame)
+        effect.process(savegame=savegame)
 
         savegame.refresh_from_db()
         assert savegame.population == 100  # Limited by housing capacity
@@ -76,7 +76,7 @@ def test_increase_population_relative_process_exact_housing_limit():
     ) as mock_service:
         mock_service.return_value.calculate_max_space.return_value = 100
 
-        effect.process(savegame)
+        effect.process(savegame=savegame)
 
         savegame.refresh_from_db()
         assert savegame.population == 100  # 80 * 1.25 = 100, exactly at limit
@@ -93,7 +93,7 @@ def test_increase_population_relative_process_creates_savegame():
     ) as mock_service:
         mock_service.return_value.calculate_max_space.return_value = 200
 
-        effect.process(savegame)
+        effect.process(savegame=savegame)
 
         savegame.refresh_from_db()
         expected_population = min(round(0 * (1 + 0.3)), 200)  # Default population (0) * (1 + percentage)
@@ -111,7 +111,7 @@ def test_increase_population_relative_process_zero_percentage():
     ) as mock_service:
         mock_service.return_value.calculate_max_space.return_value = 300
 
-        effect.process(savegame)
+        effect.process(savegame=savegame)
 
         savegame.refresh_from_db()
         assert savegame.population == 110
@@ -128,7 +128,7 @@ def test_increase_population_relative_process_calls_housing_service():
     ) as mock_service:
         mock_service.return_value.calculate_max_space.return_value = 150
 
-        effect.process(savegame)
+        effect.process(savegame=savegame)
 
         mock_service.assert_called_once()
         mock_service.return_value.calculate_max_space.assert_called_once()

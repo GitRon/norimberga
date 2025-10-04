@@ -4,9 +4,9 @@ from apps.city.models import Tile
 class RemoveBuilding:
     building: Tile
 
-    def __init__(self, tile: Tile):
+    def __init__(self, *, tile: Tile):
         self.tile = tile
 
-    def process(self, savegame=None):
+    def process(self, *, savegame=None):
         self.tile.building = None
         self.tile.save()

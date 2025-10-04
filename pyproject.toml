@@ -163,11 +163,8 @@ exclude = []
 "*/events/**/*.py" = [
     # Event classes don't follow service pattern
     "PBR005",
-    # Event methods often need multiple return points
-    "PBR002",
 ]
 "*/effects/**/*.py" = [
-    "PBR001",
     # Effect classes have simple apply() method, not process()
     "PBR005",
 ]

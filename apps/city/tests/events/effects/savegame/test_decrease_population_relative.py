@@ -18,7 +18,7 @@ def test_decrease_population_relative_process_percentage_decrease():
     savegame = SavegameFactory(population=100)
     effect = DecreasePopulationRelative(lost_population_percentage=0.3)  # 30% decrease
 
-    effect.process(savegame)
+    effect.process(savegame=savegame)
 
     savegame.refresh_from_db()
     assert savegame.population == 70  # 100 * (1 - 0.3) = 70
@@ -30,7 +30,7 @@ def test_decrease_population_relative_process_rounding():
     savegame = SavegameFactory(population=77)
     effect = DecreasePopulationRelative(lost_population_percentage=0.1)  # 10% decrease
 
-    effect.process(savegame)
+    effect.process(savegame=savegame)
 
     savegame.refresh_from_db()
     assert savegame.population == 69  # round(77 * 0.9) = round(69.3) = 69
@@ -42,7 +42,7 @@ def test_decrease_population_relative_process_minimum_zero():
     savegame = SavegameFactory(population=50)
     effect = DecreasePopulationRelative(lost_population_percentage=1.5)  # 150% decrease
 
-    effect.process(savegame)
+    effect.process(savegame=savegame)
 
     savegame.refresh_from_db()
     assert savegame.population == 0
@@ -54,7 +54,7 @@ def test_decrease_population_relative_process_complete_loss():
     savegame = SavegameFactory(population=80)
     effect = DecreasePopulationRelative(lost_population_percentage=1.0)  # 100% decrease
 
-    effect.process(savegame)
+    effect.process(savegame=savegame)
 
     savegame.refresh_from_db()
     assert savegame.population == 0
@@ -66,7 +66,7 @@ def test_decrease_population_relative_process_creates_savegame():
     savegame = SavegameFactory(population=0)
     effect = DecreasePopulationRelative(lost_population_percentage=0.2)
 
-    effect.process(savegame)
+    effect.process(savegame=savegame)
 
     savegame.refresh_from_db()
     expected_population = max(round(0 * (1 - 0.2)), 0)  # Default population (0) * (1 - percentage)
@@ -79,7 +79,7 @@ def test_decrease_population_relative_process_zero_percentage():
     savegame = SavegameFactory(population=120)
     effect = DecreasePopulationRelative(lost_population_percentage=0.0)
 
-    effect.process(savegame)
+    effect.process(savegame=savegame)
 
     savegame.refresh_from_db()
     assert savegame.population == 120
@@ -91,7 +91,7 @@ def test_decrease_population_relative_process_small_percentage():
     savegame = SavegameFactory(population=1000)
     effect = DecreasePopulationRelative(lost_population_percentage=0.05)  # 5% decrease
 
-    effect.process(savegame)
+    effect.process(savegame=savegame)
 
     savegame.refresh_from_db()
     assert savegame.population == 950  # 1000 * 0.95 = 950

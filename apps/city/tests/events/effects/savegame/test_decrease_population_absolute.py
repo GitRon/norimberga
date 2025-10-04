@@ -18,7 +18,7 @@ def test_decrease_population_absolute_process_normal_decrease():
     savegame = SavegameFactory(population=100)
     effect = DecreasePopulationAbsolute(lost_population=30)
 
-    effect.process(savegame)
+    effect.process(savegame=savegame)
 
     savegame.refresh_from_db()
     assert savegame.population == 70
@@ -30,7 +30,7 @@ def test_decrease_population_absolute_process_minimum_zero():
     savegame = SavegameFactory(population=20)
     effect = DecreasePopulationAbsolute(lost_population=35)
 
-    effect.process(savegame)
+    effect.process(savegame=savegame)
 
     savegame.refresh_from_db()
     assert savegame.population == 0
@@ -42,7 +42,7 @@ def test_decrease_population_absolute_process_exact_zero():
     savegame = SavegameFactory(population=40)
     effect = DecreasePopulationAbsolute(lost_population=40)
 
-    effect.process(savegame)
+    effect.process(savegame=savegame)
 
     savegame.refresh_from_db()
     assert savegame.population == 0
@@ -54,7 +54,7 @@ def test_decrease_population_absolute_process_creates_savegame():
     savegame = SavegameFactory(population=0)
     effect = DecreasePopulationAbsolute(lost_population=10)
 
-    effect.process(savegame)
+    effect.process(savegame=savegame)
 
     savegame.refresh_from_db()
     assert savegame.population == max(0 - 10, 0)  # Default population (0) - lost_population, min 0
@@ -66,7 +66,7 @@ def test_decrease_population_absolute_process_zero_decrease():
     savegame = SavegameFactory(population=80)
     effect = DecreasePopulationAbsolute(lost_population=0)
 
-    effect.process(savegame)
+    effect.process(savegame=savegame)
 
     savegame.refresh_from_db()
     assert savegame.population == 80

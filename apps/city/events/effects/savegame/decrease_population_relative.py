@@ -4,9 +4,9 @@ from apps.city.models import Savegame
 class DecreasePopulationRelative:
     lost_population: float
 
-    def __init__(self, lost_population_percentage: float):
+    def __init__(self, *, lost_population_percentage: float):
         self.lost_population = lost_population_percentage
 
-    def process(self, savegame: Savegame):
+    def process(self, *, savegame: Savegame):
         savegame.population = max(round(savegame.population * (1 - self.lost_population)), 0)
         savegame.save()

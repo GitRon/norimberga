@@ -18,7 +18,7 @@ def test_decrease_unrest_absolute_process_normal_decrease():
     savegame = SavegameFactory(unrest=50)
     effect = DecreaseUnrestAbsolute(lost_unrest=15)
 
-    effect.process(savegame)
+    effect.process(savegame=savegame)
 
     savegame.refresh_from_db()
     assert savegame.unrest == 35
@@ -30,7 +30,7 @@ def test_decrease_unrest_absolute_process_minimum_zero():
     savegame = SavegameFactory(unrest=5)
     effect = DecreaseUnrestAbsolute(lost_unrest=10)
 
-    effect.process(savegame)
+    effect.process(savegame=savegame)
 
     savegame.refresh_from_db()
     assert savegame.unrest == 0
@@ -42,7 +42,7 @@ def test_decrease_unrest_absolute_process_exact_zero():
     savegame = SavegameFactory(unrest=10)
     effect = DecreaseUnrestAbsolute(lost_unrest=10)
 
-    effect.process(savegame)
+    effect.process(savegame=savegame)
 
     savegame.refresh_from_db()
     assert savegame.unrest == 0
@@ -54,7 +54,7 @@ def test_decrease_unrest_absolute_process_creates_savegame():
     savegame = SavegameFactory(unrest=0)
     effect = DecreaseUnrestAbsolute(lost_unrest=5)
 
-    effect.process(savegame)
+    effect.process(savegame=savegame)
 
     savegame.refresh_from_db()
     assert savegame.unrest == max(0 - 5, 0)  # Default unrest (0) - lost_unrest, min 0
@@ -66,7 +66,7 @@ def test_decrease_unrest_absolute_process_zero_decrease():
     savegame = SavegameFactory(unrest=30)
     effect = DecreaseUnrestAbsolute(lost_unrest=0)
 
-    effect.process(savegame)
+    effect.process(savegame=savegame)
 
     savegame.refresh_from_db()
     assert savegame.unrest == 30

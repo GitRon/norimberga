@@ -18,7 +18,7 @@ def test_increase_coins_process_normal_increase():
     savegame = SavegameFactory(coins=150)
     effect = IncreaseCoins(coins=50)
 
-    effect.process(savegame)
+    effect.process(savegame=savegame)
 
     savegame.refresh_from_db()
     assert savegame.coins == 200
@@ -30,7 +30,7 @@ def test_increase_coins_process_from_negative():
     savegame = SavegameFactory(coins=-20)
     effect = IncreaseCoins(coins=30)
 
-    effect.process(savegame)
+    effect.process(savegame=savegame)
 
     savegame.refresh_from_db()
     assert savegame.coins == 10
@@ -42,7 +42,7 @@ def test_increase_coins_process_large_increase():
     savegame = SavegameFactory(coins=100)
     effect = IncreaseCoins(coins=1000)
 
-    effect.process(savegame)
+    effect.process(savegame=savegame)
 
     savegame.refresh_from_db()
     assert savegame.coins == 1100
@@ -54,7 +54,7 @@ def test_increase_coins_process_creates_savegame():
     savegame = SavegameFactory(coins=0)
     effect = IncreaseCoins(coins=40)
 
-    effect.process(savegame)
+    effect.process(savegame=savegame)
 
     savegame.refresh_from_db()
     assert savegame.coins == 0 + 40  # Default coins (0) + increased amount
@@ -66,7 +66,7 @@ def test_increase_coins_process_zero_increase():
     savegame = SavegameFactory(coins=250)
     effect = IncreaseCoins(coins=0)
 
-    effect.process(savegame)
+    effect.process(savegame=savegame)
 
     savegame.refresh_from_db()
     assert savegame.coins == 250

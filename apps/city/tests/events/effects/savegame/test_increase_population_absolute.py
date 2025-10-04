@@ -25,7 +25,7 @@ def test_increase_population_absolute_process_normal_increase():
     ) as mock_service:
         mock_service.return_value.calculate_max_space.return_value = 200
 
-        effect.process(savegame)
+        effect.process(savegame=savegame)
 
         savegame.refresh_from_db()
         assert savegame.population == 85
@@ -42,7 +42,7 @@ def test_increase_population_absolute_process_housing_limit():
     ) as mock_service:
         mock_service.return_value.calculate_max_space.return_value = 100  # Housing limit
 
-        effect.process(savegame)
+        effect.process(savegame=savegame)
 
         savegame.refresh_from_db()
         assert savegame.population == 100  # Limited by housing capacity
@@ -59,7 +59,7 @@ def test_increase_population_absolute_process_exact_housing_limit():
     ) as mock_service:
         mock_service.return_value.calculate_max_space.return_value = 100
 
-        effect.process(savegame)
+        effect.process(savegame=savegame)
 
         savegame.refresh_from_db()
         assert savegame.population == 100
@@ -76,7 +76,7 @@ def test_increase_population_absolute_process_creates_savegame():
     ) as mock_service:
         mock_service.return_value.calculate_max_space.return_value = 150
 
-        effect.process(savegame)
+        effect.process(savegame=savegame)
 
         savegame.refresh_from_db()
         expected_population = min(0 + 30, 150)  # Default population (0) + new_population, max housing
@@ -94,7 +94,7 @@ def test_increase_population_absolute_process_zero_increase():
     ) as mock_service:
         mock_service.return_value.calculate_max_space.return_value = 200
 
-        effect.process(savegame)
+        effect.process(savegame=savegame)
 
         savegame.refresh_from_db()
         assert savegame.population == 90
@@ -111,7 +111,7 @@ def test_increase_population_absolute_process_calls_housing_service():
     ) as mock_service:
         mock_service.return_value.calculate_max_space.return_value = 150
 
-        effect.process(savegame)
+        effect.process(savegame=savegame)
 
         mock_service.assert_called_once()
         mock_service.return_value.calculate_max_space.assert_called_once()

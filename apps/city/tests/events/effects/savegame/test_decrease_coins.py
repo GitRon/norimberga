@@ -18,7 +18,7 @@ def test_decrease_coins_process_normal_decrease():
     savegame = SavegameFactory(coins=200)
     effect = DecreaseCoins(coins=75)
 
-    effect.process(savegame)
+    effect.process(savegame=savegame)
 
     savegame.refresh_from_db()
     assert savegame.coins == 125
@@ -30,7 +30,7 @@ def test_decrease_coins_process_negative_balance():
     savegame = SavegameFactory(coins=30)
     effect = DecreaseCoins(coins=50)
 
-    effect.process(savegame)
+    effect.process(savegame=savegame)
 
     savegame.refresh_from_db()
     assert savegame.coins == -20
@@ -42,7 +42,7 @@ def test_decrease_coins_process_exact_zero():
     savegame = SavegameFactory(coins=80)
     effect = DecreaseCoins(coins=80)
 
-    effect.process(savegame)
+    effect.process(savegame=savegame)
 
     savegame.refresh_from_db()
     assert savegame.coins == 0
@@ -54,7 +54,7 @@ def test_decrease_coins_process_creates_savegame():
     savegame = SavegameFactory(coins=0)
     effect = DecreaseCoins(coins=25)
 
-    effect.process(savegame)
+    effect.process(savegame=savegame)
 
     savegame.refresh_from_db()
     assert savegame.coins == 0 - 25  # Default coins (0) - decreased amount
@@ -66,7 +66,7 @@ def test_decrease_coins_process_zero_decrease():
     savegame = SavegameFactory(coins=150)
     effect = DecreaseCoins(coins=0)
 
-    effect.process(savegame)
+    effect.process(savegame=savegame)
 
     savegame.refresh_from_db()
     assert savegame.coins == 150

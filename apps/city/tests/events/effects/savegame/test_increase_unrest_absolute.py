@@ -18,7 +18,7 @@ def test_increase_unrest_absolute_process_normal_increase():
     savegame = SavegameFactory(unrest=30)
     effect = IncreaseUnrestAbsolute(additional_unrest=20)
 
-    effect.process(savegame)
+    effect.process(savegame=savegame)
 
     savegame.refresh_from_db()
     assert savegame.unrest == 50
@@ -30,7 +30,7 @@ def test_increase_unrest_absolute_process_maximum_hundred():
     savegame = SavegameFactory(unrest=95)
     effect = IncreaseUnrestAbsolute(additional_unrest=15)
 
-    effect.process(savegame)
+    effect.process(savegame=savegame)
 
     savegame.refresh_from_db()
     assert savegame.unrest == 100
@@ -42,7 +42,7 @@ def test_increase_unrest_absolute_process_exact_hundred():
     savegame = SavegameFactory(unrest=85)
     effect = IncreaseUnrestAbsolute(additional_unrest=15)
 
-    effect.process(savegame)
+    effect.process(savegame=savegame)
 
     savegame.refresh_from_db()
     assert savegame.unrest == 100
@@ -54,7 +54,7 @@ def test_increase_unrest_absolute_process_creates_savegame():
     savegame = SavegameFactory(unrest=0)
     effect = IncreaseUnrestAbsolute(additional_unrest=25)
 
-    effect.process(savegame)
+    effect.process(savegame=savegame)
 
     savegame.refresh_from_db()
     assert savegame.unrest == min(0 + 25, 100)  # Default unrest (0) + additional, max 100
@@ -66,7 +66,7 @@ def test_increase_unrest_absolute_process_zero_increase():
     savegame = SavegameFactory(unrest=40)
     effect = IncreaseUnrestAbsolute(additional_unrest=0)
 
-    effect.process(savegame)
+    effect.process(savegame=savegame)
 
     savegame.refresh_from_db()
     assert savegame.unrest == 40

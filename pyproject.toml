@@ -193,6 +193,10 @@ exclude = []
     # Django custom fields have their own structure
     "PBR001",
 ]
+"*/templatetags/*.py" = [
+    # Django custom fields have their own structure
+    "PBR001",
+]
 "*/conditions/*.py" = [
     # Condition classes have their own structure
     "PBR001",

@@ -1,25 +1,23 @@
-import pytest
-
 from apps.core.templatetags.core_filters import to_roman
 
 
-def test_to_roman_converts_1_to_I():
+def test_to_roman_converts_1_to_I():  # noqa: N802
     assert to_roman(1) == "I"
 
 
-def test_to_roman_converts_5_to_V():
+def test_to_roman_converts_5_to_V():  # noqa: N802
     assert to_roman(5) == "V"
 
 
-def test_to_roman_converts_10_to_X():
+def test_to_roman_converts_10_to_X():  # noqa: N802
     assert to_roman(10) == "X"
 
 
-def test_to_roman_converts_4_to_IV():
+def test_to_roman_converts_4_to_IV():  # noqa: N802
     assert to_roman(4) == "IV"
 
 
-def test_to_roman_converts_9_to_IX():
+def test_to_roman_converts_9_to_IX():  # noqa: N802
     assert to_roman(9) == "IX"
 
 

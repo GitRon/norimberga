@@ -14,7 +14,7 @@ class WallEnclosureService:
     5. If any city building is not reachable, it's outside the enclosure
     """
 
-    def __init__(self, savegame: Savegame):
+    def __init__(self, *, savegame: Savegame):
         self.savegame = savegame
         self.map_service = MapCoordinatesService(map_size=savegame.map_size)
 
@@ -30,13 +30,13 @@ class WallEnclosureService:
             return False
 
         # Start from a city building (preferably unique)
-        start_tile = self._get_starting_tile(city_tiles)
+        start_tile = self._get_starting_tile(city_tiles=city_tiles)
 
         # Perform flood fill to find all reachable non-wall tiles
-        reachable_tiles = self._flood_fill(start_tile)
+        reachable_tiles = self._flood_fill(start_tile=start_tile)
 
         # Check if we reached the edge of the map
-        if self._reached_map_edge(reachable_tiles):
+        if self._reached_map_edge(tiles=reachable_tiles):
             return False
 
         # Check if all city buildings are reachable
@@ -54,14 +54,14 @@ class WallEnclosureService:
             .select_related("building", "building__building_type")
         )
 
-    def _get_starting_tile(self, city_tiles: list[Tile]) -> Tile:
+    def _get_starting_tile(self, *, city_tiles: list[Tile]) -> Tile:
         """Get a starting tile for the flood fill (prefer unique buildings)."""
         for tile in city_tiles:
             if tile.building and tile.building.building_type.is_unique:
                 return tile
         return city_tiles[0]
 
-    def _flood_fill(self, start_tile: Tile) -> list[Tile]:
+    def _flood_fill(self, *, start_tile: Tile) -> list[Tile]:
         """
         Perform flood fill from start_tile, marking all reachable non-wall tiles.
         """
@@ -95,7 +95,7 @@ class WallEnclosureService:
                     )
 
                     # Only add non-wall and non-water tiles to the queue
-                    if not self._is_wall_or_water(adjacent_tile):
+                    if not self._is_wall_or_water(tile=adjacent_tile):
                         to_visit.append(adjacent_tile)
 
                 except Tile.DoesNotExist:
@@ -103,15 +103,15 @@ class WallEnclosureService:
 
         return reachable
 
-    def _is_wall(self, tile: Tile) -> bool:
+    def _is_wall(self, *, tile: Tile) -> bool:
         """Check if a tile has a wall building."""
         return tile.building is not None and tile.building.building_type.is_wall
 
-    def _is_wall_or_water(self, tile: Tile) -> bool:
+    def _is_wall_or_water(self, *, tile: Tile) -> bool:
         """Check if a tile has a wall building or is water terrain."""
-        return self._is_wall(tile) or tile.terrain.is_water
+        return self._is_wall(tile=tile) or tile.terrain.is_water
 
-    def _reached_map_edge(self, tiles: list[Tile]) -> bool:
+    def _reached_map_edge(self, *, tiles: list[Tile]) -> bool:
         """Check if any of the tiles are at the edge of the map."""
         max_coord = self.savegame.map_size - 1
         return any(tile.x == 0 or tile.x == max_coord or tile.y == 0 or tile.y == max_coord for tile in tiles)

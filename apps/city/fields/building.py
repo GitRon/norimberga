@@ -2,5 +2,5 @@ from django.forms import ModelChoiceField
 
 
 class BuildingModelChoiceField(ModelChoiceField):
-    def label_from_instance(self, obj):
+    def label_from_instance(self, obj) -> str:
         return f"{obj.name} ({obj.building_costs} coins)"

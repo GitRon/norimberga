@@ -111,6 +111,9 @@ fixable = [
 ]
 unfixable = []
 
+# Allow noqa's from "boa-restrictor" linter
+external = ["PBR", "DBR"]
+
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
@@ -129,6 +132,77 @@ line-ending = "auto"
 
 # Exclude Django migration files
 exclude = ["migrations/*.py"]
+
+
+[tool.boa-restrictor]
+exclude = []
+
+[tool.boa-restrictor.per-file-excludes]
+"*/admin*.py" = [
+    # Avoid having to have kwargs-only parameters in the admin
+    "PBR001",
+]
+"*/factories/*.py" = [
+    # Avoid having to have kwargs-only parameters in factories
+    "PBR001",
+]
+"*/tests/*" = [
+    # Avoid having to have kwargs-only parameters in tests
+    "PBR001",
+    # Avoid requiring return type hints in tests (conftest fixtures)
+    "PBR002",
+    # Some services don't follow strict service pattern (e.g., utility classes)
+    "PBR005",
+    # Loops in tests are sometimes necessary (e.g., parametrized data)
+    "PBR008",
+]
+"*/views*.py" = [
+    # Avoid having to have kwargs-only parameters in views
+    "PBR001",
+]
+"*/events/**/*.py" = [
+    # Event classes don't follow service pattern
+    "PBR005",
+    # Event methods often need multiple return points
+    "PBR002",
+]
+"*/effects/**/*.py" = [
+    # Effect classes have simple apply() method, not process()
+    "PBR001",
+    "PBR005",
+]
+"*/services/**/*.py" = [
+    # Some services don't follow strict service pattern (e.g., utility classes)
+    "PBR005",
+]
+"*/context_processors/*.py" = [
+    # Context processors follow Django patterns
+    "PBR001",
+]
+"*/management/**/*.py" = [
+    # Management commands have their own structure
+    "PBR001",
+    "PBR002",
+    "PBR005",
+]
+"*/forms*.py" = [
+    # Django forms have their own structure
+    "PBR001",
+]
+"*/fields/*.py" = [
+    # Django custom fields have their own structure
+    "PBR001",
+]
+"*/conditions/*.py" = [
+    # Condition classes have their own structure
+    "PBR001",
+    "PBR006",
+]
+"*/milestones/*.py" = [
+    # Milestone classes have their own structure
+    "PBR001",
+    "PBR006",
+]
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "apps.config.settings"

@@ -11,7 +11,7 @@ from apps.city.tests.factories import RiverTerrainFactory, SavegameFactory, Terr
 def test_map_generation_service_init():
     """Test MapGenerationService initialization."""
     savegame = SavegameFactory()
-    service = MapGenerationService(savegame)
+    service = MapGenerationService(savegame=savegame)
 
     assert service.savegame == savegame
 
@@ -20,7 +20,7 @@ def test_map_generation_service_init():
 def test_map_generation_service_get_terrain():
     """Test get_terrain returns terrain based on probability."""
     savegame = SavegameFactory()
-    service = MapGenerationService(savegame)
+    service = MapGenerationService(savegame=savegame)
 
     # Create terrains with different probabilities
     terrain1 = TerrainFactory(name="Forest", probability=50)
@@ -39,7 +39,7 @@ def test_map_generation_service_get_terrain():
 def test_map_generation_service_get_terrain_retry():
     """Test get_terrain retries until finding valid terrain."""
     savegame = SavegameFactory()
-    service = MapGenerationService(savegame)
+    service = MapGenerationService(savegame=savegame)
 
     terrain = TerrainFactory(name="Forest", probability=50)
 
@@ -64,7 +64,7 @@ def test_map_generation_service_get_terrain_retry():
 def test_map_generation_service_draw_river_y_axis():
     """Test _draw_river creates river tiles starting from y-axis."""
     savegame = SavegameFactory(map_size=3)
-    service = MapGenerationService(savegame)
+    service = MapGenerationService(savegame=savegame)
 
     # Clear any existing water terrains and create a unique one
     from apps.city.models import Terrain
@@ -100,7 +100,7 @@ def test_map_generation_service_draw_river_y_axis():
 def test_map_generation_service_draw_river_x_axis():
     """Test _draw_river creates river tiles starting from x-axis."""
     savegame = SavegameFactory(map_size=3)
-    service = MapGenerationService(savegame)
+    service = MapGenerationService(savegame=savegame)
 
     # Clear any existing water terrains and create a unique one
     from apps.city.models import Terrain
@@ -136,7 +136,7 @@ def test_map_generation_service_draw_river_x_axis():
 def test_map_generation_service_draw_river_missing_terrain():
     """Test _draw_river raises ValueError when River terrain is missing."""
     savegame = SavegameFactory(map_size=3)
-    service = MapGenerationService(savegame)
+    service = MapGenerationService(savegame=savegame)
 
     # Clear any existing water terrains to simulate missing terrain
     from apps.city.models import Terrain
@@ -159,7 +159,7 @@ def test_map_generation_service_draw_river_missing_terrain():
 def test_map_generation_service_process():
     """Test process method creates complete map with river."""
     savegame = SavegameFactory(map_size=3)
-    service = MapGenerationService(savegame)
+    service = MapGenerationService(savegame=savegame)
 
     terrain = TerrainFactory()
     RiverTerrainFactory()

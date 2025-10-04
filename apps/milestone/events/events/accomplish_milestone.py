@@ -42,7 +42,5 @@ class Event(BaseEvent):
 
     def get_verbose_text(self):
         # TODO(RV): make this more pretty
-        milestone_str = ", ".join(str(milestone) for milestone in self.accomplish_milestones).strip()
-        return (
-            f'Your prosperous city has accomplished a new milestone! Rejoice that "{milestone_str}" has been achieved.'
-        )
+        milestones = ", ".join(str(milestone) for milestone in self.accomplish_milestones).strip()
+        return f'Your prosperous city has accomplished a new milestone! Rejoice that "{milestones}" has been achieved.'

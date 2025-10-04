@@ -24,7 +24,7 @@ class Savegame(models.Model):
     class Meta:
         default_related_name = "savegames"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.city_name
 
 
@@ -45,7 +45,7 @@ class Terrain(models.Model):
     class Meta:
         default_related_name = "terrains"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
@@ -62,7 +62,7 @@ class BuildingType(models.Model):
     class Meta:
         default_related_name = "building_types"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.name}"
 
 
@@ -81,7 +81,7 @@ class Building(models.Model):
     class Meta:
         default_related_name = "buildings"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.name}"
 
 
@@ -98,14 +98,14 @@ class Tile(models.Model):
         unique_together = ("savegame", "x", "y")
         default_related_name = "tiles"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.x}/{self.y}"
 
     @property
-    def content(self):
+    def content(self) -> Building | Terrain:
         return self.building if self.building else self.terrain
 
-    def color_class(self):
+    def color_class(self) -> str:
         # Tailwind can't detect dynamic classes, therefore, they are safelist-ed
         if self.building:
             if self.building.building_type.is_wall:
@@ -118,7 +118,7 @@ class Tile(models.Model):
                 return render_to_string("city/classes/_tile_city.txt")
         return self.terrain.color_class
 
-    def is_adjacent_to_city_building(self):
+    def is_adjacent_to_city_building(self) -> bool:
         return (
             Tile.objects.filter_savegame(savegame=self.savegame)
             .filter_adjacent_tiles(tile=self)

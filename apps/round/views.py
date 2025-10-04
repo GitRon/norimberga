@@ -11,13 +11,13 @@ from apps.event.services.selection import EventSelectionService
 class RoundView(generic.View):
     http_method_names = ("post",)
 
-    def post(self, request, *args, **kwargs):
-        event_list = EventSelectionService().process()
-        for event in event_list:
+    def post(self, request, *args, **kwargs) -> HttpResponse:
+        events = EventSelectionService().process()
+        for event in events:
             message = event.process()
             messages.add_message(self.request, event.LEVEL, message, extra_tags=event.TITLE)
 
-        if not len(event_list):
+        if not len(events):
             messages.add_message(
                 self.request, messages.INFO, "It was a quiet year. Nothing happened out of the ordinary."
             )

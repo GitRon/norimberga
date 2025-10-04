@@ -27,7 +27,7 @@ def test_savegame_manager_aggregate_taxes_with_buildings():
     TileFactory(savegame=savegame, building=building2)
     TileFactory(savegame=savegame, building=building3)
 
-    result = SavegameManager().aggregate_taxes(savegame)
+    result = SavegameManager().aggregate_taxes(savegame=savegame)
 
     assert result == 50  # 10 + 25 + 15
 
@@ -41,7 +41,7 @@ def test_savegame_manager_aggregate_taxes_no_buildings():
     TileFactory(savegame=savegame, building=None)
     TileFactory(savegame=savegame, building=None)
 
-    result = SavegameManager().aggregate_taxes(savegame)
+    result = SavegameManager().aggregate_taxes(savegame=savegame)
 
     # Should return 0, not None
     assert result == 0
@@ -52,7 +52,7 @@ def test_savegame_manager_aggregate_taxes_empty_savegame():
     """Test aggregate_taxes returns 0 for savegame with no tiles."""
     savegame = SavegameFactory()
 
-    result = SavegameManager().aggregate_taxes(savegame)
+    result = SavegameManager().aggregate_taxes(savegame=savegame)
 
     # Should return 0, not None
     assert result == 0
@@ -70,7 +70,7 @@ def test_savegame_manager_aggregate_taxes_zero_taxes():
     TileFactory(savegame=savegame, building=building1)
     TileFactory(savegame=savegame, building=building2)
 
-    result = SavegameManager().aggregate_taxes(savegame)
+    result = SavegameManager().aggregate_taxes(savegame=savegame)
 
     assert result == 0
 
@@ -89,7 +89,7 @@ def test_savegame_manager_aggregate_taxes_mixed():
     TileFactory(savegame=savegame, building=building2)
     TileFactory(savegame=savegame, building=None)
 
-    result = SavegameManager().aggregate_taxes(savegame)
+    result = SavegameManager().aggregate_taxes(savegame=savegame)
 
     assert result == 50  # 20 + 30
 
@@ -108,7 +108,7 @@ def test_savegame_manager_aggregate_maintenance_costs_with_buildings():
     TileFactory(savegame=savegame, building=building2)
     TileFactory(savegame=savegame, building=building3)
 
-    result = SavegameManager().aggregate_maintenance_costs(savegame)
+    result = SavegameManager().aggregate_maintenance_costs(savegame=savegame)
 
     assert result == 25  # 5 + 8 + 12
 
@@ -122,7 +122,7 @@ def test_savegame_manager_aggregate_maintenance_costs_no_buildings():
     TileFactory(savegame=savegame, building=None)
     TileFactory(savegame=savegame, building=None)
 
-    result = SavegameManager().aggregate_maintenance_costs(savegame)
+    result = SavegameManager().aggregate_maintenance_costs(savegame=savegame)
 
     # Should return 0, not None
     assert result == 0
@@ -133,7 +133,7 @@ def test_savegame_manager_aggregate_maintenance_costs_empty_savegame():
     """Test aggregate_maintenance_costs returns 0 for savegame with no tiles."""
     savegame = SavegameFactory()
 
-    result = SavegameManager().aggregate_maintenance_costs(savegame)
+    result = SavegameManager().aggregate_maintenance_costs(savegame=savegame)
 
     # Should return 0, not None
     assert result == 0
@@ -151,7 +151,7 @@ def test_savegame_manager_aggregate_maintenance_costs_zero_costs():
     TileFactory(savegame=savegame, building=building1)
     TileFactory(savegame=savegame, building=building2)
 
-    result = SavegameManager().aggregate_maintenance_costs(savegame)
+    result = SavegameManager().aggregate_maintenance_costs(savegame=savegame)
 
     assert result == 0
 
@@ -170,7 +170,7 @@ def test_savegame_manager_aggregate_maintenance_costs_mixed():
     TileFactory(savegame=savegame, building=building2)
     TileFactory(savegame=savegame, building=None)
 
-    result = SavegameManager().aggregate_maintenance_costs(savegame)
+    result = SavegameManager().aggregate_maintenance_costs(savegame=savegame)
 
     assert result == 20  # 7 + 13
 
@@ -193,15 +193,15 @@ def test_savegame_manager_aggregate_multiple_savegames():
     TileFactory(savegame=savegame2, building=building3)
 
     # Test savegame1
-    taxes1 = SavegameManager().aggregate_taxes(savegame1)
-    maintenance1 = SavegameManager().aggregate_maintenance_costs(savegame1)
+    taxes1 = SavegameManager().aggregate_taxes(savegame=savegame1)
+    maintenance1 = SavegameManager().aggregate_maintenance_costs(savegame=savegame1)
 
     assert taxes1 == 30  # 10 + 20
     assert maintenance1 == 13  # 5 + 8
 
     # Test savegame2
-    taxes2 = SavegameManager().aggregate_taxes(savegame2)
-    maintenance2 = SavegameManager().aggregate_maintenance_costs(savegame2)
+    taxes2 = SavegameManager().aggregate_taxes(savegame=savegame2)
+    maintenance2 = SavegameManager().aggregate_maintenance_costs(savegame=savegame2)
 
     assert taxes2 == 30
     assert maintenance2 == 12
@@ -218,8 +218,8 @@ def test_savegame_manager_integration():
     TileFactory(savegame=savegame, building=building)
 
     # Test manager methods work on actual model
-    taxes = Savegame.objects.aggregate_taxes(savegame)
-    maintenance = Savegame.objects.aggregate_maintenance_costs(savegame)
+    taxes = Savegame.objects.aggregate_taxes(savegame=savegame)
+    maintenance = Savegame.objects.aggregate_maintenance_costs(savegame=savegame)
 
     assert taxes == 15
     assert maintenance == 7

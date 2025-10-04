@@ -24,7 +24,7 @@ def test_wall_enclosure_service_no_city_buildings():
         for y in range(5):
             TileFactory(savegame=savegame, x=x, y=y, terrain=terrain, building=None)
 
-    service = WallEnclosureService(savegame)
+    service = WallEnclosureService(savegame=savegame)
     result = service.process()
 
     assert result is False
@@ -48,7 +48,7 @@ def test_wall_enclosure_service_city_not_enclosed():
             else:
                 TileFactory(savegame=savegame, x=x, y=y, terrain=terrain, building=None)
 
-    service = WallEnclosureService(savegame)
+    service = WallEnclosureService(savegame=savegame)
     result = service.process()
 
     assert result is False
@@ -85,7 +85,7 @@ def test_wall_enclosure_service_city_enclosed_by_walls():
             else:
                 TileFactory(savegame=savegame, x=x, y=y, terrain=terrain, building=None)
 
-    service = WallEnclosureService(savegame)
+    service = WallEnclosureService(savegame=savegame)
     result = service.process()
 
     assert result is True
@@ -121,7 +121,7 @@ def test_wall_enclosure_service_gap_in_wall():
             else:
                 TileFactory(savegame=savegame, x=x, y=y, terrain=terrain, building=None)
 
-    service = WallEnclosureService(savegame)
+    service = WallEnclosureService(savegame=savegame)
     result = service.process()
 
     assert result is False
@@ -151,7 +151,7 @@ def test_wall_enclosure_service_multiple_city_buildings():
             else:
                 TileFactory(savegame=savegame, x=x, y=y, terrain=terrain, building=None)
 
-    service = WallEnclosureService(savegame)
+    service = WallEnclosureService(savegame=savegame)
     result = service.process()
 
     assert result is True
@@ -187,7 +187,7 @@ def test_wall_enclosure_service_city_building_outside_wall():
             else:
                 TileFactory(savegame=savegame, x=x, y=y, terrain=terrain, building=None)
 
-    service = WallEnclosureService(savegame)
+    service = WallEnclosureService(savegame=savegame)
     result = service.process()
 
     assert result is False
@@ -215,14 +215,14 @@ def test_wall_enclosure_service_starts_from_unique_building():
             else:
                 TileFactory(savegame=savegame, x=x, y=y, terrain=terrain, building=None)
 
-    service = WallEnclosureService(savegame)
+    service = WallEnclosureService(savegame=savegame)
 
     # Get city building tiles
     city_tiles = service._get_city_building_tiles()
     assert len(city_tiles) == 1
 
     # Get starting tile - should be the unique building
-    start_tile = service._get_starting_tile(city_tiles)
+    start_tile = service._get_starting_tile(city_tiles=city_tiles)
     assert start_tile.building.building_type.is_unique is True
 
     # Overall result should be True (enclosed)
@@ -254,7 +254,7 @@ def test_wall_enclosure_service_3x3_map():
                 city = BuildingFactory(building_type=city_type)
                 TileFactory(savegame=savegame, x=x, y=y, terrain=terrain, building=city)
 
-    service = WallEnclosureService(savegame)
+    service = WallEnclosureService(savegame=savegame)
     result = service.process()
 
     assert result is True
@@ -292,7 +292,7 @@ def test_wall_enclosure_service_water_acts_as_wall():
                 city = BuildingFactory(building_type=city_type)
                 TileFactory(savegame=savegame, x=x, y=y, terrain=land_terrain, building=city)
 
-    service = WallEnclosureService(savegame)
+    service = WallEnclosureService(savegame=savegame)
     result = service.process()
 
     assert result is True
@@ -327,7 +327,7 @@ def test_wall_enclosure_service_water_only_enclosure():
             else:
                 TileFactory(savegame=savegame, x=x, y=y, terrain=land_terrain, building=None)
 
-    service = WallEnclosureService(savegame)
+    service = WallEnclosureService(savegame=savegame)
     result = service.process()
 
     assert result is True
@@ -362,7 +362,7 @@ def test_wall_enclosure_service_gap_in_water():
             else:
                 TileFactory(savegame=savegame, x=x, y=y, terrain=land_terrain, building=None)
 
-    service = WallEnclosureService(savegame)
+    service = WallEnclosureService(savegame=savegame)
     result = service.process()
 
     assert result is False
@@ -413,7 +413,7 @@ def test_wall_enclosure_service_mixed_water_and_walls():
             else:
                 TileFactory(savegame=savegame, x=x, y=y, terrain=land_terrain, building=None)
 
-    service = WallEnclosureService(savegame)
+    service = WallEnclosureService(savegame=savegame)
     result = service.process()
 
     assert result is True
@@ -453,7 +453,7 @@ def test_wall_enclosure_service_with_missing_tiles():
             else:
                 TileFactory(savegame=savegame, x=x, y=y, terrain=terrain, building=None)
 
-    service = WallEnclosureService(savegame)
+    service = WallEnclosureService(savegame=savegame)
     result = service.process()
 
     # The missing tile should be skipped, and enclosure should still be detected

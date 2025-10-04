@@ -11,5 +11,5 @@ class MilestoneLog(models.Model):
     class Meta:
         default_related_name = "quest_logs"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.milestone

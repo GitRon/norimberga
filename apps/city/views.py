@@ -198,6 +198,17 @@ class SavegameDeleteView(LoginRequiredMixin, generic.DeleteView):
         # Only allow deleting own savegames that are not active
         return Savegame.objects.filter(user=self.request.user, is_active=False)
 
+    def delete(self, request, *args, **kwargs) -> HttpResponse:
+        self.object = self.get_object()
+        self.object.delete()
+
+        # If HTMX request, return empty response for client-side removal
+        if request.headers.get("HX-Request"):
+            return HttpResponse(status=HTTPStatus.OK)
+
+        # Otherwise redirect to list view
+        return HttpResponseRedirect(self.get_success_url())
+
 
 class UserLoginView(LoginView):
     template_name = "city/login.html"

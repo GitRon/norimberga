@@ -10,7 +10,7 @@ from apps.event.events.events.base_event import BaseEvent
 
 
 class Event(BaseEvent):
-    PROBABILITY = 85
+    PROBABILITY = 30
     LEVEL = messages.ERROR
     TITLE = "Pillage"
 

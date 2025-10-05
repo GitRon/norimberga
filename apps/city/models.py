@@ -11,7 +11,7 @@ class Savegame(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     city_name = models.CharField(max_length=100)
     map_size = models.PositiveSmallIntegerField(default=5)
-    coins = models.SmallIntegerField("Coins", default=0)
+    coins = models.SmallIntegerField("Coins", default=1000)
     population = models.PositiveSmallIntegerField("Population", default=0)
     unrest = models.PositiveSmallIntegerField(
         "Unrest", default=0, validators=(MinValueValidator(0), MaxValueValidator(100))

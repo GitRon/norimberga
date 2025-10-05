@@ -21,7 +21,7 @@ class SavegameFactory(factory.django.DjangoModelFactory):
     user = factory.SubFactory(UserFactory)
     city_name = factory.Faker("city")
     map_size = 5
-    coins = 100
+    coins = 1000
     population = 50
     unrest = 10
     current_year = 1150

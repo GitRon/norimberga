@@ -29,7 +29,7 @@ def test_savegame_creation_with_defaults():
     """Test savegame creation with default values."""
     savegame = SavegameFactory()
     assert savegame.map_size == 5
-    assert savegame.coins == 100
+    assert savegame.coins == 1000
     assert savegame.population == 50
     assert savegame.current_year == 1150
     assert savegame.is_active is True

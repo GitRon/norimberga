@@ -59,20 +59,14 @@ def test_savegame_value_view_response(authenticated_client, user):
 @pytest.mark.django_db
 def test_navbar_values_view_get_context_data_authenticated(request_factory, user):
     """Test NavbarValuesView includes savegame and max_housing_space in context for authenticated user."""
-    savegame = SavegameFactory(user=user, is_active=True)
+    savegame = SavegameFactory(user=user, is_active=True, is_enclosed=True)
 
     request = request_factory.get("/")
     request.user = user
 
-    with (
-        mock.patch("apps.city.views.BuildingHousingService") as mock_housing_service,
-        mock.patch("apps.city.views.WallEnclosureService") as mock_wall_service,
-    ):
+    with mock.patch("apps.city.views.BuildingHousingService") as mock_housing_service:
         mock_housing_instance = mock_housing_service.return_value
         mock_housing_instance.calculate_max_space.return_value = 100
-
-        mock_wall_instance = mock_wall_service.return_value
-        mock_wall_instance.process.return_value = True
 
         view = NavbarValuesView()
         view.request = request
@@ -87,8 +81,6 @@ def test_navbar_values_view_get_context_data_authenticated(request_factory, user
         assert context["is_enclosed"] is True
         mock_housing_service.assert_called_once_with(savegame=savegame)
         mock_housing_instance.calculate_max_space.assert_called_once()
-        mock_wall_service.assert_called_once_with(savegame=savegame)
-        mock_wall_instance.process.assert_called_once()
 
 
 @pytest.mark.django_db

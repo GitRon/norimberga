@@ -7,7 +7,7 @@ from apps.city.tests.factories import SavegameFactory
 @pytest.mark.django_db
 def test_get_current_savegame_returns_existing_savegame(request_factory, user):
     """Test get_current_savegame returns existing active savegame for authenticated user."""
-    existing_savegame = SavegameFactory(user=user, city_name="Test City", is_active=True)
+    existing_savegame = SavegameFactory(user=user, city_name="Test City", is_active=True, is_enclosed=True)
 
     request = request_factory.get("/")
     request.user = user
@@ -17,6 +17,8 @@ def test_get_current_savegame_returns_existing_savegame(request_factory, user):
     assert "savegame" in result
     assert result["savegame"] == existing_savegame
     assert result["savegame"].city_name == "Test City"
+    assert "is_enclosed" in result
+    assert result["is_enclosed"] is True
 
 
 @pytest.mark.django_db
@@ -29,6 +31,8 @@ def test_get_current_savegame_returns_none_when_no_savegame(request_factory, use
 
     assert "savegame" in result
     assert result["savegame"] is None
+    assert "is_enclosed" in result
+    assert result["is_enclosed"] is False
 
 
 @pytest.mark.django_db
@@ -60,13 +64,15 @@ def test_get_current_savegame_return_structure(request_factory, user):
 
     result = get_current_savegame(request)
 
-    # Should be a dictionary with 'savegame' key
+    # Should be a dictionary with 'savegame' and 'is_enclosed' keys
     assert isinstance(result, dict)
-    assert len(result) == 1
+    assert len(result) == 2
     assert "savegame" in result
+    assert "is_enclosed" in result
 
     # Value should be None when no savegame exists
     assert result["savegame"] is None
+    assert result["is_enclosed"] is False
 
 
 def test_get_current_savegame_returns_none_for_unauthenticated_user(request_factory):
@@ -80,6 +86,8 @@ def test_get_current_savegame_returns_none_for_unauthenticated_user(request_fact
 
     assert "savegame" in result
     assert result["savegame"] is None
+    assert "is_enclosed" in result
+    assert result["is_enclosed"] is False
 
 
 def test_get_current_savegame_returns_none_when_no_user_attribute(request_factory):
@@ -90,3 +98,5 @@ def test_get_current_savegame_returns_none_when_no_user_attribute(request_factor
 
     assert "savegame" in result
     assert result["savegame"] is None
+    assert "is_enclosed" in result
+    assert result["is_enclosed"] is False

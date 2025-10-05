@@ -29,7 +29,7 @@ def test_pillage_event_init():
 
         event = PillageEvent(savegame=savegame)
 
-        assert event.PROBABILITY == 85
+        assert event.PROBABILITY == 30
         assert event.LEVEL == messages.ERROR
         assert event.TITLE == "Pillage"
         assert event.savegame.id == savegame.id
@@ -103,7 +103,7 @@ def test_pillage_event_get_probability_not_enclosed():
 
     probability = event.get_probability()
 
-    assert probability == 85
+    assert probability == 30
 
 
 @pytest.mark.django_db

@@ -14,7 +14,7 @@ Norimberga is a browser-based city simulation game set in the high middle ages, 
 uv sync
 
 # Install with development dependencies
-uv sync --extra dev
+uv sync --group dev
 
 # Add a new dependency
 uv add django-extensions
@@ -26,7 +26,7 @@ uv add --dev pytest-mock
 uv lock --upgrade
 
 # Create virtual environment and install dependencies
-uv venv && uv sync --extra dev
+uv venv && uv sync --group dev
 ```
 
 ### Backend (Django)
@@ -198,7 +198,7 @@ Uses PyTest exclusively for backend testing. Key guidelines:
 
 ## Development Workflow
 
-1. Set up environment: `uv sync --extra dev`
+1. Set up environment: `uv sync --group dev`
 2. Run backend server: `python manage.py runserver`
 3. In separate terminal, watch TailwindCSS: `npx tailwindcss -i ./static/css/input.css -o ./static/css/dist/output.css --watch`
 4. Make changes to code

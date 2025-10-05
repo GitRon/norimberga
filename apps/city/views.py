@@ -32,7 +32,10 @@ class NavbarValuesView(generic.TemplateView):
     def get_context_data(self, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
-            context["savegame"] = Savegame.objects.filter(user=self.request.user, is_active=True).first()
+            savegame = Savegame.objects.filter(user=self.request.user, is_active=True).first()
+            if savegame:
+                context["savegame"] = savegame
+                context["max_housing_space"] = BuildingHousingService(savegame=savegame).calculate_max_space()
         return context
 
 

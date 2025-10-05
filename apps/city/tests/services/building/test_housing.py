@@ -51,7 +51,7 @@ def test_building_housing_service_calculate_max_space_with_buildings():
 
 @pytest.mark.django_db
 def test_building_housing_service_calculate_max_space_no_buildings():
-    """Test calculate_max_space returns None when no buildings have housing space."""
+    """Test calculate_max_space returns 0 when no buildings have housing space."""
     savegame = SavegameFactory()
 
     # Create tile without building
@@ -60,4 +60,4 @@ def test_building_housing_service_calculate_max_space_no_buildings():
     service = BuildingHousingService(savegame=savegame)
     result = service.calculate_max_space()
 
-    assert result is None
+    assert result == 0

@@ -74,7 +74,7 @@ def test_savegame_value_view_response(client):
 # NavbarValuesView Tests
 @pytest.mark.django_db
 def test_navbar_values_view_get_context_data_authenticated(request_factory):
-    """Test NavbarValuesView includes savegame in context for authenticated user."""
+    """Test NavbarValuesView includes savegame and max_housing_space in context for authenticated user."""
     from apps.city.tests.factories import UserFactory
 
     user = UserFactory()
@@ -83,13 +83,21 @@ def test_navbar_values_view_get_context_data_authenticated(request_factory):
     request = request_factory.get("/")
     request.user = user
 
-    view = NavbarValuesView()
-    view.request = request
+    with mock.patch("apps.city.views.BuildingHousingService") as mock_service:
+        mock_instance = mock_service.return_value
+        mock_instance.calculate_max_space.return_value = 100
 
-    context = view.get_context_data()
+        view = NavbarValuesView()
+        view.request = request
 
-    assert "savegame" in context
-    assert context["savegame"] == savegame
+        context = view.get_context_data()
+
+        assert "savegame" in context
+        assert context["savegame"] == savegame
+        assert "max_housing_space" in context
+        assert context["max_housing_space"] == 100
+        mock_service.assert_called_once_with(savegame=savegame)
+        mock_instance.calculate_max_space.assert_called_once()
 
 
 @pytest.mark.django_db
@@ -117,10 +125,12 @@ def test_navbar_values_view_response(client):
     SavegameFactory(user=user, is_active=True)
 
     client.force_login(user)
-    response = client.get(reverse("city:navbar-values"))
 
-    assert response.status_code == 200
-    assert "partials/_navbar_values.html" in [t.name for t in response.templates]
+    with mock.patch("apps.city.views.BuildingHousingService"):
+        response = client.get(reverse("city:navbar-values"))
+
+        assert response.status_code == 200
+        assert "partials/_navbar_values.html" in [t.name for t in response.templates]
 
 
 # LandingPageView Tests

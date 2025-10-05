@@ -261,46 +261,8 @@ def test_wall_enclosure_service_3x3_map():
 
 
 @pytest.mark.django_db
-def test_wall_enclosure_service_water_acts_as_wall():
-    """Test that water terrain acts as a wall for enclosure purposes."""
-    savegame = SavegameFactory(map_size=5)
-    land_terrain = TerrainFactory(is_water=False)
-    water_terrain = WaterTerrainFactory()
-
-    # Create building types
-    wall_type = WallBuildingTypeFactory(allowed_terrains=[land_terrain])
-    city_type = BuildingTypeFactory(is_city=True, is_wall=False, allowed_terrains=[land_terrain])
-
-    # Create map: water on edges, walls on some edges, city in center
-    # ~ ~ ~ ~ ~  (~ = water, W = wall, C = city)
-    # ~ W W W ~
-    # ~ W C W ~
-    # ~ W W W ~
-    # ~ ~ ~ ~ ~
-
-    for x in range(5):
-        for y in range(5):
-            # Water on outer edges
-            if x == 0 or x == 4 or y == 0 or y == 4:
-                TileFactory(savegame=savegame, x=x, y=y, terrain=water_terrain, building=None)
-            # Walls on inner ring
-            elif x == 1 or x == 3 or y == 1 or y == 3:
-                wall = BuildingFactory(building_type=wall_type)
-                TileFactory(savegame=savegame, x=x, y=y, terrain=land_terrain, building=wall)
-            # City building in center
-            else:
-                city = BuildingFactory(building_type=city_type)
-                TileFactory(savegame=savegame, x=x, y=y, terrain=land_terrain, building=city)
-
-    service = WallEnclosureService(savegame=savegame)
-    result = service.process()
-
-    assert result is True
-
-
-@pytest.mark.django_db
-def test_wall_enclosure_service_water_only_enclosure():
-    """Test that a city can be enclosed by water alone without walls."""
+def test_wall_enclosure_service_water_only_does_not_enclose():
+    """Test that a city cannot be enclosed by water alone without walls."""
     savegame = SavegameFactory(map_size=5)
     land_terrain = TerrainFactory(is_water=False)
     water_terrain = WaterTerrainFactory()
@@ -330,7 +292,8 @@ def test_wall_enclosure_service_water_only_enclosure():
     service = WallEnclosureService(savegame=savegame)
     result = service.process()
 
-    assert result is True
+    # Water alone doesn't count as enclosure - only wall buildings do
+    assert result is False
 
 
 @pytest.mark.django_db
@@ -370,7 +333,7 @@ def test_wall_enclosure_service_gap_in_water():
 
 @pytest.mark.django_db
 def test_wall_enclosure_service_mixed_water_and_walls():
-    """Test that water and walls can work together to enclose a city."""
+    """Test that water does not work with walls to enclose a city - only walls count."""
     savegame = SavegameFactory(map_size=5)
     land_terrain = TerrainFactory(is_water=False)
     water_terrain = WaterTerrainFactory()
@@ -416,7 +379,8 @@ def test_wall_enclosure_service_mixed_water_and_walls():
     service = WallEnclosureService(savegame=savegame)
     result = service.process()
 
-    assert result is True
+    # Water doesn't count as wall, so flood fill can reach water tiles at edge
+    assert result is False
 
 
 @pytest.mark.django_db

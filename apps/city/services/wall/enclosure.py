@@ -6,9 +6,12 @@ class WallEnclosureService:
     """
     Service to detect if all city buildings are enclosed by walls.
 
+    Only wall buildings count as barriers. Water terrain does NOT act as a wall.
+    If there is a gap with water, the wall is not considered enclosed.
+
     Algorithm:
     1. Find a city building (preferably unique building as starting point)
-    2. Mark all adjacent tiles that are not walls
+    2. Mark all adjacent tiles that are not walls (including water tiles)
     3. Repeat for all marked tiles until no new tiles can be marked
     4. If any marked tile reaches the map edge, the city is not enclosed
     5. If any city building is not reachable, it's outside the enclosure
@@ -90,12 +93,12 @@ class WallEnclosureService:
 
                 # Get the tile at this coordinate
                 try:
-                    adjacent_tile = Tile.objects.select_related("building", "building__building_type", "terrain").get(
+                    adjacent_tile = Tile.objects.select_related("building", "building__building_type").get(
                         savegame=self.savegame, x=coord.x, y=coord.y
                     )
 
-                    # Only add non-wall and non-water tiles to the queue
-                    if not self._is_wall_or_water(tile=adjacent_tile):
+                    # Only add non-wall tiles to the queue
+                    if not self._is_wall(tile=adjacent_tile):
                         to_visit.append(adjacent_tile)
 
                 except Tile.DoesNotExist:
@@ -106,10 +109,6 @@ class WallEnclosureService:
     def _is_wall(self, *, tile: Tile) -> bool:
         """Check if a tile has a wall building."""
         return tile.building is not None and tile.building.building_type.is_wall
-
-    def _is_wall_or_water(self, *, tile: Tile) -> bool:
-        """Check if a tile has a wall building or is water terrain."""
-        return self._is_wall(tile=tile) or tile.terrain.is_water
 
     def _reached_map_edge(self, *, tiles: list[Tile]) -> bool:
         """Check if any of the tiles are at the edge of the map."""

@@ -177,6 +177,7 @@ def test_landing_page_view_response(client):
 
     user = UserFactory()
     client.force_login(user)
+    SavegameFactory(user=user, is_active=True)
 
     with mock.patch("apps.city.views.BuildingHousingService"):
         response = client.get(reverse("city:landing-page"))

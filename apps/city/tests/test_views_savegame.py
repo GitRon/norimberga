@@ -350,3 +350,19 @@ def test_savegame_delete_view_redirects_to_list(client):
 
     assert response.status_code == 302
     assert response.url == reverse("city:savegame-list")
+
+
+@pytest.mark.django_db
+def test_savegame_delete_view_htmx_request_returns_ok(client):
+    """Test SavegameDeleteView returns 200 OK for HTMX requests."""
+    user = UserFactory()
+    client.force_login(user)
+
+    savegame = SavegameFactory(user=user, is_active=False)
+
+    response = client.delete(
+        reverse("city:savegame-delete", kwargs={"pk": savegame.pk}), HTTP_HX_REQUEST="true"
+    )
+
+    assert response.status_code == 200
+    assert not Savegame.objects.filter(pk=savegame.pk).exists()

@@ -12,6 +12,7 @@ from django.views import generic
 from apps.city.forms.savegame import SavegameCreateForm
 from apps.city.forms.tile import TileBuildingForm
 from apps.city.forms.user import UserRegistrationForm
+from apps.city.mixins import SavegameRequiredMixin
 from apps.city.models import Savegame, Tile
 from apps.city.selectors.savegame import get_balance_data
 from apps.city.services.building.housing import BuildingHousingService
@@ -43,15 +44,8 @@ class NavbarValuesView(generic.TemplateView):
         return context
 
 
-class LandingPageView(generic.TemplateView):
+class LandingPageView(SavegameRequiredMixin, generic.TemplateView):
     template_name = "city/landing_page.html"
-
-    def dispatch(self, request, *args, **kwargs) -> HttpResponse:
-        # Check if user has an active savegame
-        savegame = Savegame.objects.filter(user=request.user, is_active=True).first()
-        if not savegame:
-            return HttpResponseRedirect(reverse_lazy("city:savegame-list"))
-        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)
@@ -70,7 +64,7 @@ class CityMessagesView(generic.TemplateView):
     template_name = "city/partials/city/_messages.html"
 
 
-class BalanceView(generic.TemplateView):
+class BalanceView(SavegameRequiredMixin, generic.TemplateView):
     template_name = "city/balance.html"
 
     def get_context_data(self, **kwargs) -> dict:
@@ -82,7 +76,7 @@ class BalanceView(generic.TemplateView):
         return context
 
 
-class TileBuildView(generic.UpdateView):
+class TileBuildView(SavegameRequiredMixin, generic.UpdateView):
     model = Tile
     form_class = TileBuildingForm
     template_name = "city/partials/tile/update_tile.html"
@@ -120,7 +114,7 @@ class TileBuildView(generic.UpdateView):
         return None
 
 
-class TileDemolishView(generic.View):
+class TileDemolishView(SavegameRequiredMixin, generic.View):
     def post(self, request, pk, *args, **kwargs) -> HttpResponse:
         tile = Tile.objects.get(pk=pk)
 
@@ -248,8 +242,5 @@ class UserRegistrationView(generic.CreateView):
         # Redirect to savegame list if no savegame exists, otherwise to landing page
         if has_savegame:
             return HttpResponseRedirect(reverse_lazy("city:landing-page"))
-        else:
-            return HttpResponseRedirect(reverse_lazy("city:savegame-list"))
 
-    def get_success_url(self) -> str:
-        return reverse_lazy("city:savegame-list")
+        return HttpResponseRedirect(reverse_lazy("city:savegame-list"))

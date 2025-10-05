@@ -354,6 +354,39 @@ def test_user_registration_view_redirects_to_savegame_list_when_no_savegame(clie
 
 
 @pytest.mark.django_db
+def test_user_registration_view_redirects_to_landing_page_when_savegame_exists(client):
+    """Test UserRegistrationView redirects to landing page when user has savegame."""
+    from django.contrib.auth.models import User
+    from django.db.models.signals import post_save
+
+    data = {
+        "username": "newuser",
+        "first_name": "John",
+        "last_name": "Doe",
+        "email": "john@example.com",
+        "password1": "securepassword123",
+        "password2": "securepassword123",
+    }
+
+    # Create a signal handler that creates a savegame when user is saved
+    def create_savegame_on_user_save(sender, instance, created, **kwargs):
+        if created:
+            SavegameFactory(user=instance, is_active=True)
+
+    # Connect the signal
+    post_save.connect(create_savegame_on_user_save, sender=User)
+
+    try:
+        response = client.post(reverse("city:register"), data=data, follow=False)
+
+        assert response.status_code == 302
+        assert response.url == reverse("city:landing-page")
+    finally:
+        # Disconnect the signal
+        post_save.disconnect(create_savegame_on_user_save, sender=User)
+
+
+@pytest.mark.django_db
 def test_user_registration_view_requires_first_name(client):
     """Test UserRegistrationView requires first_name field."""
     data = {

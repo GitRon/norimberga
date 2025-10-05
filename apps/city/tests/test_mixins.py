@@ -1,12 +1,11 @@
 import pytest
 from django.contrib.auth.models import AnonymousUser
 from django.http import HttpResponseRedirect
-from django.test import RequestFactory
 from django.urls import reverse
 from django.views import generic
 
 from apps.city.mixins import SavegameRequiredMixin
-from apps.city.tests.factories import SavegameFactory, UserFactory
+from apps.city.tests.factories import SavegameFactory
 
 
 class TestView(SavegameRequiredMixin, generic.TemplateView):
@@ -15,17 +14,10 @@ class TestView(SavegameRequiredMixin, generic.TemplateView):
     template_name = "city/landing_page.html"
 
 
-@pytest.fixture
-def request_factory():
-    """Provide Django request factory."""
-    return RequestFactory()
-
-
 # SavegameRequiredMixin Tests
 @pytest.mark.django_db
-def test_savegame_required_mixin_redirects_without_active_savegame(request_factory):
+def test_savegame_required_mixin_redirects_without_active_savegame(request_factory, user):
     """Test SavegameRequiredMixin redirects to savegame list when no active savegame exists."""
-    user = UserFactory()
     request = request_factory.get("/")
     request.user = user
 
@@ -37,9 +29,8 @@ def test_savegame_required_mixin_redirects_without_active_savegame(request_facto
 
 
 @pytest.mark.django_db
-def test_savegame_required_mixin_redirects_with_inactive_savegame(request_factory):
+def test_savegame_required_mixin_redirects_with_inactive_savegame(request_factory, user):
     """Test SavegameRequiredMixin redirects when user has only inactive savegames."""
-    user = UserFactory()
     SavegameFactory(user=user, is_active=False)
     request = request_factory.get("/")
     request.user = user
@@ -52,9 +43,8 @@ def test_savegame_required_mixin_redirects_with_inactive_savegame(request_factor
 
 
 @pytest.mark.django_db
-def test_savegame_required_mixin_allows_with_active_savegame(request_factory):
+def test_savegame_required_mixin_allows_with_active_savegame(request_factory, user):
     """Test SavegameRequiredMixin allows access when user has active savegame."""
-    user = UserFactory()
     SavegameFactory(user=user, is_active=True)
     request = request_factory.get("/")
     request.user = user
@@ -81,9 +71,8 @@ def test_savegame_required_mixin_allows_unauthenticated_user(request_factory):
 
 
 @pytest.mark.django_db
-def test_savegame_required_mixin_with_multiple_savegames(request_factory):
+def test_savegame_required_mixin_with_multiple_savegames(request_factory, user):
     """Test SavegameRequiredMixin works correctly when user has multiple savegames."""
-    user = UserFactory()
     SavegameFactory(user=user, is_active=False)
     SavegameFactory(user=user, is_active=False)
     SavegameFactory(user=user, is_active=True)

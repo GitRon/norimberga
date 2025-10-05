@@ -1,20 +1,12 @@
 import pytest
-from django.test import RequestFactory
 
 from apps.city.context_processors.savegame import get_current_savegame
-from apps.city.tests.factories import SavegameFactory, UserFactory
-
-
-@pytest.fixture
-def request_factory():
-    """Provide Django request factory."""
-    return RequestFactory()
+from apps.city.tests.factories import SavegameFactory
 
 
 @pytest.mark.django_db
-def test_get_current_savegame_returns_existing_savegame(request_factory):
+def test_get_current_savegame_returns_existing_savegame(request_factory, user):
     """Test get_current_savegame returns existing active savegame for authenticated user."""
-    user = UserFactory()
     existing_savegame = SavegameFactory(user=user, city_name="Test City", is_active=True)
 
     request = request_factory.get("/")
@@ -28,10 +20,8 @@ def test_get_current_savegame_returns_existing_savegame(request_factory):
 
 
 @pytest.mark.django_db
-def test_get_current_savegame_returns_none_when_no_savegame(request_factory):
+def test_get_current_savegame_returns_none_when_no_savegame(request_factory, user):
     """Test get_current_savegame returns None if user has no savegame."""
-    user = UserFactory()
-
     request = request_factory.get("/")
     request.user = user
 
@@ -42,9 +32,8 @@ def test_get_current_savegame_returns_none_when_no_savegame(request_factory):
 
 
 @pytest.mark.django_db
-def test_get_current_savegame_consistent_results(request_factory):
+def test_get_current_savegame_consistent_results(request_factory, user):
     """Test get_current_savegame returns same savegame across calls for same user."""
-    user = UserFactory()
     savegame = SavegameFactory(user=user, is_active=True)
 
     request = request_factory.get("/")
@@ -64,10 +53,8 @@ def test_get_current_savegame_consistent_results(request_factory):
 
 
 @pytest.mark.django_db
-def test_get_current_savegame_return_structure(request_factory):
+def test_get_current_savegame_return_structure(request_factory, user):
     """Test get_current_savegame returns correct dictionary structure."""
-    user = UserFactory()
-
     request = request_factory.get("/")
     request.user = user
 

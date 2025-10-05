@@ -199,6 +199,10 @@ exclude = []
     # Migration classes have their own structure
     "PBR001",
 ]
+"conftest.py" = [
+    "PBR001",
+    "PBR002",
+]
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "apps.config.settings"

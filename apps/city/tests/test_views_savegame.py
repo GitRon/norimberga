@@ -1,28 +1,8 @@
 import pytest
-from django.test import Client
 from django.urls import reverse
 
 from apps.city.models import Savegame
 from apps.city.tests.factories import SavegameFactory, UserFactory
-
-
-@pytest.fixture
-def client():
-    """Provide Django test client."""
-    return Client()
-
-
-@pytest.fixture
-def user():
-    """Provide a test user."""
-    return UserFactory(username="testuser")
-
-
-@pytest.fixture
-def authenticated_client(client, user):
-    """Provide authenticated Django test client."""
-    client.force_login(user)
-    return client
 
 
 # SavegameListView Tests

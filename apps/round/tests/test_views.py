@@ -3,22 +3,9 @@ from unittest import mock
 
 import pytest
 from django.contrib import messages
-from django.test import Client, RequestFactory
 from django.urls import reverse
 
 from apps.round.views import RoundView
-
-
-@pytest.fixture
-def client():
-    """Provide Django test client."""
-    return Client()
-
-
-@pytest.fixture
-def request_factory():
-    """Provide Django request factory."""
-    return RequestFactory()
 
 
 # RoundView Tests
@@ -169,23 +156,19 @@ def test_round_view_post_response_headers(request_factory):
 
 
 @pytest.mark.django_db
-def test_round_view_post_via_client(client):
+def test_round_view_post_via_client(authenticated_client, user):
     """Test RoundView responds correctly via Django test client."""
-    from apps.city.tests.factories import SavegameFactory, UserFactory
+    from apps.city.tests.factories import SavegameFactory
 
-    # Create user and savegame
-    user = UserFactory()
+    # Create savegame
     SavegameFactory(user=user, is_active=True)
-
-    # Log in the user
-    client.force_login(user)
 
     # Mock EventSelectionService
     with mock.patch("apps.round.views.EventSelectionService") as mock_service:
         mock_service_instance = mock_service.return_value
         mock_service_instance.process.return_value = []
 
-        response = client.post(reverse("round:finish"))
+        response = authenticated_client.post(reverse("round:finish"))
 
         # Verify successful response
         assert response.status_code == 200
@@ -198,15 +181,9 @@ def test_round_view_post_via_client(client):
 
 
 @pytest.mark.django_db
-def test_round_view_get_not_allowed(client):
+def test_round_view_get_not_allowed(authenticated_client):
     """Test RoundView rejects GET requests."""
-    from apps.city.tests.factories import UserFactory
-
-    # Create and log in user
-    user = UserFactory()
-    client.force_login(user)
-
-    response = client.get(reverse("round:finish"))
+    response = authenticated_client.get(reverse("round:finish"))
     assert response.status_code == 405  # Method Not Allowed
 
 

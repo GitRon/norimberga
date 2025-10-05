@@ -1,27 +1,5 @@
 import pytest
-from django.test import Client
 from django.urls import reverse
-
-from apps.account.tests.factories import UserFactory
-
-
-@pytest.fixture
-def client():
-    """Provide Django test client."""
-    return Client()
-
-
-@pytest.fixture
-def user():
-    """Provide a test user."""
-    return UserFactory(username="testuser")
-
-
-@pytest.fixture
-def authenticated_client(client, user):
-    """Provide authenticated Django test client."""
-    client.force_login(user)
-    return client
 
 
 # UserLoginView Tests

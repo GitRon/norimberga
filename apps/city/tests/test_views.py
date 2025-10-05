@@ -2,7 +2,7 @@ import json
 from unittest import mock
 
 import pytest
-from django.test import Client, RequestFactory
+from django.test import RequestFactory
 from django.urls import reverse
 
 from apps.city.tests.factories import (
@@ -21,18 +21,6 @@ from apps.city.views import (
     TileBuildView,
     TileDemolishView,
 )
-
-
-@pytest.fixture
-def client():
-    """Provide Django test client."""
-    return Client()
-
-
-@pytest.fixture
-def request_factory():
-    """Provide Django request factory."""
-    return RequestFactory()
 
 
 # SavegameValueView Tests
@@ -56,16 +44,12 @@ def test_savegame_value_view_get_context_data():
 
 
 @pytest.mark.django_db
-def test_savegame_value_view_response(client):
+def test_savegame_value_view_response(authenticated_client, user):
     """Test SavegameValueView responds correctly."""
-    from apps.city.tests.factories import UserFactory
-
-    user = UserFactory()
-    client.force_login(user)
     savegame = SavegameFactory(user=user, is_active=True)
 
     with mock.patch("apps.city.views.BuildingHousingService"):
-        response = client.get(reverse("city:savegame-value", kwargs={"pk": savegame.pk}))
+        response = authenticated_client.get(reverse("city:savegame-value", kwargs={"pk": savegame.pk}))
 
         assert response.status_code == 200
         assert "savegame/partials/_nav_values.html" in [t.name for t in response.templates]
@@ -73,11 +57,8 @@ def test_savegame_value_view_response(client):
 
 # NavbarValuesView Tests
 @pytest.mark.django_db
-def test_navbar_values_view_get_context_data_authenticated(request_factory):
+def test_navbar_values_view_get_context_data_authenticated(request_factory, user):
     """Test NavbarValuesView includes savegame and max_housing_space in context for authenticated user."""
-    from apps.city.tests.factories import UserFactory
-
-    user = UserFactory()
     savegame = SavegameFactory(user=user, is_active=True)
 
     request = request_factory.get("/")
@@ -127,20 +108,15 @@ def test_navbar_values_view_get_context_data_unauthenticated(request_factory):
 
 
 @pytest.mark.django_db
-def test_navbar_values_view_response(client):
+def test_navbar_values_view_response(authenticated_client, user):
     """Test NavbarValuesView returns correct template."""
-    from apps.city.tests.factories import UserFactory
-
-    user = UserFactory()
     SavegameFactory(user=user, is_active=True)
-
-    client.force_login(user)
 
     with (
         mock.patch("apps.city.views.BuildingHousingService"),
         mock.patch("apps.city.views.WallEnclosureService"),
     ):
-        response = client.get(reverse("city:navbar-values"))
+        response = authenticated_client.get(reverse("city:navbar-values"))
 
         assert response.status_code == 200
         assert "partials/_navbar_values.html" in [t.name for t in response.templates]
@@ -148,11 +124,8 @@ def test_navbar_values_view_response(client):
 
 # LandingPageView Tests
 @pytest.mark.django_db
-def test_landing_page_view_get_context_data(request_factory):
+def test_landing_page_view_get_context_data(request_factory, user):
     """Test LandingPageView includes max_housing_space in context."""
-    from apps.city.tests.factories import UserFactory
-
-    user = UserFactory()
     SavegameFactory(user=user, is_active=True)
 
     with mock.patch("apps.city.views.BuildingHousingService") as mock_service:
@@ -171,16 +144,12 @@ def test_landing_page_view_get_context_data(request_factory):
 
 
 @pytest.mark.django_db
-def test_landing_page_view_response(client):
+def test_landing_page_view_response(authenticated_client, user):
     """Test LandingPageView responds correctly."""
-    from apps.city.tests.factories import UserFactory
-
-    user = UserFactory()
-    client.force_login(user)
     SavegameFactory(user=user, is_active=True)
 
     with mock.patch("apps.city.views.BuildingHousingService"):
-        response = client.get(reverse("city:landing-page"))
+        response = authenticated_client.get(reverse("city:landing-page"))
 
         assert response.status_code == 200
         assert "city/landing_page.html" in [t.name for t in response.templates]
@@ -188,14 +157,9 @@ def test_landing_page_view_response(client):
 
 # CityMapView Tests
 @pytest.mark.django_db
-def test_city_map_view_response(client):
+def test_city_map_view_response(authenticated_client):
     """Test CityMapView responds correctly."""
-    from apps.city.tests.factories import UserFactory
-
-    user = UserFactory()
-    client.force_login(user)
-
-    response = client.get(reverse("city:city-map"))
+    response = authenticated_client.get(reverse("city:city-map"))
 
     assert response.status_code == 200
     assert "city/partials/city/_city_map.html" in [t.name for t in response.templates]
@@ -203,14 +167,9 @@ def test_city_map_view_response(client):
 
 # CityMessagesView Tests
 @pytest.mark.django_db
-def test_city_messages_view_response(client):
+def test_city_messages_view_response(authenticated_client):
     """Test CityMessagesView responds correctly."""
-    from apps.city.tests.factories import UserFactory
-
-    user = UserFactory()
-    client.force_login(user)
-
-    response = client.get(reverse("city:city-messages"))
+    response = authenticated_client.get(reverse("city:city-messages"))
 
     assert response.status_code == 200
     assert "city/partials/city/_messages.html" in [t.name for t in response.templates]
@@ -218,11 +177,8 @@ def test_city_messages_view_response(client):
 
 # TileBuildView Tests
 @pytest.mark.django_db
-def test_tile_build_view_get_form_kwargs(request_factory):
+def test_tile_build_view_get_form_kwargs(request_factory, user):
     """Test TileBuildView adds savegame to form kwargs."""
-    from apps.city.tests.factories import UserFactory
-
-    user = UserFactory()
     savegame = SavegameFactory(user=user, is_active=True)
     tile = TileFactory()
 
@@ -239,11 +195,8 @@ def test_tile_build_view_get_form_kwargs(request_factory):
 
 
 @pytest.mark.django_db
-def test_tile_build_view_form_valid_with_building(request_factory):
+def test_tile_build_view_form_valid_with_building(request_factory, user):
     """Test TileBuildView deducts coins when building is selected."""
-    from apps.city.tests.factories import UserFactory
-
-    user = UserFactory()
     savegame = SavegameFactory(user=user, coins=100, is_active=True)
     tile = TileFactory()
     building = BuildingFactory(building_costs=50)
@@ -275,11 +228,8 @@ def test_tile_build_view_form_valid_with_building(request_factory):
 
 
 @pytest.mark.django_db
-def test_tile_build_view_form_valid_without_building(request_factory):
+def test_tile_build_view_form_valid_without_building(request_factory, user):
     """Test TileBuildView doesn't deduct coins when no building selected."""
-    from apps.city.tests.factories import UserFactory
-
-    user = UserFactory()
     savegame = SavegameFactory(user=user, is_active=True, coins=100)
     tile = TileFactory()
 
@@ -332,13 +282,8 @@ def test_tile_build_view_post_request(client):
 
 
 @pytest.mark.django_db
-def test_tile_build_view_post_request_authenticated(client):
+def test_tile_build_view_post_request_authenticated(authenticated_client, user):
     """Test TileBuildView handles authenticated POST request."""
-    from apps.city.tests.factories import UserFactory
-
-    user = UserFactory()
-    client.force_login(user)
-
     terrain = TerrainFactory()
     building_type = BuildingTypeFactory()
     building_type.allowed_terrains.add(terrain)
@@ -348,7 +293,9 @@ def test_tile_build_view_post_request_authenticated(client):
     tile = TileFactory(savegame=savegame, terrain=terrain)
 
     with mock.patch.object(tile, "is_adjacent_to_city_building", return_value=True):
-        response = client.post(reverse("city:tile-build", kwargs={"pk": tile.pk}), data={"building": building.pk})
+        response = authenticated_client.post(
+            reverse("city:tile-build", kwargs={"pk": tile.pk}), data={"building": building.pk}
+        )
 
         # Should redirect or return success status
         assert response.status_code in [200, 302]
@@ -356,11 +303,8 @@ def test_tile_build_view_post_request_authenticated(client):
 
 # TileDemolishView Tests
 @pytest.mark.django_db
-def test_tile_demolish_view_post_success():
+def test_tile_demolish_view_post_success(user):
     """Test TileDemolishView successfully demolishes building."""
-    from apps.city.tests.factories import UserFactory
-
-    user = UserFactory()
     SavegameFactory(user=user, is_active=True)
 
     building_type = BuildingTypeFactory(is_unique=False)
@@ -424,19 +368,15 @@ def test_tile_demolish_view_post_no_building():
 
 
 @pytest.mark.django_db
-def test_tile_demolish_view_post_request(client):
+def test_tile_demolish_view_post_request(authenticated_client, user):
     """Test TileDemolishView handles POST request via client."""
-    from apps.city.tests.factories import UserFactory
-
-    user = UserFactory()
-    client.force_login(user)
     SavegameFactory(user=user, is_active=True)
 
     building_type = BuildingTypeFactory(is_unique=False)
     building = BuildingFactory(building_type=building_type)
     tile = TileFactory(building=building)
 
-    response = client.post(reverse("city:tile-demolish", kwargs={"pk": tile.pk}))
+    response = authenticated_client.post(reverse("city:tile-demolish", kwargs={"pk": tile.pk}))
 
     # Verify building was removed
     tile.refresh_from_db()
@@ -447,19 +387,15 @@ def test_tile_demolish_view_post_request(client):
 
 
 @pytest.mark.django_db
-def test_tile_demolish_view_post_unique_building_via_client(client):
+def test_tile_demolish_view_post_unique_building_via_client(authenticated_client, user):
     """Test TileDemolishView rejects unique building demolition via client."""
-    from apps.city.tests.factories import UserFactory
-
-    user = UserFactory()
-    client.force_login(user)
     SavegameFactory(user=user, is_active=True)
 
     unique_building_type = UniqueBuildingTypeFactory()
     unique_building = BuildingFactory(building_type=unique_building_type)
     tile = TileFactory(building=unique_building)
 
-    response = client.post(reverse("city:tile-demolish", kwargs={"pk": tile.pk}))
+    response = authenticated_client.post(reverse("city:tile-demolish", kwargs={"pk": tile.pk}))
 
     # Verify building was not removed
     tile.refresh_from_db()
@@ -471,11 +407,8 @@ def test_tile_demolish_view_post_unique_building_via_client(client):
 
 # BalanceView Tests
 @pytest.mark.django_db
-def test_balance_view_get_context_data(request_factory):
+def test_balance_view_get_context_data(request_factory, user):
     """Test BalanceView includes balance data in context."""
-    from apps.city.tests.factories import UserFactory
-
-    user = UserFactory()
     savegame = SavegameFactory(user=user, is_active=True)
 
     # Create buildings with known values
@@ -500,33 +433,25 @@ def test_balance_view_get_context_data(request_factory):
 
 
 @pytest.mark.django_db
-def test_balance_view_response(client):
+def test_balance_view_response(authenticated_client, user):
     """Test BalanceView responds correctly."""
-    from apps.city.tests.factories import UserFactory
-
-    user = UserFactory()
-    client.force_login(user)
     savegame = SavegameFactory(user=user, is_active=True)
     building = BuildingFactory(taxes=20, maintenance_costs=10)
     TileFactory(savegame=savegame, building=building)
 
-    response = client.get(reverse("city:balance"))
+    response = authenticated_client.get(reverse("city:balance"))
 
     assert response.status_code == 200
     assert "city/balance.html" in [t.name for t in response.templates]
 
 
 @pytest.mark.django_db
-def test_balance_view_context_with_no_buildings(client):
+def test_balance_view_context_with_no_buildings(authenticated_client, user):
     """Test BalanceView handles savegame with no buildings."""
-    from apps.city.tests.factories import UserFactory
-
-    user = UserFactory()
-    client.force_login(user)
     savegame = SavegameFactory(user=user, is_active=True)
     TileFactory(savegame=savegame, building=None)
 
-    response = client.get(reverse("city:balance"))
+    response = authenticated_client.get(reverse("city:balance"))
 
     assert response.status_code == 200
     assert response.context["taxes"] == 0
@@ -535,17 +460,13 @@ def test_balance_view_context_with_no_buildings(client):
 
 
 @pytest.mark.django_db
-def test_balance_view_context_positive_balance(client):
+def test_balance_view_context_positive_balance(authenticated_client, user):
     """Test BalanceView displays positive balance correctly."""
-    from apps.city.tests.factories import UserFactory
-
-    user = UserFactory()
-    client.force_login(user)
     savegame = SavegameFactory(user=user, is_active=True)
     building = BuildingFactory(taxes=100, maintenance_costs=20)
     TileFactory(savegame=savegame, building=building)
 
-    response = client.get(reverse("city:balance"))
+    response = authenticated_client.get(reverse("city:balance"))
 
     assert response.status_code == 200
     assert response.context["balance"] == 80
@@ -553,17 +474,13 @@ def test_balance_view_context_positive_balance(client):
 
 
 @pytest.mark.django_db
-def test_balance_view_context_negative_balance(client):
+def test_balance_view_context_negative_balance(authenticated_client, user):
     """Test BalanceView displays negative balance correctly."""
-    from apps.city.tests.factories import UserFactory
-
-    user = UserFactory()
-    client.force_login(user)
     savegame = SavegameFactory(user=user, is_active=True)
     building = BuildingFactory(taxes=10, maintenance_costs=50)
     TileFactory(savegame=savegame, building=building)
 
-    response = client.get(reverse("city:balance"))
+    response = authenticated_client.get(reverse("city:balance"))
 
     assert response.status_code == 200
     assert response.context["balance"] == -40

@@ -360,9 +360,7 @@ def test_savegame_delete_view_htmx_request_returns_ok(client):
 
     savegame = SavegameFactory(user=user, is_active=False)
 
-    response = client.delete(
-        reverse("city:savegame-delete", kwargs={"pk": savegame.pk}), HTTP_HX_REQUEST="true"
-    )
+    response = client.delete(reverse("city:savegame-delete", kwargs={"pk": savegame.pk}), HTTP_HX_REQUEST="true")
 
     assert response.status_code == 200
     assert not Savegame.objects.filter(pk=savegame.pk).exists()

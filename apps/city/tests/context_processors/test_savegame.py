@@ -28,8 +28,8 @@ def test_get_current_savegame_returns_existing_savegame(request_factory):
 
 
 @pytest.mark.django_db
-def test_get_current_savegame_creates_new_savegame(request_factory):
-    """Test get_current_savegame creates new savegame if user has none."""
+def test_get_current_savegame_returns_none_when_no_savegame(request_factory):
+    """Test get_current_savegame returns None if user has no savegame."""
     user = UserFactory()
 
     request = request_factory.get("/")
@@ -38,21 +38,19 @@ def test_get_current_savegame_creates_new_savegame(request_factory):
     result = get_current_savegame(request)
 
     assert "savegame" in result
-    assert result["savegame"] is not None
-    assert result["savegame"].user == user
-    assert result["savegame"].city_name == "New City"
-    assert result["savegame"].is_active is True
+    assert result["savegame"] is None
 
 
 @pytest.mark.django_db
 def test_get_current_savegame_consistent_results(request_factory):
     """Test get_current_savegame returns same savegame across calls for same user."""
     user = UserFactory()
+    savegame = SavegameFactory(user=user, is_active=True)
 
     request = request_factory.get("/")
     request.user = user
 
-    # First call should create savegame
+    # First call should return savegame
     result1 = get_current_savegame(request)
     savegame1 = result1["savegame"]
 
@@ -62,6 +60,7 @@ def test_get_current_savegame_consistent_results(request_factory):
 
     assert savegame1.id == savegame2.id
     assert savegame1 == savegame2
+    assert savegame1 == savegame
 
 
 @pytest.mark.django_db
@@ -79,7 +78,5 @@ def test_get_current_savegame_return_structure(request_factory):
     assert len(result) == 1
     assert "savegame" in result
 
-    # Value should be a Savegame instance
-    from apps.city.models import Savegame
-
-    assert isinstance(result["savegame"], Savegame)
+    # Value should be None when no savegame exists
+    assert result["savegame"] is None

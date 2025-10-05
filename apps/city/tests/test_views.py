@@ -239,27 +239,6 @@ def test_tile_build_view_get_form_kwargs(request_factory):
 
 
 @pytest.mark.django_db
-def test_tile_build_view_get_form_kwargs_creates_savegame(request_factory):
-    """Test TileBuildView creates savegame if doesn't exist."""
-    from apps.city.tests.factories import UserFactory
-
-    user = UserFactory()
-    tile = TileFactory()
-
-    request = request_factory.get("/")
-    request.user = user
-    view = TileBuildView()
-    view.request = request
-    view.object = tile
-
-    form_kwargs = view.get_form_kwargs()
-
-    assert "savegame" in form_kwargs
-    assert form_kwargs["savegame"].user == user
-    assert form_kwargs["savegame"].is_active is True
-
-
-@pytest.mark.django_db
 def test_tile_build_view_form_valid_with_building(request_factory):
     """Test TileBuildView deducts coins when building is selected."""
     from apps.city.tests.factories import UserFactory

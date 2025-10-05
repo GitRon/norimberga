@@ -87,9 +87,6 @@ class TileBuildView(SavegameRequiredMixin, generic.UpdateView):
     def get_form_kwargs(self) -> dict:
         kwargs = super().get_form_kwargs()
         kwargs["savegame"] = Savegame.objects.filter(user=self.request.user, is_active=True).first()
-        if not kwargs["savegame"]:
-            # Create a default savegame if user has none
-            kwargs["savegame"] = Savegame.objects.create(user=self.request.user, city_name="New City", is_active=True)
         return kwargs
 
     def form_valid(self, form) -> HttpResponse:

@@ -47,9 +47,9 @@
                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                             Savegames
                         </a>
-                        <button hx-post="{% url 'city:logout' %}"
+                        <button hx-post="{% url 'account:logout' %}"
                                 hx-swap="none"
-                                hx-on::after-request="window.location.href='{% url 'city:login' %}'"
+                                hx-on::after-request="window.location.href='{% url 'account:login' %}'"
                                 class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                             Logout
                         </button>

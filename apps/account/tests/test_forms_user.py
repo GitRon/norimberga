@@ -1,7 +1,7 @@
 import pytest
 from django.contrib.auth.models import User
 
-from apps.city.forms.user import UserRegistrationForm
+from apps.account.forms.user import UserRegistrationForm
 
 
 @pytest.mark.django_db

@@ -1,17 +1,7 @@
 import factory
-from django.contrib.auth.models import User
 
+from apps.account.tests.factories import UserFactory
 from apps.city.models import Building, BuildingType, Savegame, Terrain, Tile
-
-
-class UserFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = User
-
-    username = factory.Sequence(lambda n: f"user{n}")
-    email = factory.LazyAttribute(lambda obj: f"{obj.username}@example.com")
-    first_name = factory.Faker("first_name")
-    last_name = factory.Faker("last_name")
 
 
 class SavegameFactory(factory.django.DjangoModelFactory):

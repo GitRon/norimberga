@@ -48,6 +48,7 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
+    "apps.account",
     "apps.city",
     "apps.config",
     "apps.core",
@@ -160,5 +161,5 @@ CRISPY_TEMPLATE_PACK = "tailwind"
 
 # Authentication
 
-LOGIN_URL = "city:login"
+LOGIN_URL = "account:login"
 LOGIN_REDIRECT_URL = "city:landing-page"

@@ -1,17 +1,12 @@
 import json
 from http import HTTPStatus
 
-from django.contrib.auth import login
-from django.contrib.auth.decorators import login_not_required
-from django.contrib.auth.views import LoginView, LogoutView
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse_lazy
-from django.utils.decorators import method_decorator
 from django.views import generic
 
 from apps.city.forms.savegame import SavegameCreateForm
 from apps.city.forms.tile import TileBuildingForm
-from apps.city.forms.user import UserRegistrationForm
 from apps.city.mixins import SavegameRequiredMixin
 from apps.city.models import Savegame, Tile
 from apps.city.selectors.savegame import get_balance_data
@@ -209,35 +204,3 @@ class SavegameDeleteView(generic.DeleteView):
 
         # Otherwise redirect to list view
         return HttpResponseRedirect(self.get_success_url())
-
-
-@method_decorator(login_not_required, name="dispatch")
-class UserLoginView(LoginView):
-    template_name = "city/login.html"
-    next_page = reverse_lazy("city:landing-page")
-
-
-class UserLogoutView(LogoutView):
-    next_page = reverse_lazy("city:login")
-
-
-@method_decorator(login_not_required, name="dispatch")
-class UserRegistrationView(generic.CreateView):
-    form_class = UserRegistrationForm
-    template_name = "city/register.html"
-
-    def form_valid(self, form) -> HttpResponse:
-        # Save the user
-        user = form.save()
-
-        # Log the user in
-        login(self.request, user)
-
-        # Check if user has any savegames
-        has_savegame = Savegame.objects.filter(user=user).exists()
-
-        # Redirect to savegame list if no savegame exists, otherwise to landing page
-        if has_savegame:
-            return HttpResponseRedirect(reverse_lazy("city:landing-page"))
-
-        return HttpResponseRedirect(reverse_lazy("city:savegame-list"))

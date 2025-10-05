@@ -262,6 +262,11 @@ dev = [
     { name = "pytest-xdist" },
 ]
 
+[package.dev-dependencies]
+dev = [
+    { name = "pre-commit" },
+]
+
 [package.metadata]
 requires-dist = [
     { name = "crispy-tailwind", specifier = ">=0.5.0,<1.0" },
@@ -276,6 +281,9 @@ requires-dist = [
     { name = "pytest-xdist", marker = "extra == 'dev'", specifier = ">=3.8,<4.0" },
 ]
 provides-extras = ["dev"]
+
+[package.metadata.requires-dev]
+dev = [{ name = "pre-commit", specifier = ">=3.8.0" }]
 
 [[package]]
 name = "packaging"

@@ -1,6 +1,6 @@
 # Idea pool
 
-Ziel Norimberga: Reichsstadt werden
+Ziel Norimberga: Freie Reichsstadt werden
 
 - Edikte, wo man entscheiden kann, was man möchte, die vll auch widerrufen werden können?
     - Gib einen Tile an die Kirche, das gibt Einfluss, aber kostet die Tile?
@@ -12,7 +12,7 @@ Ziel Norimberga: Reichsstadt werden
     - Gibt es ein Event, welches darauf lauscht, wenn ich einen Milestone erledigt habe?
         - Klingt sinnvoll
 - Gibt es verschiedene Verzweigungen im Quest/Milestone-Baum?
-- Braucht man, um Reichsstadt zu werden
+- Braucht man, um Freie Reichsstadt zu werden
     - Ist das der letzte Quest? Klingt sinnvoll
 - Brauche ich dann Favour überhaupt noch? Klingt sinvoll, damit es etwas mehr Spiel gibt bei den Milestones
 

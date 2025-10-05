@@ -279,3 +279,152 @@ def test_savegame_delete_view_redirects_to_savegame_list(authenticated_client, u
 
     assert response.status_code == 302
     assert response.url == reverse("city:savegame-list")
+
+
+# UserRegistrationView Tests
+@pytest.mark.django_db
+def test_user_registration_view_get_displays_registration_form(client):
+    """Test UserRegistrationView displays registration form."""
+    response = client.get(reverse("city:register"))
+
+    assert response.status_code == 200
+    assert "city/register.html" in [t.name for t in response.templates]
+
+
+@pytest.mark.django_db
+def test_user_registration_view_post_with_valid_data_creates_user(client):
+    """Test UserRegistrationView creates user with valid data."""
+    from django.contrib.auth.models import User
+
+    data = {
+        "username": "newuser",
+        "first_name": "John",
+        "last_name": "Doe",
+        "email": "john@example.com",
+        "password1": "securepassword123",
+        "password2": "securepassword123",
+    }
+
+    response = client.post(reverse("city:register"), data=data, follow=False)
+
+    assert response.status_code == 302
+    assert User.objects.filter(username="newuser").exists()
+    user = User.objects.get(username="newuser")
+    assert user.first_name == "John"
+    assert user.last_name == "Doe"
+    assert user.email == "john@example.com"
+    assert user.check_password("securepassword123")
+
+
+@pytest.mark.django_db
+def test_user_registration_view_logs_in_user_after_registration(client):
+    """Test UserRegistrationView logs in user after successful registration."""
+    data = {
+        "username": "newuser",
+        "first_name": "John",
+        "last_name": "Doe",
+        "email": "john@example.com",
+        "password1": "securepassword123",
+        "password2": "securepassword123",
+    }
+
+    response = client.post(reverse("city:register"), data=data, follow=True)
+
+    assert response.status_code == 200
+    assert response.wsgi_request.user.is_authenticated
+    assert response.wsgi_request.user.username == "newuser"
+
+
+@pytest.mark.django_db
+def test_user_registration_view_redirects_to_savegame_list_when_no_savegame(client):
+    """Test UserRegistrationView redirects to savegame list when user has no savegame."""
+    data = {
+        "username": "newuser",
+        "first_name": "John",
+        "last_name": "Doe",
+        "email": "john@example.com",
+        "password1": "securepassword123",
+        "password2": "securepassword123",
+    }
+
+    response = client.post(reverse("city:register"), data=data, follow=False)
+
+    assert response.status_code == 302
+    assert response.url == reverse("city:savegame-list")
+
+
+@pytest.mark.django_db
+def test_user_registration_view_requires_first_name(client):
+    """Test UserRegistrationView requires first_name field."""
+    data = {
+        "username": "newuser",
+        "first_name": "",
+        "last_name": "Doe",
+        "email": "john@example.com",
+        "password1": "securepassword123",
+        "password2": "securepassword123",
+    }
+
+    response = client.post(reverse("city:register"), data=data)
+
+    assert response.status_code == 200
+    assert "first_name" in response.context["form"].errors
+
+
+@pytest.mark.django_db
+def test_user_registration_view_requires_last_name(client):
+    """Test UserRegistrationView requires last_name field."""
+    data = {
+        "username": "newuser",
+        "first_name": "John",
+        "last_name": "",
+        "email": "john@example.com",
+        "password1": "securepassword123",
+        "password2": "securepassword123",
+    }
+
+    response = client.post(reverse("city:register"), data=data)
+
+    assert response.status_code == 200
+    assert "last_name" in response.context["form"].errors
+
+
+@pytest.mark.django_db
+def test_user_registration_view_validates_password_match(client):
+    """Test UserRegistrationView validates that passwords match."""
+    data = {
+        "username": "newuser",
+        "first_name": "John",
+        "last_name": "Doe",
+        "email": "john@example.com",
+        "password1": "securepassword123",
+        "password2": "differentpassword",
+    }
+
+    response = client.post(reverse("city:register"), data=data)
+
+    assert response.status_code == 200
+    assert "password2" in response.context["form"].errors
+
+
+# LandingPageView Tests
+@pytest.mark.django_db
+def test_landing_page_view_redirects_to_savegame_list_when_no_active_savegame(authenticated_client, user):
+    """Test LandingPageView redirects to savegame list when user has no active savegame."""
+    Savegame.objects.filter(user=user).update(is_active=False)
+
+    response = authenticated_client.get(reverse("city:landing-page"), follow=False)
+
+    assert response.status_code == 302
+    assert response.url == reverse("city:savegame-list")
+
+
+@pytest.mark.django_db
+def test_landing_page_view_displays_when_user_has_active_savegame(authenticated_client, user):
+    """Test LandingPageView displays when user has an active savegame."""
+    SavegameFactory(user=user, is_active=True)
+
+    response = authenticated_client.get(reverse("city:landing-page"))
+
+    assert response.status_code == 200
+    assert "city/landing_page.html" in [t.name for t in response.templates]

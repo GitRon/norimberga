@@ -162,13 +162,3 @@ CRISPY_TEMPLATE_PACK = "tailwind"
 
 LOGIN_URL = "city:login"
 LOGIN_REDIRECT_URL = "city:landing-page"
-
-# URLs that don't require authentication
-LOGIN_REQUIRED_IGNORE_PATHS = [
-    r"^/city/login/$",
-    r"^/admin/",
-]
-
-LOGIN_REQUIRED_IGNORE_VIEW_NAMES = [
-    "city:login",
-]

@@ -1,14 +1,17 @@
 import json
 from http import HTTPStatus
 
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth import login
+from django.contrib.auth.decorators import login_not_required
 from django.contrib.auth.views import LoginView, LogoutView
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
 from django.views import generic
 
 from apps.city.forms.savegame import SavegameCreateForm
 from apps.city.forms.tile import TileBuildingForm
+from apps.city.forms.user import UserRegistrationForm
 from apps.city.models import Savegame, Tile
 from apps.city.selectors.savegame import get_balance_data
 from apps.city.services.building.housing import BuildingHousingService
@@ -42,6 +45,13 @@ class NavbarValuesView(generic.TemplateView):
 
 class LandingPageView(generic.TemplateView):
     template_name = "city/landing_page.html"
+
+    def dispatch(self, request, *args, **kwargs) -> HttpResponse:
+        # Check if user has an active savegame
+        savegame = Savegame.objects.filter(user=request.user, is_active=True).first()
+        if not savegame:
+            return HttpResponseRedirect(reverse_lazy("city:savegame-list"))
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)
@@ -140,7 +150,7 @@ class TileDemolishView(generic.View):
         return response
 
 
-class SavegameListView(LoginRequiredMixin, generic.ListView):
+class SavegameListView(generic.ListView):
     model = Savegame
     template_name = "city/savegame_list.html"
     context_object_name = "savegames"
@@ -149,7 +159,7 @@ class SavegameListView(LoginRequiredMixin, generic.ListView):
         return Savegame.objects.filter(user=self.request.user).order_by("-id")
 
 
-class SavegameLoadView(LoginRequiredMixin, generic.View):
+class SavegameLoadView(generic.View):
     def post(self, request, pk, *args, **kwargs) -> HttpResponse:
         savegame = Savegame.objects.get(pk=pk, user=request.user)
 
@@ -163,7 +173,7 @@ class SavegameLoadView(LoginRequiredMixin, generic.View):
         return HttpResponse(status=HTTPStatus.OK, headers={"HX-Redirect": reverse_lazy("city:landing-page")})
 
 
-class SavegameCreateView(LoginRequiredMixin, generic.CreateView):
+class SavegameCreateView(generic.CreateView):
     model = Savegame
     form_class = SavegameCreateForm
     template_name = "city/savegame_create.html"
@@ -190,7 +200,7 @@ class SavegameCreateView(LoginRequiredMixin, generic.CreateView):
         return reverse_lazy("city:landing-page")
 
 
-class SavegameDeleteView(LoginRequiredMixin, generic.DeleteView):
+class SavegameDeleteView(generic.DeleteView):
     model = Savegame
     success_url = reverse_lazy("city:savegame-list")
 
@@ -210,6 +220,7 @@ class SavegameDeleteView(LoginRequiredMixin, generic.DeleteView):
         return HttpResponseRedirect(self.get_success_url())
 
 
+@method_decorator(login_not_required, name="dispatch")
 class UserLoginView(LoginView):
     template_name = "city/login.html"
     next_page = reverse_lazy("city:landing-page")
@@ -217,3 +228,28 @@ class UserLoginView(LoginView):
 
 class UserLogoutView(LogoutView):
     next_page = reverse_lazy("city:login")
+
+
+@method_decorator(login_not_required, name="dispatch")
+class UserRegistrationView(generic.CreateView):
+    form_class = UserRegistrationForm
+    template_name = "city/register.html"
+
+    def form_valid(self, form) -> HttpResponse:
+        # Save the user
+        user = form.save()
+
+        # Log the user in
+        login(self.request, user)
+
+        # Check if user has any savegames
+        has_savegame = Savegame.objects.filter(user=user).exists()
+
+        # Redirect to savegame list if no savegame exists, otherwise to landing page
+        if has_savegame:
+            return HttpResponseRedirect(reverse_lazy("city:landing-page"))
+        else:
+            return HttpResponseRedirect(reverse_lazy("city:savegame-list"))
+
+    def get_success_url(self) -> str:
+        return reverse_lazy("city:savegame-list")

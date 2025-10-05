@@ -6,6 +6,7 @@ from django.http import HttpResponse
 from django.views import generic
 
 from apps.city.models import Savegame
+from apps.city.services.wall.enclosure import WallEnclosureService
 from apps.event.services.selection import EventSelectionService
 
 
@@ -30,6 +31,10 @@ class RoundView(generic.View):
             messages.add_message(
                 self.request, messages.INFO, "It was a quiet year. Nothing happened out of the ordinary."
             )
+
+        # Update enclosure status after events (in case buildings were removed)
+        savegame.is_enclosed = WallEnclosureService(savegame=savegame).process()
+        savegame.save()
 
         response = HttpResponse(status=HTTPStatus.OK)
         response["HX-Trigger"] = json.dumps(

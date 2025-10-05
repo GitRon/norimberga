@@ -35,7 +35,7 @@ class NavbarValuesView(generic.TemplateView):
             if savegame:
                 context["savegame"] = savegame
                 context["max_housing_space"] = BuildingHousingService(savegame=savegame).calculate_max_space()
-                context["is_enclosed"] = WallEnclosureService(savegame=savegame).process()
+                context["is_enclosed"] = savegame.is_enclosed
         return context
 
 
@@ -175,9 +175,10 @@ class SavegameCreateView(generic.CreateView):
         service = MapGenerationService(savegame=self.object)
         service.process()
 
-        # Set this as the active savegame
+        # Set this as the active savegame and update enclosure status
         Savegame.objects.filter(user=self.request.user).update(is_active=False)
         self.object.is_active = True
+        self.object.is_enclosed = WallEnclosureService(savegame=self.object).process()
         self.object.save()
 
         return HttpResponseRedirect(self.get_success_url())

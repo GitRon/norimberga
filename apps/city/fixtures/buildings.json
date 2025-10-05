@@ -6,9 +6,9 @@
       "name": "Small House",
       "building_type": 1,
       "level": 1,
-      "taxes": 5,
+      "taxes": 3,
       "building_costs": 50,
-      "maintenance_costs": 2,
+      "maintenance_costs": 0,
       "housing_space": 10
     }
   },
@@ -19,9 +19,9 @@
       "name": "Medium House",
       "building_type": 1,
       "level": 2,
-      "taxes": 10,
+      "taxes": 6,
       "building_costs": 100,
-      "maintenance_costs": 4,
+      "maintenance_costs": 0,
       "housing_space": 20
     }
   },
@@ -32,9 +32,9 @@
       "name": "Large House",
       "building_type": 1,
       "level": 3,
-      "taxes": 20,
+      "taxes": 12,
       "building_costs": 200,
-      "maintenance_costs": 8,
+      "maintenance_costs": 0,
       "housing_space": 40
     }
   },
@@ -45,9 +45,9 @@
       "name": "Small Workshop",
       "building_type": 2,
       "level": 1,
-      "taxes": 10,
+      "taxes": 7,
       "building_costs": 80,
-      "maintenance_costs": 3,
+      "maintenance_costs": 0,
       "housing_space": 0
     }
   },
@@ -58,9 +58,9 @@
       "name": "Medium Workshop",
       "building_type": 2,
       "level": 2,
-      "taxes": 20,
+      "taxes": 14,
       "building_costs": 150,
-      "maintenance_costs": 6,
+      "maintenance_costs": 0,
       "housing_space": 0
     }
   },
@@ -71,9 +71,9 @@
       "name": "Large Workshop",
       "building_type": 2,
       "level": 3,
-      "taxes": 40,
+      "taxes": 28,
       "building_costs": 300,
-      "maintenance_costs": 12,
+      "maintenance_costs": 0,
       "housing_space": 0
     }
   },
@@ -123,9 +123,9 @@
       "name": "Small Market Square",
       "building_type": 4,
       "level": 1,
-      "taxes": 15,
+      "taxes": 10,
       "building_costs": 150,
-      "maintenance_costs": 5,
+      "maintenance_costs": 0,
       "housing_space": 0
     }
   },
@@ -136,9 +136,9 @@
       "name": "Medium Market Square",
       "building_type": 4,
       "level": 2,
-      "taxes": 30,
+      "taxes": 20,
       "building_costs": 300,
-      "maintenance_costs": 10,
+      "maintenance_costs": 0,
       "housing_space": 0
     }
   },
@@ -149,9 +149,9 @@
       "name": "Large Market Square",
       "building_type": 4,
       "level": 3,
-      "taxes": 60,
+      "taxes": 40,
       "building_costs": 600,
-      "maintenance_costs": 20,
+      "maintenance_costs": 0,
       "housing_space": 0
     }
   },
@@ -162,9 +162,9 @@
       "name": "Small Mine",
       "building_type": 5,
       "level": 1,
-      "taxes": 12,
+      "taxes": 7,
       "building_costs": 100,
-      "maintenance_costs": 5,
+      "maintenance_costs": 0,
       "housing_space": 0
     }
   },
@@ -175,9 +175,9 @@
       "name": "Medium Mine",
       "building_type": 5,
       "level": 2,
-      "taxes": 24,
+      "taxes": 14,
       "building_costs": 200,
-      "maintenance_costs": 10,
+      "maintenance_costs": 0,
       "housing_space": 0
     }
   },
@@ -188,9 +188,9 @@
       "name": "Large Mine",
       "building_type": 5,
       "level": 3,
-      "taxes": 48,
+      "taxes": 28,
       "building_costs": 400,
-      "maintenance_costs": 20,
+      "maintenance_costs": 0,
       "housing_space": 0
     }
   },
@@ -201,9 +201,9 @@
       "name": "Small Quarry",
       "building_type": 6,
       "level": 1,
-      "taxes": 8,
+      "taxes": 4,
       "building_costs": 80,
-      "maintenance_costs": 4,
+      "maintenance_costs": 0,
       "housing_space": 0
     }
   },
@@ -214,9 +214,9 @@
       "name": "Medium Quarry",
       "building_type": 6,
       "level": 2,
-      "taxes": 16,
+      "taxes": 8,
       "building_costs": 160,
-      "maintenance_costs": 8,
+      "maintenance_costs": 0,
       "housing_space": 0
     }
   },
@@ -227,9 +227,9 @@
       "name": "Large Quarry",
       "building_type": 6,
       "level": 3,
-      "taxes": 32,
+      "taxes": 16,
       "building_costs": 320,
-      "maintenance_costs": 16,
+      "maintenance_costs": 0,
       "housing_space": 0
     }
   },
@@ -240,9 +240,9 @@
       "name": "Small Lumberjack",
       "building_type": 7,
       "level": 1,
-      "taxes": 6,
+      "taxes": 3,
       "building_costs": 60,
-      "maintenance_costs": 3,
+      "maintenance_costs": 0,
       "housing_space": 0
     }
   },
@@ -253,9 +253,9 @@
       "name": "Medium Lumberjack",
       "building_type": 7,
       "level": 2,
-      "taxes": 12,
+      "taxes": 6,
       "building_costs": 120,
-      "maintenance_costs": 6,
+      "maintenance_costs": 0,
       "housing_space": 0
     }
   },
@@ -266,9 +266,9 @@
       "name": "Large Lumberjack",
       "building_type": 7,
       "level": 3,
-      "taxes": 24,
+      "taxes": 12,
       "building_costs": 240,
-      "maintenance_costs": 12,
+      "maintenance_costs": 0,
       "housing_space": 0
     }
   },
@@ -279,9 +279,9 @@
       "name": "Small Farm",
       "building_type": 8,
       "level": 1,
-      "taxes": 4,
+      "taxes": 2,
       "building_costs": 40,
-      "maintenance_costs": 2,
+      "maintenance_costs": 0,
       "housing_space": 0
     }
   },
@@ -292,9 +292,9 @@
       "name": "Medium Farm",
       "building_type": 8,
       "level": 2,
-      "taxes": 8,
+      "taxes": 4,
       "building_costs": 80,
-      "maintenance_costs": 4,
+      "maintenance_costs": 0,
       "housing_space": 0
     }
   },
@@ -305,9 +305,9 @@
       "name": "Large Farm",
       "building_type": 8,
       "level": 3,
-      "taxes": 16,
+      "taxes": 8,
       "building_costs": 160,
-      "maintenance_costs": 8,
+      "maintenance_costs": 0,
       "housing_space": 0
     }
   },
@@ -318,9 +318,9 @@
       "name": "Small Fishery",
       "building_type": 9,
       "level": 1,
-      "taxes": 5,
+      "taxes": 3,
       "building_costs": 50,
-      "maintenance_costs": 2,
+      "maintenance_costs": 0,
       "housing_space": 0
     }
   },
@@ -331,9 +331,9 @@
       "name": "Medium Fishery",
       "building_type": 9,
       "level": 2,
-      "taxes": 10,
+      "taxes": 6,
       "building_costs": 100,
-      "maintenance_costs": 4,
+      "maintenance_costs": 0,
       "housing_space": 0
     }
   },
@@ -344,9 +344,9 @@
       "name": "Large Fishery",
       "building_type": 9,
       "level": 3,
-      "taxes": 20,
+      "taxes": 12,
       "building_costs": 200,
-      "maintenance_costs": 8,
+      "maintenance_costs": 0,
       "housing_space": 0
     }
   }

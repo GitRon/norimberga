@@ -16,6 +16,14 @@
             <span class="text-gray-500">Year:</span>
             <span class="font-semibold">{{ savegame.current_year }}</span>
         </div>
+        <div title="{% if is_enclosed %}City is enclosed by walls{% else %}City is not enclosed by walls{% endif %}">
+            <span class="text-gray-500">Wall:</span>
+            {% if is_enclosed %}
+                <span class="font-semibold text-green-600">✓</span>
+            {% else %}
+                <span class="font-semibold text-red-600">✗</span>
+            {% endif %}
+        </div>
     </div>
     <button hx-post="{% url 'round:finish' %}"
             hx-swap="none"

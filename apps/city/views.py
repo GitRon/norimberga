@@ -36,6 +36,7 @@ class NavbarValuesView(generic.TemplateView):
             if savegame:
                 context["savegame"] = savegame
                 context["max_housing_space"] = BuildingHousingService(savegame=savegame).calculate_max_space()
+                context["is_enclosed"] = WallEnclosureService(savegame=savegame).process()
         return context
 
 

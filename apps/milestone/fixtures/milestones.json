@@ -1,0 +1,102 @@
+[
+  {
+    "model": "milestone.milestone",
+    "pk": 1,
+    "fields": {
+      "name": "First Settlement",
+      "description": "Establish your first settlement with a handful of inhabitants",
+      "parent": null,
+      "order": 1
+    }
+  },
+  {
+    "model": "milestone.milestone",
+    "pk": 2,
+    "fields": {
+      "name": "Growing Village",
+      "description": "Your settlement is growing into a proper village",
+      "parent": 1,
+      "order": 2
+    }
+  },
+  {
+    "model": "milestone.milestone",
+    "pk": 3,
+    "fields": {
+      "name": "Prosperous Village",
+      "description": "Your village is thriving with many inhabitants",
+      "parent": 2,
+      "order": 3
+    }
+  },
+  {
+    "model": "milestone.milestone",
+    "pk": 4,
+    "fields": {
+      "name": "Small Town",
+      "description": "Your settlement has grown into a small town",
+      "parent": 3,
+      "order": 4
+    }
+  },
+  {
+    "model": "milestone.milestone",
+    "pk": 5,
+    "fields": {
+      "name": "Fortified Town",
+      "description": "Build walls to protect your town from threats",
+      "parent": 4,
+      "order": 5
+    }
+  },
+  {
+    "model": "milestone.milestone",
+    "pk": 6,
+    "fields": {
+      "name": "Major City",
+      "description": "Your town has become a major city in the region",
+      "parent": 5,
+      "order": 6
+    }
+  },
+  {
+    "model": "milestone.milestone",
+    "pk": 7,
+    "fields": {
+      "name": "Trade Hub",
+      "description": "Your city is a center of trade and commerce",
+      "parent": 6,
+      "order": 7
+    }
+  },
+  {
+    "model": "milestone.milestone",
+    "pk": 8,
+    "fields": {
+      "name": "Freie Reichsstadt",
+      "description": "Achieve the ultimate goal: become a free imperial city!",
+      "parent": 7,
+      "order": 8
+    }
+  },
+  {
+    "model": "milestone.milestone",
+    "pk": 9,
+    "fields": {
+      "name": "First Coins",
+      "description": "Accumulate your first treasury",
+      "parent": null,
+      "order": 10
+    }
+  },
+  {
+    "model": "milestone.milestone",
+    "pk": 10,
+    "fields": {
+      "name": "Wealthy City",
+      "description": "Build significant wealth through taxes and trade",
+      "parent": 9,
+      "order": 11
+    }
+  }
+]

@@ -1,12 +1,28 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="flex flex-row">
-        <div class="flex flex-col">
-            <h1 class="text-3xl font-bold mb-4">Milestones</h1>
+    <div class="max-w-6xl mx-auto">
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Milestones</h1>
+            <p class="text-gray-600">Track your progress towards becoming a Freie Reichsstadt</p>
         </div>
-    </div>
-    <div class="flex flex-row">
-        I am a milestone
+
+        {% if milestone_tree %}
+            <div class="space-y-6">
+                {% for root_milestone in milestone_tree %}
+                    {% include "milestone/partials/_milestone_card.html" with milestone_data=root_milestone level=0 %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="bg-white rounded-lg shadow-md p-8 text-center">
+                <div class="text-gray-500 mb-4">
+                    <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">No Milestones Yet</h3>
+                <p class="text-gray-600">Milestones will appear here once they are configured.</p>
+            </div>
+        {% endif %}
     </div>
 {% endblock content %}

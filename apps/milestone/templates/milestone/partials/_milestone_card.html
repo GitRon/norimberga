@@ -1,0 +1,92 @@
+{% load static %}
+
+<div class="{% if level > 0 %}ml-8 mt-4{% endif %}">
+    <div class="bg-white rounded-lg shadow-md border-l-4 {% if milestone_data.is_completed %}border-green-500{% elif milestone_data.is_available %}border-blue-500{% else %}border-gray-300{% endif %} hover:shadow-lg transition-shadow">
+        <div class="p-6">
+            <div class="flex items-start justify-between">
+                <div class="flex items-start gap-4 flex-1">
+                    {# Status Icon #}
+                    <div class="flex-shrink-0 mt-1">
+                        {% if milestone_data.is_completed %}
+                            <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                        {% elif milestone_data.is_available %}
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                            </svg>
+                        {% else %}
+                            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                            </svg>
+                        {% endif %}
+                    </div>
+
+                    {# Milestone Content #}
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-2">
+                            <h3 class="text-lg font-semibold {% if milestone_data.is_locked %}text-gray-500{% else %}text-gray-900{% endif %}">
+                                {{ milestone_data.milestone.name }}
+                            </h3>
+
+                            {# Status Badge #}
+                            {% if milestone_data.is_completed %}
+                                <span class="px-2 py-1 text-xs font-semibold text-green-800 bg-green-200 rounded-full">
+                                    Completed
+                                </span>
+                            {% elif milestone_data.is_available %}
+                                <span class="px-2 py-1 text-xs font-semibold text-blue-800 bg-blue-200 rounded-full">
+                                    Available
+                                </span>
+                            {% else %}
+                                <span class="px-2 py-1 text-xs font-semibold text-gray-800 bg-gray-200 rounded-full">
+                                    Locked
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        {% if milestone_data.milestone.description %}
+                            <p class="text-gray-600 mb-3">{{ milestone_data.milestone.description }}</p>
+                        {% endif %}
+
+                        {# Conditions #}
+                        {% if milestone_data.conditions_verbose %}
+                            <div class="mt-3">
+                                <h4 class="text-sm font-semibold text-gray-700 mb-2">Requirements:</h4>
+                                <ul class="space-y-1">
+                                    {% for condition in milestone_data.conditions_verbose %}
+                                        <li class="flex items-center text-sm text-gray-600">
+                                            <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                            </svg>
+                                            {{ condition.verbose_name }}: {{ condition.value }}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+
+                        {# Parent requirement notice #}
+                        {% if milestone_data.is_locked and milestone_data.milestone.parent %}
+                            <div class="mt-3 flex items-center gap-2 text-sm text-gray-500">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span>Complete "{{ milestone_data.milestone.parent.name }}" to unlock this milestone</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Render children milestones recursively #}
+    {% if milestone_data.children %}
+        <div class="mt-2">
+            {% for child in milestone_data.children %}
+                {% include "milestone/partials/_milestone_card.html" with milestone_data=child level=level|add:1 %}
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>

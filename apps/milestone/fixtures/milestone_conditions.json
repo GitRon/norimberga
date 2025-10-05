@@ -1,0 +1,119 @@
+[
+  {
+    "model": "milestone.milestonecondition",
+    "pk": 1,
+    "fields": {
+      "milestone": 1,
+      "condition_class": "apps.milestone.conditions.population.MinPopulationCondition",
+      "value": "10"
+    }
+  },
+  {
+    "model": "milestone.milestonecondition",
+    "pk": 2,
+    "fields": {
+      "milestone": 2,
+      "condition_class": "apps.milestone.conditions.population.MinPopulationCondition",
+      "value": "50"
+    }
+  },
+  {
+    "model": "milestone.milestonecondition",
+    "pk": 3,
+    "fields": {
+      "milestone": 3,
+      "condition_class": "apps.milestone.conditions.population.MinPopulationCondition",
+      "value": "100"
+    }
+  },
+  {
+    "model": "milestone.milestonecondition",
+    "pk": 4,
+    "fields": {
+      "milestone": 4,
+      "condition_class": "apps.milestone.conditions.population.MinPopulationCondition",
+      "value": "200"
+    }
+  },
+  {
+    "model": "milestone.milestonecondition",
+    "pk": 5,
+    "fields": {
+      "milestone": 5,
+      "condition_class": "apps.milestone.conditions.population.MinPopulationCondition",
+      "value": "300"
+    }
+  },
+  {
+    "model": "milestone.milestonecondition",
+    "pk": 6,
+    "fields": {
+      "milestone": 6,
+      "condition_class": "apps.milestone.conditions.population.MinPopulationCondition",
+      "value": "500"
+    }
+  },
+  {
+    "model": "milestone.milestonecondition",
+    "pk": 7,
+    "fields": {
+      "milestone": 7,
+      "condition_class": "apps.milestone.conditions.population.MinPopulationCondition",
+      "value": "750"
+    }
+  },
+  {
+    "model": "milestone.milestonecondition",
+    "pk": 8,
+    "fields": {
+      "milestone": 8,
+      "condition_class": "apps.milestone.conditions.population.MinPopulationCondition",
+      "value": "1000"
+    }
+  },
+  {
+    "model": "milestone.milestonecondition",
+    "pk": 9,
+    "fields": {
+      "milestone": 9,
+      "condition_class": "apps.milestone.conditions.coins.MinCoinsCondition",
+      "value": "500"
+    }
+  },
+  {
+    "model": "milestone.milestonecondition",
+    "pk": 10,
+    "fields": {
+      "milestone": 10,
+      "condition_class": "apps.milestone.conditions.coins.MinCoinsCondition",
+      "value": "5000"
+    }
+  },
+  {
+    "model": "milestone.milestonecondition",
+    "pk": 11,
+    "fields": {
+      "milestone": 10,
+      "condition_class": "apps.milestone.conditions.population.MinPopulationCondition",
+      "value": "200"
+    }
+  },
+  {
+    "model": "milestone.milestonecondition",
+    "pk": 12,
+    "fields": {
+      "milestone": 8,
+      "condition_class": "apps.milestone.conditions.coins.MinCoinsCondition",
+      "value": "10000"
+    }
+  },
+  {
+    "model": "milestone.milestonecondition",
+    "pk": 13,
+    "fields": {
+      "milestone": 8,
+      "condition_class": "apps.milestone.conditions.year.MinYearCondition",
+      "value": "1200"
+    }
+  }
+]

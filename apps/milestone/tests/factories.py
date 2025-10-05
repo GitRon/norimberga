@@ -1,7 +1,26 @@
 import factory
 
 from apps.city.tests.factories import SavegameFactory
-from apps.milestone.models import MilestoneLog
+from apps.milestone.models import Milestone, MilestoneCondition, MilestoneLog
+
+
+class MilestoneFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Milestone
+
+    name = factory.Sequence(lambda n: f"Milestone {n}")
+    description = factory.Faker("sentence")
+    parent = None
+    order = factory.Sequence(lambda n: n)
+
+
+class MilestoneConditionFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = MilestoneCondition
+
+    milestone = factory.SubFactory(MilestoneFactory)
+    condition_class = "apps.milestone.conditions.population.MinPopulationCondition"
+    value = "50"
 
 
 class MilestoneLogFactory(factory.django.DjangoModelFactory):
@@ -9,5 +28,5 @@ class MilestoneLogFactory(factory.django.DjangoModelFactory):
         model = MilestoneLog
 
     savegame = factory.SubFactory(SavegameFactory)
-    milestone = factory.Faker("sentence", nb_words=3)
+    milestone = factory.SubFactory(MilestoneFactory)
     accomplished_at = factory.Faker("random_int", min=1000, max=1500)

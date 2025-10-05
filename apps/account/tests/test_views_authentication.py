@@ -219,3 +219,29 @@ def test_user_registration_view_validates_password_match(client):
 
     assert response.status_code == 200
     assert "password2" in response.context["form"].errors
+
+
+@pytest.mark.django_db
+def test_user_registration_view_redirects_to_landing_page_with_existing_savegame(client):
+    """Test UserRegistrationView redirects to landing page when user has existing savegame."""
+    from unittest.mock import patch
+
+
+    data = {
+        "username": "newuser",
+        "first_name": "John",
+        "last_name": "Doe",
+        "email": "john@example.com",
+        "password1": "securepassword123",
+        "password2": "securepassword123",
+    }
+
+    # Mock the Savegame.objects.filter().exists() to return True
+    # This simulates the case where the user has an existing savegame after registration
+    with patch("apps.account.views.Savegame.objects.filter") as mock_filter:
+        mock_filter.return_value.exists.return_value = True
+
+        response = client.post(reverse("account:register"), data=data, follow=False)
+
+    assert response.status_code == 302
+    assert response.url == reverse("city:landing-page")

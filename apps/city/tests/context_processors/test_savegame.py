@@ -80,3 +80,26 @@ def test_get_current_savegame_return_structure(request_factory):
 
     # Value should be None when no savegame exists
     assert result["savegame"] is None
+
+
+def test_get_current_savegame_returns_none_for_unauthenticated_user(request_factory):
+    """Test get_current_savegame returns None for unauthenticated user."""
+    from django.contrib.auth.models import AnonymousUser
+
+    request = request_factory.get("/")
+    request.user = AnonymousUser()
+
+    result = get_current_savegame(request)
+
+    assert "savegame" in result
+    assert result["savegame"] is None
+
+
+def test_get_current_savegame_returns_none_when_no_user_attribute(request_factory):
+    """Test get_current_savegame returns None when request has no user attribute."""
+    request = request_factory.get("/")
+
+    result = get_current_savegame(request)
+
+    assert "savegame" in result
+    assert result["savegame"] is None

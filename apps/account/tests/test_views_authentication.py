@@ -226,7 +226,6 @@ def test_user_registration_view_redirects_to_landing_page_with_existing_savegame
     """Test UserRegistrationView redirects to landing page when user has existing savegame."""
     from unittest.mock import patch
 
-
     data = {
         "username": "newuser",
         "first_name": "John",

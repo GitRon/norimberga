@@ -4,12 +4,15 @@
         <div class="grid grid-cols-20 gap-0 text-center bg-gray-300 rounded">
             {% for tile in savegame.tiles.all %}
                 {# Tailwind can't detect dynamic classes, therefore, they are safelist-ed #}
-                <div class="w-10 aspect-square border border-gray-400 cursor-pointer {{ tile.color_class }} relative transition-all duration-200 hover:brightness-110 hover:z-10 hover:shadow-xl hover:border-gray-700 hover:border-2"
-                     hx-get="{% url "city:tile-build" tile.id %}" hx-target="#build-container" hx-swap="innerHTML">
+                <div class="aspect-square border border-gray-400 cursor-pointer {{ tile.color_class }} relative transition-all duration-200 hover:brightness-110 hover:z-10 hover:shadow-xl hover:border-gray-700 hover:border-2"
+                     hx-get="{% url "city:tile-build" tile.id %}"
+                     hx-target="#build-container"
+                     hx-swap="innerHTML"
+                     onclick="document.getElementById('build-modal').classList.remove('hidden')">
                     {% if tile.building %}
                         <div class="flex flex-col items-center justify-center h-full text-center px-0.5 overflow-hidden">
-                            <span class="text-[6px] font-bold text-gray-800 leading-tight break-words line-clamp-2">{{ tile.building.building_type.name }}</span>
-                            <span class="text-[7px] font-semibold text-gray-600 mt-0.5">{{ tile.building.level|to_roman }}</span>
+                            <span class="text-[0.45rem] sm:text-[0.5rem] md:text-[0.55rem] lg:text-[0.6rem] xl:text-[0.65rem] 2xl:text-xs font-bold text-gray-800 leading-tight break-words line-clamp-2">{{ tile.building.building_type.name }}</span>
+                            <span class="text-[0.5rem] sm:text-[0.55rem] md:text-[0.6rem] lg:text-[0.65rem] xl:text-[0.7rem] 2xl:text-sm font-semibold text-gray-600 mt-0.5">{{ tile.building.level|to_roman }}</span>
                         </div>
                     {% endif %}
 {# <span class="absolute bottom-0 right-0 m-1 text-xs text-slate-500">{{ tile.x }}/{{ tile.y }}</span> #}

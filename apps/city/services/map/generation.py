@@ -57,9 +57,12 @@ class MapGenerationService:
         Place random country buildings on the map at valid locations.
         All buildings are placed at level 1.
         Buildings cannot be placed on edge tiles.
+        Excludes buildings that are both city and country buildings.
         """
-        # Get all country building types that have allowed terrains
-        country_building_types = BuildingType.objects.filter(is_country=True).prefetch_related("allowed_terrains")
+        # Get all country building types that have allowed terrains, excluding buildings that are also city buildings
+        country_building_types = BuildingType.objects.filter(is_country=True, is_city=False).prefetch_related(
+            "allowed_terrains"
+        )
 
         if not country_building_types.exists():
             return

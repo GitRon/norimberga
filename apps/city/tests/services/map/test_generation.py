@@ -446,3 +446,39 @@ def test_map_generation_service_place_random_country_buildings_skips_occupied_ti
     # (the occupied tile should be skipped and other tiles used instead)
     tiles_with_buildings = savegame.tiles.filter(building__isnull=False)
     assert tiles_with_buildings.count() == INITIAL_COUNTRY_BUILDINGS + 1  # +1 for the pre-placed building
+
+
+@pytest.mark.django_db
+def test_map_generation_service_place_random_country_buildings_excludes_city_and_country_buildings():
+    """Test _place_random_country_buildings excludes buildings that are both is_city and is_country."""
+    from apps.city.models import BuildingType
+
+    savegame = SavegameFactory()
+    service = MapGenerationService(savegame=savegame)
+
+    # Create terrain
+    terrain = TerrainFactory(name="Grass", probability=80)
+
+    # Create a building type that is both city and country (like market square)
+    city_and_country_building_type = BuildingType.objects.create(name="Market Square", is_city=True, is_country=True)
+    city_and_country_building_type.allowed_terrains.add(terrain)
+    BuildingFactory(building_type=city_and_country_building_type, level=1)
+
+    # Create a pure country building type
+    country_only_building_type = CountryBuildingTypeFactory(allowed_terrains=[terrain])
+    BuildingFactory(building_type=country_only_building_type, level=1)
+
+    create_tiles_batch(savegame, 5, terrain)
+
+    service._place_random_country_buildings()
+
+    # Verify that buildings were placed
+    tiles_with_buildings = savegame.tiles.filter(building__isnull=False)
+    assert tiles_with_buildings.count() == INITIAL_COUNTRY_BUILDINGS
+
+    # Verify that none of the placed buildings are the city+country type
+    for tile in tiles_with_buildings:
+        assert tile.building.building_type != city_and_country_building_type
+        assert tile.building.building_type == country_only_building_type
+        assert tile.building.building_type.is_country is True
+        assert tile.building.building_type.is_city is False

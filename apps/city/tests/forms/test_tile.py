@@ -348,6 +348,130 @@ def test_tile_building_form_clean_building_no_building():
 
 
 @pytest.mark.django_db
+def test_tile_building_form_clean_building_edge_tile_top():
+    """Test form validation fails when trying to build on top edge tile."""
+    savegame = SavegameFactory(map_size=5, coins=100)
+    terrain = TerrainFactory()
+
+    # Create tile on top edge (y=0)
+    tile = TileFactory(savegame=savegame, terrain=terrain, x=2, y=0, building=None)
+
+    building_type = BuildingTypeFactory()
+    building_type.allowed_terrains.add(terrain)
+    building = BuildingFactory(building_type=building_type, building_costs=50, level=1)
+
+    form = TileBuildingForm(savegame=savegame, instance=tile)
+    form.cleaned_data = {"building": building}
+
+    with pytest.raises(ValidationError) as exc_info:
+        form.clean_building()
+
+    assert "You can't build on edge tiles." in str(exc_info.value)
+
+
+@pytest.mark.django_db
+def test_tile_building_form_clean_building_edge_tile_left():
+    """Test form validation fails when trying to build on left edge tile."""
+    savegame = SavegameFactory(map_size=5, coins=100)
+    terrain = TerrainFactory()
+
+    # Create tile on left edge (x=0)
+    tile = TileFactory(savegame=savegame, terrain=terrain, x=0, y=2, building=None)
+
+    building_type = BuildingTypeFactory()
+    building_type.allowed_terrains.add(terrain)
+    building = BuildingFactory(building_type=building_type, building_costs=50, level=1)
+
+    form = TileBuildingForm(savegame=savegame, instance=tile)
+    form.cleaned_data = {"building": building}
+
+    with pytest.raises(ValidationError) as exc_info:
+        form.clean_building()
+
+    assert "You can't build on edge tiles." in str(exc_info.value)
+
+
+@pytest.mark.django_db
+def test_tile_building_form_clean_building_edge_tile_bottom():
+    """Test form validation fails when trying to build on bottom edge tile."""
+    savegame = SavegameFactory(map_size=5, coins=100)
+    terrain = TerrainFactory()
+
+    # Create tile on bottom edge (y=map_size-1 = 4)
+    tile = TileFactory(savegame=savegame, terrain=terrain, x=2, y=4, building=None)
+
+    building_type = BuildingTypeFactory()
+    building_type.allowed_terrains.add(terrain)
+    building = BuildingFactory(building_type=building_type, building_costs=50, level=1)
+
+    form = TileBuildingForm(savegame=savegame, instance=tile)
+    form.cleaned_data = {"building": building}
+
+    with pytest.raises(ValidationError) as exc_info:
+        form.clean_building()
+
+    assert "You can't build on edge tiles." in str(exc_info.value)
+
+
+@pytest.mark.django_db
+def test_tile_building_form_clean_building_edge_tile_right():
+    """Test form validation fails when trying to build on right edge tile."""
+    savegame = SavegameFactory(map_size=5, coins=100)
+    terrain = TerrainFactory()
+
+    # Create tile on right edge (x=map_size-1 = 4)
+    tile = TileFactory(savegame=savegame, terrain=terrain, x=4, y=2, building=None)
+
+    building_type = BuildingTypeFactory()
+    building_type.allowed_terrains.add(terrain)
+    building = BuildingFactory(building_type=building_type, building_costs=50, level=1)
+
+    form = TileBuildingForm(savegame=savegame, instance=tile)
+    form.cleaned_data = {"building": building}
+
+    with pytest.raises(ValidationError) as exc_info:
+        form.clean_building()
+
+    assert "You can't build on edge tiles." in str(exc_info.value)
+
+
+@pytest.mark.django_db
+def test_tile_building_form_clean_building_non_edge_tile():
+    """Test form validation passes when building on non-edge tile."""
+    savegame = SavegameFactory(map_size=5, coins=100)
+    terrain = TerrainFactory()
+
+    # Create tile not on edge (x=2, y=2)
+    tile = TileFactory(savegame=savegame, terrain=terrain, x=2, y=2, building=None)
+
+    building_type = BuildingTypeFactory()
+    building_type.allowed_terrains.add(terrain)
+    building = BuildingFactory(building_type=building_type, building_costs=50, level=1)
+
+    form = TileBuildingForm(savegame=savegame, instance=tile)
+    form.cleaned_data = {"building": building}
+
+    result = form.clean_building()
+    assert result == building
+
+
+@pytest.mark.django_db
+def test_tile_building_form_clean_building_edge_tile_no_building():
+    """Test form validation passes when not building on edge tile (demolishing or no action)."""
+    savegame = SavegameFactory(map_size=5)
+    terrain = TerrainFactory()
+
+    # Create tile on edge
+    tile = TileFactory(savegame=savegame, terrain=terrain, x=0, y=0, building=None)
+
+    form = TileBuildingForm(savegame=savegame, instance=tile)
+    form.cleaned_data = {"building": None}
+
+    result = form.clean_building()
+    assert result is None
+
+
+@pytest.mark.django_db
 def test_tile_building_form_crispy_helper():
     """Test form has crispy helper configured."""
     savegame = SavegameFactory()

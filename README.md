@@ -15,6 +15,7 @@ challenges dealing with space within the city walls.
     * [Idea pool](docs/contributing/idea_pool.md)
 * Patterns
     * [Django patterns](docs/patterns/django_patterns.md)
+    * [HTMX usage](docs/patterns/htmx_usage.md)
     * [Dependency injection](docs/patterns/dependency_injection.md)
     * [Event system](docs/patterns/event_system.md)
     * [Mono app approach](docs/patterns/mono_app_approach.md)

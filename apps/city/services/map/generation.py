@@ -8,9 +8,11 @@ from apps.city.services.map.coordinates import MapCoordinatesService
 
 class MapGenerationService:
     savegame: Savegame
+    map_size: int
 
-    def __init__(self, *, savegame: Savegame):
+    def __init__(self, *, savegame: Savegame, map_size: int = MAP_SIZE):
         self.savegame = savegame
+        self.map_size = map_size
 
     def get_terrain(self) -> Terrain:
         terrain = None
@@ -18,6 +20,11 @@ class MapGenerationService:
             dice = randint(1, 100)
             terrain = Terrain.objects.filter(probability__gte=dice).exclude(name="River").order_by("?").first()
         return terrain
+
+    def _is_edge_tile(self, tile: Tile) -> bool:
+        """Check if a tile is on the edge of the map based on the current map size."""
+        max_coord = self.map_size - 1
+        return tile.x == 0 or tile.y == 0 or tile.x == max_coord or tile.y == max_coord
 
     def _draw_river(self):
         """
@@ -27,9 +34,9 @@ class MapGenerationService:
         dice = randint(1, 2)
         # Decide if the river starts on the x- or y-axis
         if dice == 1:
-            start_coordinates = MapCoordinatesService.Coordinates(x=0, y=randint(1, MAP_SIZE - 1))
+            start_coordinates = MapCoordinatesService.Coordinates(x=0, y=randint(1, self.map_size - 1))
         else:
-            start_coordinates = MapCoordinatesService.Coordinates(x=randint(1, MAP_SIZE - 1), y=0)
+            start_coordinates = MapCoordinatesService.Coordinates(x=randint(1, self.map_size - 1), y=0)
 
         # Fetch river terrain
         terrain_river = Terrain.objects.filter(name="River").first()
@@ -44,7 +51,7 @@ class MapGenerationService:
             ).update(terrain=terrain_river)
 
             # If we have reached the other end of the map, we are done
-            if iter_coordinates.x == MAP_SIZE - 1 or iter_coordinates.y == MAP_SIZE - 1:
+            if iter_coordinates.x == self.map_size - 1 or iter_coordinates.y == self.map_size - 1:
                 break
 
             # Get the next field which should become a river
@@ -70,7 +77,7 @@ class MapGenerationService:
         # Get all non-edge tiles that could potentially have buildings
         tiles = list(self.savegame.tiles.select_related("terrain").all())
         # Filter out edge tiles
-        tiles = [t for t in tiles if not t.is_edge_tile()]
+        tiles = [t for t in tiles if not self._is_edge_tile(t)]
 
         if not tiles:
             return
@@ -115,8 +122,8 @@ class MapGenerationService:
         self.savegame.tiles.all().delete()
 
         # Generate map
-        for x in range(MAP_SIZE):
-            for y in range(MAP_SIZE):
+        for x in range(self.map_size):
+            for y in range(self.map_size):
                 Tile.objects.create(savegame=self.savegame, x=x, y=y, terrain=self.get_terrain())
 
         # Draw river

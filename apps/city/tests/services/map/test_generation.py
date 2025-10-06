@@ -2,7 +2,6 @@ from unittest import mock
 
 import pytest
 
-from apps.city.constants import MAP_SIZE
 from apps.city.services.map.coordinates import MapCoordinatesService
 from apps.city.services.map.generation import INITIAL_COUNTRY_BUILDINGS, MapGenerationService
 from apps.city.tests.factories import (
@@ -32,16 +31,17 @@ def create_tiles_batch(savegame, size, terrain=None):
 def test_map_generation_service_init():
     """Test MapGenerationService initialization."""
     savegame = SavegameFactory()
-    service = MapGenerationService(savegame=savegame)
+    service = MapGenerationService(savegame=savegame, map_size=5)
 
     assert service.savegame == savegame
+    assert service.map_size == 5
 
 
 @pytest.mark.django_db
 def test_map_generation_service_get_terrain():
     """Test get_terrain returns terrain based on probability."""
     savegame = SavegameFactory()
-    service = MapGenerationService(savegame=savegame)
+    service = MapGenerationService(savegame=savegame, map_size=3)
 
     # Create terrains with different probabilities
     terrain1 = TerrainFactory(name="Forest", probability=50)
@@ -60,7 +60,7 @@ def test_map_generation_service_get_terrain():
 def test_map_generation_service_get_terrain_retry():
     """Test get_terrain retries until finding valid terrain."""
     savegame = SavegameFactory()
-    service = MapGenerationService(savegame=savegame)
+    service = MapGenerationService(savegame=savegame, map_size=3)
 
     terrain = TerrainFactory(name="Forest", probability=50)
 
@@ -85,8 +85,9 @@ def test_map_generation_service_get_terrain_retry():
 @pytest.mark.django_db
 def test_map_generation_service_draw_river_y_axis():
     """Test _draw_river creates river tiles starting from y-axis."""
+    map_size = 5
     savegame = SavegameFactory()
-    service = MapGenerationService(savegame=savegame)
+    service = MapGenerationService(savegame=savegame, map_size=map_size)
 
     # Clear any existing water terrains and create a unique one
     from apps.city.models import Terrain
@@ -95,17 +96,17 @@ def test_map_generation_service_draw_river_y_axis():
     river_terrain = RiverTerrainFactory()
     terrain = TerrainFactory()
 
-    create_tiles_batch(savegame, MAP_SIZE, terrain)
+    create_tiles_batch(savegame, map_size, terrain)
 
     with (
         mock.patch("apps.city.services.map.generation.randint") as mock_randint,
         mock.patch("apps.city.services.map.generation.random.choice") as mock_choice,
     ):
-        # Set up river starting at (0, 10) and going to reach edge at x=MAP_SIZE-1
-        mock_randint.side_effect = [1, 10]  # dice=1 means start on y-axis, y=10
+        # Set up river starting at (0, 2) and going to reach edge at x=map_size-1
+        mock_randint.side_effect = [1, 2]  # dice=1 means start on y-axis, y=2
 
-        # Mock coordinate choices for river path to reach edge at x=MAP_SIZE-1
-        coords = [MapCoordinatesService.Coordinates(x=i + 1, y=10) for i in range(MAP_SIZE - 1)]
+        # Mock coordinate choices for river path to reach edge at x=map_size-1
+        coords = [MapCoordinatesService.Coordinates(x=i + 1, y=2) for i in range(map_size - 1)]
         mock_choice.side_effect = coords
 
         service._draw_river()
@@ -118,8 +119,9 @@ def test_map_generation_service_draw_river_y_axis():
 @pytest.mark.django_db
 def test_map_generation_service_draw_river_x_axis():
     """Test _draw_river creates river tiles starting from x-axis."""
+    map_size = 5
     savegame = SavegameFactory()
-    service = MapGenerationService(savegame=savegame)
+    service = MapGenerationService(savegame=savegame, map_size=map_size)
 
     # Clear any existing water terrains and create a unique one
     from apps.city.models import Terrain
@@ -128,17 +130,17 @@ def test_map_generation_service_draw_river_x_axis():
     river_terrain = RiverTerrainFactory()
     terrain = TerrainFactory()
 
-    create_tiles_batch(savegame, MAP_SIZE, terrain)
+    create_tiles_batch(savegame, map_size, terrain)
 
     with (
         mock.patch("apps.city.services.map.generation.randint") as mock_randint,
         mock.patch("apps.city.services.map.generation.random.choice") as mock_choice,
     ):
         # Set up river starting on x-axis - dice=2 triggers else branch (line 31)
-        mock_randint.side_effect = [2, 10]  # dice=2 means start on x-axis, x=10
+        mock_randint.side_effect = [2, 2]  # dice=2 means start on x-axis, x=2
 
-        # Mock coordinate choices for river path to reach edge at y=MAP_SIZE-1
-        coords = [MapCoordinatesService.Coordinates(x=10, y=i + 1) for i in range(MAP_SIZE - 1)]
+        # Mock coordinate choices for river path to reach edge at y=map_size-1
+        coords = [MapCoordinatesService.Coordinates(x=2, y=i + 1) for i in range(map_size - 1)]
         mock_choice.side_effect = coords
 
         service._draw_river()
@@ -151,8 +153,9 @@ def test_map_generation_service_draw_river_x_axis():
 @pytest.mark.django_db
 def test_map_generation_service_draw_river_missing_terrain():
     """Test _draw_river raises ValueError when River terrain is missing."""
+    map_size = 3
     savegame = SavegameFactory()
-    service = MapGenerationService(savegame=savegame)
+    service = MapGenerationService(savegame=savegame, map_size=map_size)
 
     # Clear any existing water terrains to simulate missing terrain
     from apps.city.models import Terrain
@@ -160,7 +163,7 @@ def test_map_generation_service_draw_river_missing_terrain():
     Terrain.objects.filter(is_water=True).delete()
     terrain = TerrainFactory()
 
-    create_tiles_batch(savegame, MAP_SIZE, terrain)
+    create_tiles_batch(savegame, map_size, terrain)
 
     with pytest.raises(
         ValueError,
@@ -172,8 +175,9 @@ def test_map_generation_service_draw_river_missing_terrain():
 @pytest.mark.django_db
 def test_map_generation_service_process():
     """Test process method creates complete map with river."""
+    map_size = 5
     savegame = SavegameFactory()
-    service = MapGenerationService(savegame=savegame)
+    service = MapGenerationService(savegame=savegame, map_size=map_size)
 
     terrain = TerrainFactory()
     RiverTerrainFactory()
@@ -186,21 +190,22 @@ def test_map_generation_service_process():
 
         service.process()
 
-        # Verify all tiles were created (20x20 map = 400 tiles)
-        assert savegame.tiles.count() == 400
+        # Verify all tiles were created (5x5 map = 25 tiles)
+        assert savegame.tiles.count() == 25
 
         # Verify draw_river was called
         mock_draw_river.assert_called_once()
 
         # Verify get_terrain was called for each tile
-        assert mock_get_terrain.call_count == 400
+        assert mock_get_terrain.call_count == 25
 
 
 @pytest.mark.django_db
 def test_map_generation_service_place_random_country_buildings():
     """Test _place_random_country_buildings places buildings on valid tiles."""
+    map_size = 5
     savegame = SavegameFactory()
-    service = MapGenerationService(savegame=savegame)
+    service = MapGenerationService(savegame=savegame, map_size=map_size)
 
     # Create terrains
     terrain_grass = TerrainFactory(name="Grass", probability=80)
@@ -214,8 +219,8 @@ def test_map_generation_service_place_random_country_buildings():
 
     # Create tiles with alternating terrains using batch creation
     tiles = []
-    for i in range(25):  # 5x5 = 25 tiles
-        x, y = i % 5, i // 5
+    for i in range(map_size * map_size):
+        x, y = i % map_size, i // map_size
         tiles.append(
             TileFactory.build(
                 savegame=savegame, x=x, y=y, terrain=terrain_grass if (x + y) % 2 == 0 else terrain_forest
@@ -243,13 +248,14 @@ def test_map_generation_service_place_random_country_buildings_no_building_types
     # Ensure no country building types exist
     BuildingType.objects.filter(is_country=True).delete()
 
+    map_size = 3
     savegame = SavegameFactory()
-    service = MapGenerationService(savegame=savegame)
+    service = MapGenerationService(savegame=savegame, map_size=map_size)
 
     terrain = TerrainFactory()
 
     # Create tiles without any country building types
-    create_tiles_batch(savegame, 3, terrain)
+    create_tiles_batch(savegame, map_size, terrain)
 
     service._place_random_country_buildings()
 
@@ -261,8 +267,9 @@ def test_map_generation_service_place_random_country_buildings_no_building_types
 @pytest.mark.django_db
 def test_map_generation_service_place_random_country_buildings_no_valid_terrains():
     """Test _place_random_country_buildings handles case where buildings can't be placed."""
+    map_size = 3
     savegame = SavegameFactory()
-    service = MapGenerationService(savegame=savegame)
+    service = MapGenerationService(savegame=savegame, map_size=map_size)
 
     # Create terrain that won't be allowed for country buildings
     terrain_water = TerrainFactory(name="Water", is_water=True)
@@ -273,7 +280,10 @@ def test_map_generation_service_place_random_country_buildings_no_valid_terrains
     BuildingFactory(building_type=country_building_type, level=1)
 
     # Create tiles with only water terrain (which isn't allowed)
-    tiles = [TileFactory.build(savegame=savegame, x=i % 3, y=i // 3, terrain=terrain_water) for i in range(9)]
+    tiles = [
+        TileFactory.build(savegame=savegame, x=i % map_size, y=i // map_size, terrain=terrain_water)
+        for i in range(map_size * map_size)
+    ]
     TileFactory._meta.model.objects.bulk_create(tiles)
 
     service._place_random_country_buildings()
@@ -286,8 +296,9 @@ def test_map_generation_service_place_random_country_buildings_no_valid_terrains
 @pytest.mark.django_db
 def test_map_generation_service_process_includes_country_buildings():
     """Test process method includes country building placement."""
+    map_size = 3
     savegame = SavegameFactory()
-    service = MapGenerationService(savegame=savegame)
+    service = MapGenerationService(savegame=savegame, map_size=map_size)
 
     terrain = TerrainFactory()
     RiverTerrainFactory()
@@ -312,8 +323,9 @@ def test_map_generation_service_process_includes_country_buildings():
 @pytest.mark.django_db
 def test_map_generation_service_place_random_country_buildings_excludes_edge_tiles():
     """Test _place_random_country_buildings does not place buildings on edge tiles."""
+    map_size = 5
     savegame = SavegameFactory()
-    service = MapGenerationService(savegame=savegame)
+    service = MapGenerationService(savegame=savegame, map_size=map_size)
 
     # Create terrain
     terrain = TerrainFactory(name="Grass", probability=80)
@@ -325,7 +337,7 @@ def test_map_generation_service_place_random_country_buildings_excludes_edge_til
     BuildingFactory(building_type=country_building_type, level=1)
 
     # Create tiles - all with same terrain
-    create_tiles_batch(savegame, 5, terrain)
+    create_tiles_batch(savegame, map_size, terrain)
 
     service._place_random_country_buildings()
 
@@ -333,20 +345,21 @@ def test_map_generation_service_place_random_country_buildings_excludes_edge_til
     tiles_with_buildings = savegame.tiles.filter(building__isnull=False)
     assert tiles_with_buildings.count() == INITIAL_COUNTRY_BUILDINGS
 
-    # Verify none of the buildings are on edge tiles (MAP_SIZE x MAP_SIZE map has coordinates 0 to MAP_SIZE-1)
+    # Verify none of the buildings are on edge tiles (map_size x map_size map has coordinates 0 to map_size-1)
     for tile in tiles_with_buildings:
         assert tile.is_edge_tile() is False
         assert tile.x != 0
         assert tile.y != 0
-        assert tile.x != MAP_SIZE - 1
-        assert tile.y != MAP_SIZE - 1
+        assert tile.x != map_size - 1
+        assert tile.y != map_size - 1
 
 
 @pytest.mark.django_db
 def test_map_generation_service_place_random_country_buildings_no_tiles():
     """Test _place_random_country_buildings handles case where there are no valid tiles (line 75)."""
+    map_size = 5
     savegame = SavegameFactory()
-    service = MapGenerationService(savegame=savegame)
+    service = MapGenerationService(savegame=savegame, map_size=map_size)
 
     # Create water terrain that building can't be placed on
     terrain_water = WaterTerrainFactory(name="Water", probability=80)
@@ -363,9 +376,9 @@ def test_map_generation_service_place_random_country_buildings_no_tiles():
     # Create tiles - all non-edge tiles are water (incompatible terrain)
     # Only edge tiles are grass, so no buildings can be placed
     tiles = []
-    for i in range(MAP_SIZE * MAP_SIZE):
-        x, y = i % MAP_SIZE, i // MAP_SIZE
-        is_edge = x == 0 or y == 0 or x == MAP_SIZE - 1 or y == MAP_SIZE - 1
+    for i in range(map_size * map_size):
+        x, y = i % map_size, i // map_size
+        is_edge = x == 0 or y == 0 or x == map_size - 1 or y == map_size - 1
         tiles.append(
             TileFactory.build(savegame=savegame, x=x, y=y, terrain=terrain_grass if is_edge else terrain_water)
         )
@@ -381,8 +394,9 @@ def test_map_generation_service_place_random_country_buildings_no_tiles():
 @pytest.mark.django_db
 def test_map_generation_service_place_random_country_buildings_no_level_1_building():
     """Test _place_random_country_buildings handles case where building type has no level 1 (line 104)."""
+    map_size = 5
     savegame = SavegameFactory()
-    service = MapGenerationService(savegame=savegame)
+    service = MapGenerationService(savegame=savegame, map_size=map_size)
 
     # Create terrain
     terrain = TerrainFactory(name="Grass", probability=80)
@@ -393,7 +407,7 @@ def test_map_generation_service_place_random_country_buildings_no_level_1_buildi
     # Create level 2 building for this type, but NO level 1
     BuildingFactory(building_type=country_building_type, level=2)
 
-    create_tiles_batch(savegame, 5, terrain)
+    create_tiles_batch(savegame, map_size, terrain)
 
     service._place_random_country_buildings()
 
@@ -405,8 +419,9 @@ def test_map_generation_service_place_random_country_buildings_no_level_1_buildi
 @pytest.mark.django_db
 def test_map_generation_service_place_random_country_buildings_skips_occupied_tiles():
     """Test _place_random_country_buildings skips tiles that already have buildings (line 89)."""
+    map_size = 5
     savegame = SavegameFactory()
-    service = MapGenerationService(savegame=savegame)
+    service = MapGenerationService(savegame=savegame, map_size=map_size)
 
     # Create terrain
     terrain = TerrainFactory(name="Grass", probability=80)
@@ -417,12 +432,12 @@ def test_map_generation_service_place_random_country_buildings_skips_occupied_ti
     # Create level 1 building for this type
     building_level_1 = BuildingFactory(building_type=country_building_type, level=1)
 
-    create_tiles_batch(savegame, MAP_SIZE, terrain)
+    create_tiles_batch(savegame, map_size, terrain)
 
     # Pre-place a building on a non-edge tile to occupy it
     from apps.city.models import Tile
 
-    occupied_tile = Tile.objects.get(savegame=savegame, x=10, y=10)
+    occupied_tile = Tile.objects.get(savegame=savegame, x=2, y=2)
     occupied_tile.building = building_level_1
     occupied_tile.save(update_fields=["building"])
 
@@ -456,8 +471,9 @@ def test_map_generation_service_place_random_country_buildings_excludes_city_and
     """Test _place_random_country_buildings excludes buildings that are both is_city and is_country."""
     from apps.city.models import BuildingType
 
+    map_size = 5
     savegame = SavegameFactory()
-    service = MapGenerationService(savegame=savegame)
+    service = MapGenerationService(savegame=savegame, map_size=map_size)
 
     # Create terrain
     terrain = TerrainFactory(name="Grass", probability=80)
@@ -471,7 +487,7 @@ def test_map_generation_service_place_random_country_buildings_excludes_city_and
     country_only_building_type = CountryBuildingTypeFactory(allowed_terrains=[terrain])
     BuildingFactory(building_type=country_only_building_type, level=1)
 
-    create_tiles_batch(savegame, 5, terrain)
+    create_tiles_batch(savegame, map_size, terrain)
 
     service._place_random_country_buildings()
 
@@ -490,8 +506,9 @@ def test_map_generation_service_place_random_country_buildings_excludes_city_and
 @pytest.mark.django_db
 def test_map_generation_service_place_random_country_buildings_only_edge_tiles():
     """Test _place_random_country_buildings returns early when only edge tiles exist (line 76)."""
+    map_size = 5
     savegame = SavegameFactory()
-    service = MapGenerationService(savegame=savegame)
+    service = MapGenerationService(savegame=savegame, map_size=map_size)
 
     # Create terrain
     terrain = TerrainFactory(name="Grass", probability=80)
@@ -500,18 +517,18 @@ def test_map_generation_service_place_random_country_buildings_only_edge_tiles()
     country_building_type = CountryBuildingTypeFactory(allowed_terrains=[terrain])
     BuildingFactory(building_type=country_building_type, level=1)
 
-    # Create only edge tiles (tiles where x=0 or y=0 or x=MAP_SIZE-1 or y=MAP_SIZE-1)
+    # Create only edge tiles (tiles where x=0 or y=0 or x=map_size-1 or y=map_size-1)
     # After filtering out edge tiles in line 73, the tiles list will be empty
     tiles = []
     # Top row (y=0)
-    tiles.extend([TileFactory.build(savegame=savegame, x=x, y=0, terrain=terrain) for x in range(MAP_SIZE)])
-    # Bottom row (y=MAP_SIZE-1)
-    tiles.extend([TileFactory.build(savegame=savegame, x=x, y=MAP_SIZE - 1, terrain=terrain) for x in range(MAP_SIZE)])
+    tiles.extend([TileFactory.build(savegame=savegame, x=x, y=0, terrain=terrain) for x in range(map_size)])
+    # Bottom row (y=map_size-1)
+    tiles.extend([TileFactory.build(savegame=savegame, x=x, y=map_size - 1, terrain=terrain) for x in range(map_size)])
     # Left column (x=0, excluding corners already added)
-    tiles.extend([TileFactory.build(savegame=savegame, x=0, y=y, terrain=terrain) for y in range(1, MAP_SIZE - 1)])
-    # Right column (x=MAP_SIZE-1, excluding corners already added)
+    tiles.extend([TileFactory.build(savegame=savegame, x=0, y=y, terrain=terrain) for y in range(1, map_size - 1)])
+    # Right column (x=map_size-1, excluding corners already added)
     tiles.extend(
-        [TileFactory.build(savegame=savegame, x=MAP_SIZE - 1, y=y, terrain=terrain) for y in range(1, MAP_SIZE - 1)]
+        [TileFactory.build(savegame=savegame, x=map_size - 1, y=y, terrain=terrain) for y in range(1, map_size - 1)]
     )
 
     TileFactory._meta.model.objects.bulk_create(tiles)

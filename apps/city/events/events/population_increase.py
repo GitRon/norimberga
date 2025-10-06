@@ -13,7 +13,7 @@ class Event(BaseEvent):
     LEVEL = messages.INFO
     TITLE = "Population increase"
 
-    YEARLY_POP_INCREASE_FACTOR = 0.05
+    YEARLY_POP_INCREASE_FACTOR = 0.15
 
     new_population: int
 

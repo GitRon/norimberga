@@ -14,10 +14,10 @@ def test_population_increase_event_init():
 
     assert event.PROBABILITY == 100
     assert event.TITLE == "Population increase"
-    assert event.YEARLY_POP_INCREASE_FACTOR == 0.05
+    assert event.YEARLY_POP_INCREASE_FACTOR == 0.15
     assert event.savegame.id == savegame.id
     assert event.initial_population == 100
-    assert event.new_population == 5  # ceil(100 * 0.05) = 5
+    assert event.new_population == 15  # ceil(100 * 0.15) = 15
 
 
 @pytest.mark.django_db
@@ -38,7 +38,7 @@ def test_population_increase_event_init_small_population():
 
     event = PopulationIncreaseEvent(savegame=savegame)
 
-    assert event.new_population == 1  # max(ceil(10 * 0.05), 1) = max(1, 1) = 1
+    assert event.new_population == 2  # max(ceil(10 * 0.15), 1) = max(2, 1) = 2
 
 
 @pytest.mark.django_db
@@ -49,7 +49,7 @@ def test_population_increase_event_init_zero_population():
 
     event = PopulationIncreaseEvent(savegame=savegame)
 
-    assert event.new_population == 1  # max(ceil(0 * 0.05), 1) = max(0, 1) = 1
+    assert event.new_population == 1  # max(ceil(0 * 0.15), 1) = max(0, 1) = 1
 
 
 @pytest.mark.django_db
@@ -107,7 +107,7 @@ def test_population_increase_event_get_effects():
 
     assert len(effects) == 1
     assert isinstance(effects[0], IncreasePopulationAbsolute)
-    assert effects[0].new_population == 4  # ceil(80 * 0.05) = 4
+    assert effects[0].new_population == 12  # ceil(80 * 0.15) = 12
 
 
 @pytest.mark.django_db
@@ -119,7 +119,7 @@ def test_population_increase_event_get_verbose_text():
     event = PopulationIncreaseEvent(savegame=savegame)
     verbose_text = event.get_verbose_text()
 
-    expected_text = "Your fertile city welcomes 3 new inhabitants."  # ceil(60 * 0.05) = 3
+    expected_text = "Your fertile city welcomes 9 new inhabitants."  # ceil(60 * 0.15) = 9
     assert verbose_text == expected_text
 
 
@@ -131,7 +131,7 @@ def test_population_increase_event_large_population():
 
     event = PopulationIncreaseEvent(savegame=savegame)
 
-    assert event.new_population == 50  # ceil(1000 * 0.05) = 50
+    assert event.new_population == 150  # ceil(1000 * 0.15) = 150
 
 
 @pytest.mark.django_db
@@ -142,5 +142,5 @@ def test_population_increase_event_fractional_calculation():
 
     event = PopulationIncreaseEvent(savegame=savegame)
 
-    # ceil(33 * 0.05) = ceil(1.65) = 2
-    assert event.new_population == 2
+    # ceil(33 * 0.15) = ceil(4.95) = 5
+    assert event.new_population == 5

@@ -249,3 +249,76 @@ def test_tile_queryset_filter_city_building_edge_cases():
     # Should exclude tiles with is_city=False (country_only and neither)
     assert tile_country_only.id not in result_ids
     assert tile_neither.id not in result_ids
+
+
+@pytest.mark.django_db
+def test_tile_manager_has_adjacent_city_building_true():
+    """Test has_adjacent_city_building returns True when adjacent city building exists."""
+    savegame = SavegameFactory(map_size=3)
+    city_building_type = BuildingTypeFactory(is_city=True)
+    city_building = BuildingFactory(building_type=city_building_type)
+
+    # Create tile with city building at adjacent coordinates
+    TileFactory(savegame=savegame, x=0, y=0, building=city_building)
+
+    # Create tile to test
+    tile = TileFactory(savegame=savegame, x=1, y=1)
+
+    # Mock MapCoordinatesService to return adjacent coordinates
+    with mock.patch("apps.city.managers.tile.MapCoordinatesService") as mock_service_class:
+        mock_service = mock_service_class.return_value
+        mock_coords = [
+            mock.Mock(x=0, y=0),
+            mock.Mock(x=0, y=1),
+            mock.Mock(x=0, y=2),
+            mock.Mock(x=1, y=0),
+            mock.Mock(x=1, y=2),
+            mock.Mock(x=2, y=0),
+            mock.Mock(x=2, y=1),
+            mock.Mock(x=2, y=2),
+        ]
+        mock_service.get_adjacent_coordinates.return_value = mock_coords
+
+        from apps.city.models import Tile
+
+        result = Tile.objects.has_adjacent_city_building(tile=tile)
+
+        assert result is True
+        mock_service_class.assert_called_once_with(map_size=savegame.map_size)
+        mock_service.get_adjacent_coordinates.assert_called_once_with(x=tile.x, y=tile.y)
+
+
+@pytest.mark.django_db
+def test_tile_manager_has_adjacent_city_building_false():
+    """Test has_adjacent_city_building returns False when no adjacent city building exists."""
+    savegame = SavegameFactory(map_size=3)
+
+    # Create tile without adjacent city buildings
+    tile = TileFactory(savegame=savegame, x=1, y=1)
+
+    # Create a non-city building
+    country_building_type = BuildingTypeFactory(is_city=False, is_country=True)
+    country_building = BuildingFactory(building_type=country_building_type)
+
+    # Create adjacent tile with non-city building
+    TileFactory(savegame=savegame, x=0, y=0, building=country_building)
+
+    with mock.patch("apps.city.managers.tile.MapCoordinatesService") as mock_service_class:
+        mock_service = mock_service_class.return_value
+        mock_coords = [
+            mock.Mock(x=0, y=0),
+            mock.Mock(x=0, y=1),
+            mock.Mock(x=0, y=2),
+            mock.Mock(x=1, y=0),
+            mock.Mock(x=1, y=2),
+            mock.Mock(x=2, y=0),
+            mock.Mock(x=2, y=1),
+            mock.Mock(x=2, y=2),
+        ]
+        mock_service.get_adjacent_coordinates.return_value = mock_coords
+
+        from apps.city.models import Tile
+
+        result = Tile.objects.has_adjacent_city_building(tile=tile)
+
+        assert result is False

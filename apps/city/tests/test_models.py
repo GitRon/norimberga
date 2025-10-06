@@ -355,53 +355,18 @@ def test_tile_color_class_without_building():
 
 
 @pytest.mark.django_db
-def test_tile_is_adjacent_to_city_building_true():
-    """Test is_adjacent_to_city_building returns True when adjacent city building exists."""
-    savegame = SavegameFactory()
-    city_building_type = BuildingTypeFactory(is_city=True)
-    city_building = BuildingFactory(building_type=city_building_type)
+def test_tile_is_adjacent_to_city_building_delegates_to_manager():
+    """Test is_adjacent_to_city_building delegates to manager method."""
+    tile = TileFactory()
 
-    # Create tile with city building at adjacent coordinates
-    TileFactory(savegame=savegame, x=0, y=0, building=city_building)
-
-    # Create tile to test
-    tile = TileFactory(savegame=savegame, x=1, y=1)
-
-    # Mock the queryset chain to return True
-    with mock.patch("apps.city.models.Tile.objects.filter_savegame") as mock_filter_savegame:
-        mock_queryset = mock.Mock()
-        mock_filter_savegame.return_value = mock_queryset
-        mock_queryset.filter_adjacent_tiles.return_value = mock_queryset
-        mock_queryset.filter_city_building.return_value = mock_queryset
-        mock_queryset.exists.return_value = True
+    # Mock the manager method
+    with mock.patch("apps.city.models.Tile.objects.has_adjacent_city_building") as mock_manager_method:
+        mock_manager_method.return_value = True
 
         result = tile.is_adjacent_to_city_building()
 
         assert result is True
-        mock_filter_savegame.assert_called_once_with(savegame=savegame)
-        mock_queryset.filter_adjacent_tiles.assert_called_once_with(tile=tile)
-        mock_queryset.filter_city_building.assert_called_once()
-        mock_queryset.exists.assert_called_once()
-
-
-@pytest.mark.django_db
-def test_tile_is_adjacent_to_city_building_false():
-    """Test is_adjacent_to_city_building returns False when no adjacent city building exists."""
-    savegame = SavegameFactory()
-    tile = TileFactory(savegame=savegame, x=1, y=1)
-
-    # Mock the queryset chain to return False
-    with mock.patch("apps.city.models.Tile.objects.filter_savegame") as mock_filter_savegame:
-        mock_queryset = mock.Mock()
-        mock_filter_savegame.return_value = mock_queryset
-        mock_queryset.filter_adjacent_tiles.return_value = mock_queryset
-        mock_queryset.filter_city_building.return_value = mock_queryset
-        mock_queryset.exists.return_value = False
-
-        result = tile.is_adjacent_to_city_building()
-
-        assert result is False
-        mock_queryset.exists.assert_called_once()
+        mock_manager_method.assert_called_once_with(tile=tile)
 
 
 @pytest.mark.django_db

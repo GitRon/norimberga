@@ -121,12 +121,7 @@ class Tile(models.Model):
         return self.terrain.color_class
 
     def is_adjacent_to_city_building(self) -> bool:
-        return (
-            Tile.objects.filter_savegame(savegame=self.savegame)
-            .filter_adjacent_tiles(tile=self)
-            .filter_city_building()
-            .exists()
-        )
+        return Tile.objects.has_adjacent_city_building(tile=self)
 
     def is_edge_tile(self) -> bool:
         """Check if this tile is on the edge of the map."""

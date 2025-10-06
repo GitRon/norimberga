@@ -27,7 +27,14 @@ class TileQuerySet(models.QuerySet):
 
 
 class TileManager(models.Manager):
-    pass
+    def has_adjacent_city_building(self, *, tile: "Tile") -> bool:
+        """Check if a tile has any adjacent city buildings."""
+        return (
+            self.filter_savegame(savegame=tile.savegame)
+            .filter_adjacent_tiles(tile=tile)
+            .filter_city_building()
+            .exists()
+        )
 
 
 TileManager = TileManager.from_queryset(TileQuerySet)

@@ -7,7 +7,9 @@ from apps.city.models import Building, Tile
 
 
 class TileBuildingForm(forms.ModelForm):
-    tile = forms.ModelChoiceField(queryset=Tile.objects.all(), disabled=True, required=False)
+    tile = forms.ModelChoiceField(
+        queryset=Tile.objects.all(), disabled=True, required=False, widget=forms.HiddenInput()
+    )
     current_building = forms.ModelChoiceField(queryset=Building.objects.all(), disabled=True, required=False)
     building = BuildingModelChoiceField(queryset=Building.objects.none(), required=False, empty_label=None)
 

@@ -1,22 +1,26 @@
 {% load crispy_forms_tags tailwind_filters %}
-<div id="form-container" class="flex flex-row ml-10">
-    <div class="flex flex-col">
-        <h1 class="text-xl font-bold mb-4">Build something: {{ object.terrain }} ({{ object }})</h1>
-        <form method="POST" action="{% url "city:tile-build" object.id %}">
-            {% crispy form %}
-            <div class="flex gap-2">
-                <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-                        hx-post="{% url "city:tile-build" object.id %}" hx-target="closest #form-container" hx-swap="outerHTML">
-                    Commence changes!
+<div id="form-container" class="p-6">
+    <h1 class="text-xl font-bold mb-4">Build something: {{ object.terrain }} ({{ object }})</h1>
+    <form method="POST" action="{% url "city:tile-build" object.id %}">
+        {% crispy form %}
+        <div class="flex gap-2">
+            <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                    hx-post="{% url "city:tile-build" object.id %}"
+                    hx-target="#form-container"
+                    hx-swap="outerHTML"
+                    onclick="setTimeout(() => { document.getElementById('build-modal').classList.add('hidden'); htmx.trigger('body', 'refreshMap'); }, 100)">
+                Commence changes!
+            </button>
+            {% if object.building and not object.building.building_type.is_unique %}
+                <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                        hx-post="{% url "city:tile-demolish" object.id %}"
+                        hx-target="#form-container"
+                        hx-swap="outerHTML"
+                        hx-confirm="Are you sure you want to demolish {{ object.building.name }}?"
+                        onclick="setTimeout(() => { document.getElementById('build-modal').classList.add('hidden'); htmx.trigger('body', 'refreshMap'); }, 100)">
+                    Demolish Building
                 </button>
-                {% if object.building and not object.building.building_type.is_unique %}
-                    <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                            hx-post="{% url "city:tile-demolish" object.id %}" hx-target="closest #form-container" hx-swap="outerHTML"
-                            hx-confirm="Are you sure you want to demolish {{ object.building.name }}?">
-                        Demolish Building
-                    </button>
-                {% endif %}
-            </div>
-        </form>
-    </div>
+            {% endif %}
+        </div>
+    </form>
 </div>

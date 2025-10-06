@@ -3,8 +3,9 @@ from apps.city.services.map.coordinates import MapCoordinatesService
 
 def test_map_coordinates_service_init():
     """Test MapCoordinatesService initialization."""
-    service = MapCoordinatesService(map_size=5)
-    assert service.map_size == 5
+    service = MapCoordinatesService()
+    # Service no longer has map_size attribute - it uses constant MAP_SIZE
+    assert service is not None
 
 
 def test_coordinates_dataclass():
@@ -16,7 +17,7 @@ def test_coordinates_dataclass():
 
 def test_get_valid_coordinates():
     """Test _get_valid_coordinates returns correct coordinates."""
-    service = MapCoordinatesService(map_size=5)
+    service = MapCoordinatesService()
 
     result = service._get_valid_coordinates(start_x=1, start_y=1, min_x=0, max_x=2, min_y=0, max_y=2)
 
@@ -39,7 +40,7 @@ def test_get_valid_coordinates():
 
 def test_get_adjacent_coordinates_center():
     """Test get_adjacent_coordinates from center of map."""
-    service = MapCoordinatesService(map_size=5)
+    service = MapCoordinatesService()
 
     result = service.get_adjacent_coordinates(x=2, y=2)
 
@@ -53,7 +54,7 @@ def test_get_adjacent_coordinates_center():
 
 def test_get_adjacent_coordinates_corner():
     """Test get_adjacent_coordinates from corner of map."""
-    service = MapCoordinatesService(map_size=5)
+    service = MapCoordinatesService()
 
     result = service.get_adjacent_coordinates(x=0, y=0)
 
@@ -67,7 +68,7 @@ def test_get_adjacent_coordinates_corner():
 
 def test_get_adjacent_coordinates_edge():
     """Test get_adjacent_coordinates from edge of map."""
-    service = MapCoordinatesService(map_size=5)
+    service = MapCoordinatesService()
 
     result = service.get_adjacent_coordinates(x=0, y=2)
 
@@ -81,7 +82,7 @@ def test_get_adjacent_coordinates_edge():
 
 def test_get_forward_adjacent_fields_center():
     """Test get_forward_adjacent_fields from center of map."""
-    service = MapCoordinatesService(map_size=5)
+    service = MapCoordinatesService()
 
     result = service.get_forward_adjacent_fields(x=2, y=2)
 
@@ -95,9 +96,10 @@ def test_get_forward_adjacent_fields_center():
 
 def test_get_forward_adjacent_fields_corner():
     """Test get_forward_adjacent_fields from bottom-right corner."""
-    service = MapCoordinatesService(map_size=5)
+    service = MapCoordinatesService()
 
-    result = service.get_forward_adjacent_fields(x=4, y=4)
+    # Use MAP_SIZE-1 (19) for bottom-right corner of 20x20 map
+    result = service.get_forward_adjacent_fields(x=19, y=19)
 
     # Should return 0 coordinates as we're at bottom-right corner
     assert len(result) == 0
@@ -105,12 +107,13 @@ def test_get_forward_adjacent_fields_corner():
 
 def test_get_forward_adjacent_fields_edge():
     """Test get_forward_adjacent_fields from edge."""
-    service = MapCoordinatesService(map_size=5)
+    service = MapCoordinatesService()
 
-    result = service.get_forward_adjacent_fields(x=3, y=4)
+    # Use coordinates near bottom-right for 20x20 map (0-19)
+    result = service.get_forward_adjacent_fields(x=18, y=19)
 
     # Should return 1 coordinate
-    expected_coords = [(4, 4)]
+    expected_coords = [(19, 19)]
 
     result_coords = [(c.x, c.y) for c in result]
     assert len(result_coords) == 1

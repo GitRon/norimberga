@@ -35,7 +35,7 @@ def test_tile_queryset_filter_savegame():
 @pytest.mark.django_db
 def test_tile_queryset_filter_adjacent_tiles():
     """Test filter_adjacent_tiles returns adjacent tiles."""
-    savegame = SavegameFactory(map_size=3)
+    savegame = SavegameFactory()
 
     # Create a 3x3 grid of tiles
     center_tile = TileFactory(savegame=savegame, x=1, y=1)
@@ -74,7 +74,7 @@ def test_tile_queryset_filter_adjacent_tiles():
         result = queryset.filter_adjacent_tiles(tile=center_tile)
 
         # Verify service was called correctly
-        mock_service_class.assert_called_once_with(map_size=savegame.map_size)
+        mock_service_class.assert_called_once_with()
         mock_service.get_adjacent_coordinates.assert_called_once_with(x=center_tile.x, y=center_tile.y)
 
         # The result should contain the adjacent tiles
@@ -117,7 +117,7 @@ def test_tile_queryset_filter_city_building():
 @pytest.mark.django_db
 def test_tile_queryset_chaining():
     """Test queryset methods can be chained together."""
-    savegame = SavegameFactory(map_size=3)
+    savegame = SavegameFactory()
 
     # Create city building type
     city_building_type = BuildingTypeFactory(is_city=True)
@@ -197,7 +197,7 @@ def test_tile_manager_integration():
 @pytest.mark.django_db
 def test_tile_queryset_filter_adjacent_tiles_edge_case():
     """Test filter_adjacent_tiles with edge coordinates."""
-    savegame = SavegameFactory(map_size=5)
+    savegame = SavegameFactory()
 
     # Create tile at edge
     edge_tile = TileFactory(savegame=savegame, x=0, y=0)
@@ -214,7 +214,7 @@ def test_tile_queryset_filter_adjacent_tiles_edge_case():
         result = queryset.filter_adjacent_tiles(tile=edge_tile)
 
         # Verify service was called with correct parameters
-        mock_service_class.assert_called_once_with(map_size=savegame.map_size)
+        mock_service_class.assert_called_once_with()
         mock_service.get_adjacent_coordinates.assert_called_once_with(x=0, y=0)
 
         # Result should be filtered by the mock coordinates
@@ -254,7 +254,7 @@ def test_tile_queryset_filter_city_building_edge_cases():
 @pytest.mark.django_db
 def test_tile_manager_has_adjacent_city_building_true():
     """Test has_adjacent_city_building returns True when adjacent city building exists."""
-    savegame = SavegameFactory(map_size=3)
+    savegame = SavegameFactory()
     city_building_type = BuildingTypeFactory(is_city=True)
     city_building = BuildingFactory(building_type=city_building_type)
 
@@ -284,14 +284,14 @@ def test_tile_manager_has_adjacent_city_building_true():
         result = Tile.objects.has_adjacent_city_building(tile=tile)
 
         assert result is True
-        mock_service_class.assert_called_once_with(map_size=savegame.map_size)
+        mock_service_class.assert_called_once_with()
         mock_service.get_adjacent_coordinates.assert_called_once_with(x=tile.x, y=tile.y)
 
 
 @pytest.mark.django_db
 def test_tile_manager_has_adjacent_city_building_false():
     """Test has_adjacent_city_building returns False when no adjacent city building exists."""
-    savegame = SavegameFactory(map_size=3)
+    savegame = SavegameFactory()
 
     # Create tile without adjacent city buildings
     tile = TileFactory(savegame=savegame, x=1, y=1)

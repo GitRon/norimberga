@@ -215,9 +215,9 @@ def test_pillage_event_get_verbose_text_with_multiple_buildings():
     """Test get_verbose_text returns correct description with multiple buildings."""
     savegame = SavegameFactory(coins=800, population=150, is_enclosed=False)
     building_type = BuildingTypeFactory(is_city=True)
-    for _ in range(5):
-        building = BuildingFactory(building_type=building_type)
-        TileFactory(savegame=savegame, building=building)
+    buildings = BuildingFactory.create_batch(5, building_type=building_type)
+    for i, building in enumerate(buildings):
+        TileFactory(savegame=savegame, building=building, x=i, y=0)
 
     with mock.patch("apps.city.events.events.pillage.random.randint") as mock_randint:
         mock_randint.side_effect = [25, 10, 100]  # 25% coins, 10% population, 100% buildings
@@ -273,11 +273,9 @@ def test_pillage_event_get_effects_with_buildings():
     """Test get_effects returns all effects when buildings exist."""
     savegame = SavegameFactory(coins=1000, population=200, is_enclosed=False)
     building_type = BuildingTypeFactory(is_city=True)
-    buildings = []
-    for _ in range(3):
-        building = BuildingFactory(building_type=building_type)
-        TileFactory(savegame=savegame, building=building)
-        buildings.append(building)
+    buildings = BuildingFactory.create_batch(3, building_type=building_type)
+    for i, building in enumerate(buildings):
+        TileFactory(savegame=savegame, building=building, x=i, y=0)
 
     with mock.patch("apps.city.events.events.pillage.random.randint") as mock_randint:
         mock_randint.side_effect = [15, 10, 100]  # 15% coins, 10% population, 100% buildings
@@ -323,9 +321,9 @@ def test_pillage_event_scaling_with_many_buildings():
     savegame = SavegameFactory(coins=1000, population=100, is_enclosed=False)
     building_type = BuildingTypeFactory(is_city=True)
     # Create 20 city buildings
-    for _ in range(20):
-        building = BuildingFactory(building_type=building_type)
-        TileFactory(savegame=savegame, building=building)
+    buildings = BuildingFactory.create_batch(20, building_type=building_type)
+    for i, building in enumerate(buildings):
+        TileFactory(savegame=savegame, building=building, x=i % 5, y=i // 5)
 
     with mock.patch("apps.city.events.events.pillage.random.randint") as mock_randint:
         mock_randint.side_effect = [20, 10, 25]  # 20% coins, 10% population, 25% buildings
@@ -343,9 +341,9 @@ def test_pillage_event_scaling_with_few_buildings():
     savegame = SavegameFactory(coins=1000, population=100, is_enclosed=False)
     building_type = BuildingTypeFactory(is_city=True)
     # Create 3 city buildings
-    for _ in range(3):
-        building = BuildingFactory(building_type=building_type)
-        TileFactory(savegame=savegame, building=building)
+    buildings = BuildingFactory.create_batch(3, building_type=building_type)
+    for i, building in enumerate(buildings):
+        TileFactory(savegame=savegame, building=building, x=i, y=0)
 
     with mock.patch("apps.city.events.events.pillage.random.randint") as mock_randint:
         mock_randint.side_effect = [20, 10, 10]  # 20% coins, 10% population, 10% buildings
@@ -362,11 +360,8 @@ def test_pillage_event_process():
     """Test full event processing workflow."""
     savegame = SavegameFactory(coins=1000, population=100, is_enclosed=False)
     building_type = BuildingTypeFactory(is_city=True)
-    tiles = []
-    for _ in range(2):
-        building = BuildingFactory(building_type=building_type)
-        tile = TileFactory(savegame=savegame, building=building)
-        tiles.append(tile)
+    buildings = BuildingFactory.create_batch(2, building_type=building_type)
+    tiles = [TileFactory(savegame=savegame, building=building, x=i, y=0) for i, building in enumerate(buildings)]
 
     with mock.patch("apps.city.events.events.pillage.random.randint") as mock_randint:
         mock_randint.side_effect = [25, 10, 100]  # 25% coins, 10% population, 100% buildings

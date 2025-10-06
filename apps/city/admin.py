@@ -10,7 +10,10 @@ class SavegameAdmin(admin.ModelAdmin):
 
 @admin.register(Tile)
 class TileAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("id", "x", "y", "savegame", "terrain", "building")
+    list_filter = ("savegame", "terrain", "building__building_type")
+    search_fields = ("savegame__city_name", "x", "y")
+    list_select_related = ("savegame", "terrain", "building", "building__building_type")
 
 
 @admin.register(Terrain)

@@ -6,17 +6,9 @@ from apps.city.models import Savegame
 
 
 class SavegameCreateForm(forms.ModelForm):
-    map_size = forms.IntegerField(
-        initial=10,
-        disabled=True,
-        required=False,
-        help_text="The size of the map for your new city",
-        label="Map Size",
-    )
-
     class Meta:
         model = Savegame
-        fields = ("city_name", "map_size")
+        fields = ("city_name",)
         labels = {"city_name": "City Name"}
         help_texts = {"city_name": "Choose a name for your medieval city"}
 
@@ -28,7 +20,6 @@ class SavegameCreateForm(forms.ModelForm):
         self.helper.form_method = "post"
         self.helper.layout = Layout(
             Field("city_name"),
-            Field("map_size"),
             Div(
                 HTML(
                     "<a href=\"{% url 'city:savegame-list' %}\" "

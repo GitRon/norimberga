@@ -161,7 +161,7 @@ Uses PyTest exclusively for backend testing. Key guidelines:
 
 ### Testing
 - PyTest 7.4+ with pytest-django for Django integration
-- pytest-cov for coverage reporting (minimum 80% coverage required)
+- pytest-cov for coverage reporting (minimum 100% coverage required)
 - factory-boy for test data generation
 - pytest-xdist for parallel test execution
 

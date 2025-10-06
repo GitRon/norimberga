@@ -28,7 +28,7 @@ def test_savegame_str_representation():
 def test_savegame_creation_with_defaults():
     """Test savegame creation with default values."""
     savegame = SavegameFactory()
-    assert savegame.map_size == 5
+
     assert savegame.coins == 1000
     assert savegame.population == 50
     assert savegame.current_year == 1150
@@ -372,13 +372,13 @@ def test_tile_is_adjacent_to_city_building_delegates_to_manager():
 @pytest.mark.django_db
 def test_tile_is_edge_tile_corners():
     """Test is_edge_tile returns True for corner tiles."""
-    savegame = SavegameFactory(map_size=5)
+    savegame = SavegameFactory()
 
-    # Test all four corners
+    # Test all four corners (20x20 map has coordinates 0-19)
     tile_top_left = TileFactory(savegame=savegame, x=0, y=0)
-    tile_top_right = TileFactory(savegame=savegame, x=4, y=0)
-    tile_bottom_left = TileFactory(savegame=savegame, x=0, y=4)
-    tile_bottom_right = TileFactory(savegame=savegame, x=4, y=4)
+    tile_top_right = TileFactory(savegame=savegame, x=19, y=0)
+    tile_bottom_left = TileFactory(savegame=savegame, x=0, y=19)
+    tile_bottom_right = TileFactory(savegame=savegame, x=19, y=19)
 
     assert tile_top_left.is_edge_tile() is True
     assert tile_top_right.is_edge_tile() is True
@@ -389,13 +389,13 @@ def test_tile_is_edge_tile_corners():
 @pytest.mark.django_db
 def test_tile_is_edge_tile_edges():
     """Test is_edge_tile returns True for tiles on edges."""
-    savegame = SavegameFactory(map_size=5)
+    savegame = SavegameFactory()
 
-    # Test tiles on each edge
-    tile_top = TileFactory(savegame=savegame, x=2, y=0)
-    tile_bottom = TileFactory(savegame=savegame, x=2, y=4)
-    tile_left = TileFactory(savegame=savegame, x=0, y=2)
-    tile_right = TileFactory(savegame=savegame, x=4, y=2)
+    # Test tiles on each edge (20x20 map has coordinates 0-19)
+    tile_top = TileFactory(savegame=savegame, x=10, y=0)
+    tile_bottom = TileFactory(savegame=savegame, x=10, y=19)
+    tile_left = TileFactory(savegame=savegame, x=0, y=10)
+    tile_right = TileFactory(savegame=savegame, x=19, y=10)
 
     assert tile_top.is_edge_tile() is True
     assert tile_bottom.is_edge_tile() is True
@@ -406,7 +406,7 @@ def test_tile_is_edge_tile_edges():
 @pytest.mark.django_db
 def test_tile_is_edge_tile_center():
     """Test is_edge_tile returns False for non-edge tiles."""
-    savegame = SavegameFactory(map_size=5)
+    savegame = SavegameFactory()
 
     # Test center tiles
     tile_center = TileFactory(savegame=savegame, x=2, y=2)

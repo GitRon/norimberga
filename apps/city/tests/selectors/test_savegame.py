@@ -210,9 +210,9 @@ def test_get_balance_data_large_numbers():
     savegame = SavegameFactory()
 
     # Create multiple buildings with various values
-    for _ in range(10):
-        building = BuildingFactory(taxes=100, maintenance_costs=75)
-        TileFactory(savegame=savegame, building=building)
+    buildings = BuildingFactory.create_batch(10, taxes=100, maintenance_costs=75)
+    for i, building in enumerate(buildings):
+        TileFactory(savegame=savegame, building=building, x=i, y=0)
 
     result = get_balance_data(savegame=savegame)
 

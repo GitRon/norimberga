@@ -4,7 +4,7 @@
         <div class="grid grid-cols-20 gap-0 text-center bg-gray-300 rounded">
             {% for tile in savegame.tiles.all %}
                 {# Tailwind can't detect dynamic classes, therefore, they are safelist-ed #}
-                <div class="w-10 h-10 border border-gray-400 cursor-pointer {{ tile.color_class }} relative transition-all duration-200 hover:brightness-110 hover:z-10 hover:shadow-xl hover:border-gray-700 hover:border-2"
+                <div class="w-10 aspect-square border border-gray-400 cursor-pointer {{ tile.color_class }} relative transition-all duration-200 hover:brightness-110 hover:z-10 hover:shadow-xl hover:border-gray-700 hover:border-2"
                      hx-get="{% url "city:tile-build" tile.id %}" hx-target="#build-container" hx-swap="innerHTML">
                     {% if tile.building %}
                         <div class="flex flex-col items-center justify-center h-full text-center px-0.5 overflow-hidden">

@@ -226,7 +226,12 @@ def test_map_generation_service_place_random_country_buildings():
 
 @pytest.mark.django_db
 def test_map_generation_service_place_random_country_buildings_no_building_types():
-    """Test _place_random_country_buildings does nothing when no country building types exist."""
+    """Test _place_random_country_buildings does nothing when no country building types exist (line 67)."""
+    from apps.city.models import BuildingType
+
+    # Ensure no country building types exist
+    BuildingType.objects.filter(is_country=True).delete()
+
     savegame = SavegameFactory(map_size=3)
     service = MapGenerationService(savegame=savegame)
 
@@ -329,3 +334,107 @@ def test_map_generation_service_place_random_country_buildings_excludes_edge_til
         assert tile.y != 0
         assert tile.x != 4
         assert tile.y != 4
+
+
+@pytest.mark.django_db
+def test_map_generation_service_place_random_country_buildings_no_tiles():
+    """Test _place_random_country_buildings handles case where all tiles are edge tiles (line 75)."""
+    savegame = SavegameFactory(map_size=2)  # 2x2 map has only edge tiles
+    service = MapGenerationService(savegame=savegame)
+
+    # Create terrain
+    terrain = TerrainFactory(name="Grass", probability=80)
+
+    # Create country building type with allowed terrains
+    country_building_type = CountryBuildingTypeFactory(allowed_terrains=[terrain])
+
+    # Create level 1 building for this type
+    BuildingFactory(building_type=country_building_type, level=1)
+
+    # Create tiles - in a 2x2 map, all tiles are edge tiles
+    for x in range(2):
+        for y in range(2):
+            TileFactory(savegame=savegame, x=x, y=y, terrain=terrain)
+
+    service._place_random_country_buildings()
+
+    # Verify no buildings were placed because all tiles are edge tiles
+    tiles_with_buildings = savegame.tiles.filter(building__isnull=False)
+    assert tiles_with_buildings.count() == 0
+
+
+@pytest.mark.django_db
+def test_map_generation_service_place_random_country_buildings_no_level_1_building():
+    """Test _place_random_country_buildings handles case where building type has no level 1 (line 104)."""
+    savegame = SavegameFactory(map_size=5)
+    service = MapGenerationService(savegame=savegame)
+
+    # Create terrain
+    terrain = TerrainFactory(name="Grass", probability=80)
+
+    # Create country building type with allowed terrains
+    country_building_type = CountryBuildingTypeFactory(allowed_terrains=[terrain])
+
+    # Create level 2 building for this type, but NO level 1
+    BuildingFactory(building_type=country_building_type, level=2)
+
+    # Create tiles
+    for x in range(5):
+        for y in range(5):
+            TileFactory(savegame=savegame, x=x, y=y, terrain=terrain)
+
+    service._place_random_country_buildings()
+
+    # Verify no buildings were placed because no level 1 building exists
+    tiles_with_buildings = savegame.tiles.filter(building__isnull=False)
+    assert tiles_with_buildings.count() == 0
+
+
+@pytest.mark.django_db
+def test_map_generation_service_place_random_country_buildings_skips_occupied_tiles():
+    """Test _place_random_country_buildings skips tiles that already have buildings (line 89)."""
+    savegame = SavegameFactory(map_size=5)
+    service = MapGenerationService(savegame=savegame)
+
+    # Create terrain
+    terrain = TerrainFactory(name="Grass", probability=80)
+
+    # Create country building type with allowed terrains
+    country_building_type = CountryBuildingTypeFactory(allowed_terrains=[terrain])
+
+    # Create level 1 building for this type
+    building_level_1 = BuildingFactory(building_type=country_building_type, level=1)
+
+    # Create tiles
+    for x in range(5):
+        for y in range(5):
+            TileFactory(savegame=savegame, x=x, y=y, terrain=terrain)
+
+    # Pre-place a building on a non-edge tile to occupy it
+    occupied_tile = savegame.tiles.filter(x=2, y=2).first()
+    occupied_tile.building = building_level_1
+    occupied_tile.save(update_fields=["building"])
+
+    # Mock random.choice - it's called twice per iteration: once for tile, once for building_type
+    with mock.patch("apps.city.services.map.generation.random.choice") as mock_choice:
+        # Get the tiles list similar to how the service does it (non-edge tiles)
+        tiles = [t for t in savegame.tiles.select_related("terrain").all() if not t.is_edge_tile()]
+        # Filter out the occupied tile to get available tiles
+        available_tiles = [t for t in tiles if t != occupied_tile]
+
+        # Make the first call return the occupied tile (should be skipped due to line 89)
+        # Then provide enough tile and building_type choices for successful placements
+        # Pattern: tile, building_type, tile, building_type, ...
+        side_effects = [occupied_tile]  # First attempt - will hit line 89 and continue
+        for i in range(INITIAL_COUNTRY_BUILDINGS):
+            side_effects.append(available_tiles[i])  # Pick a tile
+            side_effects.append(country_building_type)  # Pick the building type
+
+        mock_choice.side_effect = side_effects
+
+        service._place_random_country_buildings()
+
+    # Verify that exactly INITIAL_COUNTRY_BUILDINGS new buildings were placed
+    # (the occupied tile should be skipped and other tiles used instead)
+    tiles_with_buildings = savegame.tiles.filter(building__isnull=False)
+    assert tiles_with_buildings.count() == INITIAL_COUNTRY_BUILDINGS + 1  # +1 for the pre-placed building

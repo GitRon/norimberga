@@ -8,7 +8,7 @@ from apps.city.mixins import SavegameRequiredMixin
 from apps.city.tests.factories import SavegameFactory
 
 
-class TestView(SavegameRequiredMixin, generic.TemplateView):
+class _TestView(SavegameRequiredMixin, generic.TemplateView):
     """Test view that uses SavegameRequiredMixin."""
 
     template_name = "city/landing_page.html"
@@ -21,7 +21,7 @@ def test_savegame_required_mixin_redirects_without_active_savegame(request_facto
     request = request_factory.get("/")
     request.user = user
 
-    view = TestView()
+    view = _TestView()
     response = view.dispatch(request)
 
     assert isinstance(response, HttpResponseRedirect)
@@ -35,7 +35,7 @@ def test_savegame_required_mixin_redirects_with_inactive_savegame(request_factor
     request = request_factory.get("/")
     request.user = user
 
-    view = TestView()
+    view = _TestView()
     response = view.dispatch(request)
 
     assert isinstance(response, HttpResponseRedirect)
@@ -49,7 +49,7 @@ def test_savegame_required_mixin_allows_with_active_savegame(request_factory, us
     request = request_factory.get("/")
     request.user = user
 
-    view = TestView.as_view()
+    view = _TestView.as_view()
     response = view(request)
 
     # Response should not be a redirect
@@ -63,7 +63,7 @@ def test_savegame_required_mixin_allows_unauthenticated_user(request_factory):
     request = request_factory.get("/")
     request.user = AnonymousUser()
 
-    view = TestView.as_view()
+    view = _TestView.as_view()
     response = view(request)
 
     # Should not redirect to savegame list (authentication should be handled by LoginRequiredMixin)
@@ -80,7 +80,7 @@ def test_savegame_required_mixin_with_multiple_savegames(request_factory, user):
     request = request_factory.get("/")
     request.user = user
 
-    view = TestView.as_view()
+    view = _TestView.as_view()
     response = view(request)
 
     # Should allow access because user has an active savegame

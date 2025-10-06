@@ -1,6 +1,7 @@
 import random
 
 from django.contrib import messages
+from django.template.defaultfilters import pluralize
 
 from apps.city.events.effects.building.remove_building import RemoveBuilding
 from apps.city.events.effects.savegame.decrease_coins import DecreaseCoins
@@ -17,8 +18,8 @@ class Event(BaseEvent):
     initial_coins: int
     lost_coins: int
     lost_population: int
-    affected_tile: Tile | None
-    destroyed_building_name: str | None
+    affected_tiles: list[Tile]
+    destroyed_building_count: int
 
     def __init__(self, *, savegame: Savegame):
         super().__init__(savegame=savegame)
@@ -32,17 +33,28 @@ class Event(BaseEvent):
         population_loss_percentage = random.randint(5, 15) / 100
         self.lost_population = max(int(self.savegame.population * population_loss_percentage), 5)
 
-        # Randomly select a building to destroy (excluding walls and unique buildings)
-        self.affected_tile = (
+        # Calculate how many buildings to destroy based on total buildings
+        # Destroy 10-25% of city buildings, minimum 1, maximum 5
+        # Only target pure city buildings (exclude walls, country buildings, unique buildings)
+        eligible_tiles = (
             self.savegame.tiles.filter(building__isnull=False)
+            .filter(building__building_type__is_city=True)
             .exclude(building__building_type__is_wall=True)
+            .exclude(building__building_type__is_country=True)
             .exclude(building__building_type__is_unique=True)
-            .order_by("?")
-            .first()
         )
+        total_eligible_buildings = eligible_tiles.count()
 
-        # Store building name before it's destroyed
-        self.destroyed_building_name = self.affected_tile.building.building_type.name if self.affected_tile else None
+        if total_eligible_buildings > 0:
+            destruction_percentage = random.randint(10, 25) / 100
+            buildings_to_destroy = max(1, min(5, int(total_eligible_buildings * destruction_percentage)))
+        else:
+            buildings_to_destroy = 0
+
+        # Select random city buildings to destroy
+        self.affected_tiles = list(eligible_tiles.order_by("?")[:buildings_to_destroy])
+
+        self.destroyed_building_count = len(self.affected_tiles)
 
     def get_probability(self) -> int | float:
         # Only occurs when city is not enclosed by walls
@@ -54,10 +66,17 @@ class Event(BaseEvent):
     def _prepare_effect_decrease_population(self) -> DecreasePopulationAbsolute:
         return DecreasePopulationAbsolute(lost_population=self.lost_population)
 
-    def _prepare_effect_remove_building(self) -> RemoveBuilding | None:
-        if self.affected_tile:
-            return RemoveBuilding(tile=self.affected_tile)
-        return None
+    def get_effects(self) -> list:
+        """Override to dynamically add building removal effects."""
+        effects = [
+            self._prepare_effect_decrease_coins(),
+            self._prepare_effect_decrease_population(),
+        ]
+
+        # Add a RemoveBuilding effect for each affected tile
+        effects.extend([RemoveBuilding(tile=tile) for tile in self.affected_tiles])
+
+        return effects
 
     def get_verbose_text(self) -> str:
         self.savegame.refresh_from_db()
@@ -66,7 +85,10 @@ class Event(BaseEvent):
             f"They stole {self.initial_coins - self.savegame.coins} coins and killed "
             f"{self.lost_population} inhabitants."
         )
-        if self.affected_tile and self.destroyed_building_name:
-            message += f" The {self.destroyed_building_name} at {self.affected_tile} was destroyed during the raid."
+        if self.destroyed_building_count > 0:
+            message += (
+                f" {self.destroyed_building_count} building{pluralize(self.destroyed_building_count)} "
+                f"{'was' if self.destroyed_building_count == 1 else 'were'} destroyed during the raid."
+            )
 
         return message

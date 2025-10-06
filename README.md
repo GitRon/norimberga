@@ -11,6 +11,7 @@ challenges dealing with space within the city walls.
 
 * Contributing
     * [Getting started](docs/contributing/getting_started.md)
+    * [Setup](docs/contributing/setup.md)
     * [Idea pool](docs/contributing/idea_pool.md)
 * Patterns
     * [Django patterns](docs/patterns/django_patterns.md)

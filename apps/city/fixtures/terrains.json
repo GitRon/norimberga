@@ -51,16 +51,6 @@
   },
   {
     "model": "city.terrain",
-    "pk": 6,
-    "fields": {
-      "name": "Fertile Plains",
-      "color_class": "bg-lime-400",
-      "probability": 2,
-      "is_water": false
-    }
-  },
-  {
-    "model": "city.terrain",
     "pk": 7,
     "fields": {
       "name": "River",

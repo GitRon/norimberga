@@ -1,5 +1,9 @@
 # Norimberga
 
+![Coverage](https://img.shields.io/badge/coverage-100%25-green)
+![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)
+![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)
+
 Norimberga is a small browser game which simulates city development in the high middle ages. It focuses on the
 challenges dealing with space within the city walls.
 

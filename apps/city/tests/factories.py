@@ -111,3 +111,13 @@ class UniqueBuildingTypeFactory(BuildingTypeFactory):
     name = "Cathedral"
     is_unique = True
     is_city = True
+
+
+class CountryBuildingTypeFactory(BuildingTypeFactory):
+    class Meta:
+        model = BuildingType
+        skip_postgeneration_save = True
+
+    name = "Farm"
+    is_country = True
+    is_city = False

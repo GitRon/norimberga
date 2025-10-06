@@ -402,3 +402,52 @@ def test_tile_is_adjacent_to_city_building_false():
 
         assert result is False
         mock_queryset.exists.assert_called_once()
+
+
+@pytest.mark.django_db
+def test_tile_is_edge_tile_corners():
+    """Test is_edge_tile returns True for corner tiles."""
+    savegame = SavegameFactory(map_size=5)
+
+    # Test all four corners
+    tile_top_left = TileFactory(savegame=savegame, x=0, y=0)
+    tile_top_right = TileFactory(savegame=savegame, x=4, y=0)
+    tile_bottom_left = TileFactory(savegame=savegame, x=0, y=4)
+    tile_bottom_right = TileFactory(savegame=savegame, x=4, y=4)
+
+    assert tile_top_left.is_edge_tile() is True
+    assert tile_top_right.is_edge_tile() is True
+    assert tile_bottom_left.is_edge_tile() is True
+    assert tile_bottom_right.is_edge_tile() is True
+
+
+@pytest.mark.django_db
+def test_tile_is_edge_tile_edges():
+    """Test is_edge_tile returns True for tiles on edges."""
+    savegame = SavegameFactory(map_size=5)
+
+    # Test tiles on each edge
+    tile_top = TileFactory(savegame=savegame, x=2, y=0)
+    tile_bottom = TileFactory(savegame=savegame, x=2, y=4)
+    tile_left = TileFactory(savegame=savegame, x=0, y=2)
+    tile_right = TileFactory(savegame=savegame, x=4, y=2)
+
+    assert tile_top.is_edge_tile() is True
+    assert tile_bottom.is_edge_tile() is True
+    assert tile_left.is_edge_tile() is True
+    assert tile_right.is_edge_tile() is True
+
+
+@pytest.mark.django_db
+def test_tile_is_edge_tile_center():
+    """Test is_edge_tile returns False for non-edge tiles."""
+    savegame = SavegameFactory(map_size=5)
+
+    # Test center tiles
+    tile_center = TileFactory(savegame=savegame, x=2, y=2)
+    tile_inner = TileFactory(savegame=savegame, x=1, y=1)
+    tile_inner2 = TileFactory(savegame=savegame, x=3, y=3)
+
+    assert tile_center.is_edge_tile() is False
+    assert tile_inner.is_edge_tile() is False
+    assert tile_inner2.is_edge_tile() is False

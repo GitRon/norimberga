@@ -485,3 +485,39 @@ def test_map_generation_service_place_random_country_buildings_excludes_city_and
         assert tile.building.building_type == country_only_building_type
         assert tile.building.building_type.is_country is True
         assert tile.building.building_type.is_city is False
+
+
+@pytest.mark.django_db
+def test_map_generation_service_place_random_country_buildings_only_edge_tiles():
+    """Test _place_random_country_buildings returns early when only edge tiles exist (line 76)."""
+    savegame = SavegameFactory()
+    service = MapGenerationService(savegame=savegame)
+
+    # Create terrain
+    terrain = TerrainFactory(name="Grass", probability=80)
+
+    # Create country building type with allowed terrains
+    country_building_type = CountryBuildingTypeFactory(allowed_terrains=[terrain])
+    BuildingFactory(building_type=country_building_type, level=1)
+
+    # Create only edge tiles (tiles where x=0 or y=0 or x=MAP_SIZE-1 or y=MAP_SIZE-1)
+    # After filtering out edge tiles in line 73, the tiles list will be empty
+    tiles = []
+    # Top row (y=0)
+    tiles.extend([TileFactory.build(savegame=savegame, x=x, y=0, terrain=terrain) for x in range(MAP_SIZE)])
+    # Bottom row (y=MAP_SIZE-1)
+    tiles.extend([TileFactory.build(savegame=savegame, x=x, y=MAP_SIZE - 1, terrain=terrain) for x in range(MAP_SIZE)])
+    # Left column (x=0, excluding corners already added)
+    tiles.extend([TileFactory.build(savegame=savegame, x=0, y=y, terrain=terrain) for y in range(1, MAP_SIZE - 1)])
+    # Right column (x=MAP_SIZE-1, excluding corners already added)
+    tiles.extend(
+        [TileFactory.build(savegame=savegame, x=MAP_SIZE - 1, y=y, terrain=terrain) for y in range(1, MAP_SIZE - 1)]
+    )
+
+    TileFactory._meta.model.objects.bulk_create(tiles)
+
+    service._place_random_country_buildings()
+
+    # Verify no buildings were placed because all tiles are edge tiles
+    tiles_with_buildings = savegame.tiles.filter(building__isnull=False)
+    assert tiles_with_buildings.count() == 0

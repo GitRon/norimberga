@@ -1,8 +1,8 @@
 from unittest import mock
 
-import factory
 import pytest
 
+from apps.city.constants import MAP_SIZE
 from apps.city.services.map.coordinates import MapCoordinatesService
 from apps.city.services.map.generation import INITIAL_COUNTRY_BUILDINGS, MapGenerationService
 from apps.city.tests.factories import (
@@ -20,13 +20,12 @@ def create_tiles_batch(savegame, size, terrain=None):
     """Helper to batch create tiles for a square map."""
     if terrain is None:
         terrain = TerrainFactory()
-    return TileFactory.create_batch(
-        size * size,
-        savegame=savegame,
-        terrain=terrain,
-        x=factory.Sequence(lambda n: n % size),
-        y=factory.Sequence(lambda n: n // size),
-    )
+
+    # Create tiles manually to avoid factory.Sequence global counter issues
+    # Using list comprehension with bulk_create for performance
+    tiles = [TileFactory.build(savegame=savegame, terrain=terrain, x=i % size, y=i // size) for i in range(size * size)]
+
+    return TileFactory._meta.model.objects.bulk_create(tiles)
 
 
 @pytest.mark.django_db
@@ -94,18 +93,19 @@ def test_map_generation_service_draw_river_y_axis():
 
     Terrain.objects.filter(is_water=True).delete()
     river_terrain = RiverTerrainFactory()
+    terrain = TerrainFactory()
 
-    create_tiles_batch(savegame, 20)
+    create_tiles_batch(savegame, MAP_SIZE, terrain)
 
     with (
         mock.patch("apps.city.services.map.generation.randint") as mock_randint,
         mock.patch("apps.city.services.map.generation.random.choice") as mock_choice,
     ):
-        # Set up river starting at (0, 10) and going to reach edge at x=19
+        # Set up river starting at (0, 10) and going to reach edge at x=MAP_SIZE-1
         mock_randint.side_effect = [1, 10]  # dice=1 means start on y-axis, y=10
 
-        # Mock coordinate choices for river path to reach edge at x=19
-        coords = [MapCoordinatesService.Coordinates(x=i + 1, y=10) for i in range(19)]
+        # Mock coordinate choices for river path to reach edge at x=MAP_SIZE-1
+        coords = [MapCoordinatesService.Coordinates(x=i + 1, y=10) for i in range(MAP_SIZE - 1)]
         mock_choice.side_effect = coords
 
         service._draw_river()
@@ -126,8 +126,9 @@ def test_map_generation_service_draw_river_x_axis():
 
     Terrain.objects.filter(is_water=True).delete()
     river_terrain = RiverTerrainFactory()
+    terrain = TerrainFactory()
 
-    create_tiles_batch(savegame, 20)
+    create_tiles_batch(savegame, MAP_SIZE, terrain)
 
     with (
         mock.patch("apps.city.services.map.generation.randint") as mock_randint,
@@ -136,8 +137,8 @@ def test_map_generation_service_draw_river_x_axis():
         # Set up river starting on x-axis - dice=2 triggers else branch (line 31)
         mock_randint.side_effect = [2, 10]  # dice=2 means start on x-axis, x=10
 
-        # Mock coordinate choices for river path to reach edge at y=19
-        coords = [MapCoordinatesService.Coordinates(x=10, y=i + 1) for i in range(19)]
+        # Mock coordinate choices for river path to reach edge at y=MAP_SIZE-1
+        coords = [MapCoordinatesService.Coordinates(x=10, y=i + 1) for i in range(MAP_SIZE - 1)]
         mock_choice.side_effect = coords
 
         service._draw_river()
@@ -157,8 +158,9 @@ def test_map_generation_service_draw_river_missing_terrain():
     from apps.city.models import Terrain
 
     Terrain.objects.filter(is_water=True).delete()
+    terrain = TerrainFactory()
 
-    create_tiles_batch(savegame, 20)
+    create_tiles_batch(savegame, MAP_SIZE, terrain)
 
     with pytest.raises(
         ValueError,
@@ -271,9 +273,8 @@ def test_map_generation_service_place_random_country_buildings_no_valid_terrains
     BuildingFactory(building_type=country_building_type, level=1)
 
     # Create tiles with only water terrain (which isn't allowed)
-    for x in range(3):
-        for y in range(3):
-            TileFactory(savegame=savegame, x=x, y=y, terrain=terrain_water)
+    tiles = [TileFactory.build(savegame=savegame, x=i % 3, y=i // 3, terrain=terrain_water) for i in range(9)]
+    TileFactory._meta.model.objects.bulk_create(tiles)
 
     service._place_random_country_buildings()
 
@@ -332,13 +333,13 @@ def test_map_generation_service_place_random_country_buildings_excludes_edge_til
     tiles_with_buildings = savegame.tiles.filter(building__isnull=False)
     assert tiles_with_buildings.count() == INITIAL_COUNTRY_BUILDINGS
 
-    # Verify none of the buildings are on edge tiles (20x20 map has coordinates 0-19)
+    # Verify none of the buildings are on edge tiles (MAP_SIZE x MAP_SIZE map has coordinates 0 to MAP_SIZE-1)
     for tile in tiles_with_buildings:
         assert tile.is_edge_tile() is False
         assert tile.x != 0
         assert tile.y != 0
-        assert tile.x != 19
-        assert tile.y != 19
+        assert tile.x != MAP_SIZE - 1
+        assert tile.y != MAP_SIZE - 1
 
 
 @pytest.mark.django_db
@@ -362,9 +363,9 @@ def test_map_generation_service_place_random_country_buildings_no_tiles():
     # Create tiles - all non-edge tiles are water (incompatible terrain)
     # Only edge tiles are grass, so no buildings can be placed
     tiles = []
-    for i in range(400):  # 20x20 = 400 tiles
-        x, y = i % 20, i // 20
-        is_edge = x == 0 or y == 0 or x == 19 or y == 19
+    for i in range(MAP_SIZE * MAP_SIZE):
+        x, y = i % MAP_SIZE, i // MAP_SIZE
+        is_edge = x == 0 or y == 0 or x == MAP_SIZE - 1 or y == MAP_SIZE - 1
         tiles.append(
             TileFactory.build(savegame=savegame, x=x, y=y, terrain=terrain_grass if is_edge else terrain_water)
         )
@@ -416,10 +417,12 @@ def test_map_generation_service_place_random_country_buildings_skips_occupied_ti
     # Create level 1 building for this type
     building_level_1 = BuildingFactory(building_type=country_building_type, level=1)
 
-    create_tiles_batch(savegame, 5, terrain)
+    create_tiles_batch(savegame, MAP_SIZE, terrain)
 
     # Pre-place a building on a non-edge tile to occupy it
-    occupied_tile = savegame.tiles.filter(x=2, y=2).first()
+    from apps.city.models import Tile
+
+    occupied_tile = Tile.objects.get(savegame=savegame, x=10, y=10)
     occupied_tile.building = building_level_1
     occupied_tile.save(update_fields=["building"])
 

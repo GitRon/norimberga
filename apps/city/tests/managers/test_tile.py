@@ -74,7 +74,7 @@ def test_tile_queryset_filter_adjacent_tiles():
         result = queryset.filter_adjacent_tiles(tile=center_tile)
 
         # Verify service was called correctly
-        mock_service_class.assert_called_once_with(map_size=savegame.map_size)
+        mock_service_class.assert_called_once_with()
         mock_service.get_adjacent_coordinates.assert_called_once_with(x=center_tile.x, y=center_tile.y)
 
         # The result should contain the adjacent tiles
@@ -214,7 +214,7 @@ def test_tile_queryset_filter_adjacent_tiles_edge_case():
         result = queryset.filter_adjacent_tiles(tile=edge_tile)
 
         # Verify service was called with correct parameters
-        mock_service_class.assert_called_once_with(map_size=savegame.map_size)
+        mock_service_class.assert_called_once_with()
         mock_service.get_adjacent_coordinates.assert_called_once_with(x=0, y=0)
 
         # Result should be filtered by the mock coordinates
@@ -284,7 +284,7 @@ def test_tile_manager_has_adjacent_city_building_true():
         result = Tile.objects.has_adjacent_city_building(tile=tile)
 
         assert result is True
-        mock_service_class.assert_called_once_with(map_size=savegame.map_size)
+        mock_service_class.assert_called_once_with()
         mock_service.get_adjacent_coordinates.assert_called_once_with(x=tile.x, y=tile.y)
 
 

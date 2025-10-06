@@ -66,11 +66,7 @@ class TileBuildingForm(forms.ModelForm):
             raise ValidationError("You can't demolish a unique building.")
 
         # Prevent building on edge tiles
-        max_coord = self.savegame.map_size - 1
-        is_edge_tile = (
-            self.instance.x == 0 or self.instance.y == 0 or self.instance.x == max_coord or self.instance.y == max_coord
-        )
-        if building and is_edge_tile:
+        if building and self.instance.is_edge_tile():
             raise ValidationError("You can't build on edge tiles.")
 
         return building

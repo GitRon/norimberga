@@ -112,5 +112,4 @@ class WallEnclosureService:
 
     def _reached_map_edge(self, *, tiles: list[Tile]) -> bool:
         """Check if any of the tiles are at the edge of the map."""
-        max_coord = self.savegame.map_size - 1
-        return any(tile.x == 0 or tile.x == max_coord or tile.y == 0 or tile.y == max_coord for tile in tiles)
+        return any(tile.is_edge_tile() for tile in tiles)

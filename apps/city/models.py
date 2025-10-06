@@ -127,3 +127,8 @@ class Tile(models.Model):
             .filter_city_building()
             .exists()
         )
+
+    def is_edge_tile(self) -> bool:
+        """Check if this tile is on the edge of the map."""
+        max_coord = self.savegame.map_size - 1
+        return self.x == 0 or self.y == 0 or self.x == max_coord or self.y == max_coord

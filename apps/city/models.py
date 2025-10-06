@@ -10,7 +10,6 @@ from apps.city.managers.tile import TileManager
 class Savegame(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     city_name = models.CharField(max_length=100)
-    map_size = models.PositiveSmallIntegerField(default=5)
     coins = models.SmallIntegerField("Coins", default=1000)
     population = models.PositiveSmallIntegerField("Population", default=0)
     unrest = models.PositiveSmallIntegerField(
@@ -125,5 +124,7 @@ class Tile(models.Model):
 
     def is_edge_tile(self) -> bool:
         """Check if this tile is on the edge of the map."""
-        max_coord = self.savegame.map_size - 1
+        from apps.city.constants import MAP_SIZE
+
+        max_coord = MAP_SIZE - 1
         return self.x == 0 or self.y == 0 or self.x == max_coord or self.y == max_coord

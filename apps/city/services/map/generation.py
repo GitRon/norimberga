@@ -1,11 +1,9 @@
 import random
 from random import randint
 
+from apps.city.constants import INITIAL_COUNTRY_BUILDINGS, MAP_SIZE
 from apps.city.models import Building, BuildingType, Savegame, Terrain, Tile
 from apps.city.services.map.coordinates import MapCoordinatesService
-
-# Number of random country buildings to place on the map during generation
-INITIAL_COUNTRY_BUILDINGS = 3
 
 
 class MapGenerationService:
@@ -29,9 +27,9 @@ class MapGenerationService:
         dice = randint(1, 2)
         # Decide if the river starts on the x- or y-axis
         if dice == 1:
-            start_coordinates = MapCoordinatesService.Coordinates(x=0, y=randint(1, self.savegame.map_size - 1))
+            start_coordinates = MapCoordinatesService.Coordinates(x=0, y=randint(1, MAP_SIZE - 1))
         else:
-            start_coordinates = MapCoordinatesService.Coordinates(x=randint(1, self.savegame.map_size - 1), y=0)
+            start_coordinates = MapCoordinatesService.Coordinates(x=randint(1, MAP_SIZE - 1), y=0)
 
         # Fetch river terrain
         terrain_river = Terrain.objects.filter(name="River").first()
@@ -46,11 +44,11 @@ class MapGenerationService:
             ).update(terrain=terrain_river)
 
             # If we have reached the other end of the map, we are done
-            if iter_coordinates.x == self.savegame.map_size - 1 or iter_coordinates.y == self.savegame.map_size - 1:
+            if iter_coordinates.x == MAP_SIZE - 1 or iter_coordinates.y == MAP_SIZE - 1:
                 break
 
             # Get the next field which should become a river
-            service = MapCoordinatesService(map_size=self.savegame.map_size)
+            service = MapCoordinatesService()
             forward_adjacent_fields = service.get_forward_adjacent_fields(x=iter_coordinates.x, y=iter_coordinates.y)
             iter_coordinates = random.choice(forward_adjacent_fields)
 
@@ -114,8 +112,8 @@ class MapGenerationService:
         self.savegame.tiles.all().delete()
 
         # Generate map
-        for x in range(self.savegame.map_size):
-            for y in range(self.savegame.map_size):
+        for x in range(MAP_SIZE):
+            for y in range(MAP_SIZE):
                 Tile.objects.create(savegame=self.savegame, x=x, y=y, terrain=self.get_terrain())
 
         # Draw river

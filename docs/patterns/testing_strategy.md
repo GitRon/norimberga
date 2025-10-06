@@ -38,3 +38,4 @@ Here are a few rules to keep in mind when writing unittests:
   package. Therefore, avoid testing `apps.py` or admin classes which don't implement any custom code.
 * Never test model manager or CQS methods directly (`MyManager().my_method()`), always go through the model
   (`MyModel.objects.my_method()`)
+* Never create many objects manually. Always use batch creation. Try to avoid creating many objects at once if possible.

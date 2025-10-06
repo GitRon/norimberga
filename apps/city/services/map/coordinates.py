@@ -1,16 +1,13 @@
 import dataclasses
 
+from apps.city.constants import MAP_SIZE
+
 
 class MapCoordinatesService:
-    map_size: int
-
     @dataclasses.dataclass(kw_only=True)
     class Coordinates:
         x: int
         y: int
-
-    def __init__(self, *, map_size: int):
-        self.map_size = map_size
 
     def _get_valid_coordinates(
         self, *, start_x, start_y, min_x: int, max_x: int, min_y: int, max_y: int
@@ -26,10 +23,10 @@ class MapCoordinatesService:
 
     def get_adjacent_coordinates(self, *, x: int, y: int) -> list[Coordinates]:
         min_x = max(0, x - 1)
-        max_x = min(x + 1, self.map_size - 1)  # Coordinates start at zero
+        max_x = min(x + 1, MAP_SIZE - 1)  # Coordinates start at zero
 
         min_y = max(0, y - 1)
-        max_y = min(y + 1, self.map_size - 1)  # Coordinates start at zero
+        max_y = min(y + 1, MAP_SIZE - 1)  # Coordinates start at zero
 
         return self._get_valid_coordinates(start_x=x, start_y=y, min_x=min_x, max_x=max_x, min_y=min_y, max_y=max_y)
 
@@ -38,9 +35,9 @@ class MapCoordinatesService:
         Looking from the 0/0 field, get adjacent fields in the "forward" direction
         """
         min_x = x
-        max_x = min(x + 1, self.map_size - 1)  # Coordinates start at zero
+        max_x = min(x + 1, MAP_SIZE - 1)  # Coordinates start at zero
 
         min_y = y
-        max_y = min(y + 1, self.map_size - 1)  # Coordinates start at zero
+        max_y = min(y + 1, MAP_SIZE - 1)  # Coordinates start at zero
 
         return self._get_valid_coordinates(start_x=x, start_y=y, min_x=min_x, max_x=max_x, min_y=min_y, max_y=max_y)

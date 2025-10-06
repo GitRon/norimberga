@@ -19,7 +19,7 @@ class WallEnclosureService:
 
     def __init__(self, *, savegame: Savegame):
         self.savegame = savegame
-        self.map_service = MapCoordinatesService(map_size=savegame.map_size)
+        self.map_service = MapCoordinatesService()
 
     def process(self) -> bool:
         """

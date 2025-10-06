@@ -350,7 +350,7 @@ def test_tile_building_form_clean_building_no_building():
 @pytest.mark.django_db
 def test_tile_building_form_clean_building_edge_tile_top():
     """Test form validation fails when trying to build on top edge tile."""
-    savegame = SavegameFactory(map_size=5, coins=100)
+    savegame = SavegameFactory(coins=100)
     terrain = TerrainFactory()
 
     # Create tile on top edge (y=0)
@@ -372,7 +372,7 @@ def test_tile_building_form_clean_building_edge_tile_top():
 @pytest.mark.django_db
 def test_tile_building_form_clean_building_edge_tile_left():
     """Test form validation fails when trying to build on left edge tile."""
-    savegame = SavegameFactory(map_size=5, coins=100)
+    savegame = SavegameFactory(coins=100)
     terrain = TerrainFactory()
 
     # Create tile on left edge (x=0)
@@ -394,11 +394,11 @@ def test_tile_building_form_clean_building_edge_tile_left():
 @pytest.mark.django_db
 def test_tile_building_form_clean_building_edge_tile_bottom():
     """Test form validation fails when trying to build on bottom edge tile."""
-    savegame = SavegameFactory(map_size=5, coins=100)
+    savegame = SavegameFactory(coins=100)
     terrain = TerrainFactory()
 
-    # Create tile on bottom edge (y=map_size-1 = 4)
-    tile = TileFactory(savegame=savegame, terrain=terrain, x=2, y=4, building=None)
+    # Create tile on bottom edge (y=MAP_SIZE-1 = 19 for 20x20 map)
+    tile = TileFactory(savegame=savegame, terrain=terrain, x=10, y=19, building=None)
 
     building_type = BuildingTypeFactory()
     building_type.allowed_terrains.add(terrain)
@@ -416,11 +416,11 @@ def test_tile_building_form_clean_building_edge_tile_bottom():
 @pytest.mark.django_db
 def test_tile_building_form_clean_building_edge_tile_right():
     """Test form validation fails when trying to build on right edge tile."""
-    savegame = SavegameFactory(map_size=5, coins=100)
+    savegame = SavegameFactory(coins=100)
     terrain = TerrainFactory()
 
-    # Create tile on right edge (x=map_size-1 = 4)
-    tile = TileFactory(savegame=savegame, terrain=terrain, x=4, y=2, building=None)
+    # Create tile on right edge (x=MAP_SIZE-1 = 19 for 20x20 map)
+    tile = TileFactory(savegame=savegame, terrain=terrain, x=19, y=10, building=None)
 
     building_type = BuildingTypeFactory()
     building_type.allowed_terrains.add(terrain)
@@ -438,7 +438,7 @@ def test_tile_building_form_clean_building_edge_tile_right():
 @pytest.mark.django_db
 def test_tile_building_form_clean_building_non_edge_tile():
     """Test form validation passes when building on non-edge tile."""
-    savegame = SavegameFactory(map_size=5, coins=100)
+    savegame = SavegameFactory(coins=100)
     terrain = TerrainFactory()
 
     # Create tile not on edge (x=2, y=2)
@@ -458,7 +458,7 @@ def test_tile_building_form_clean_building_non_edge_tile():
 @pytest.mark.django_db
 def test_tile_building_form_clean_building_edge_tile_no_building():
     """Test form validation passes when not building on edge tile (demolishing or no action)."""
-    savegame = SavegameFactory(map_size=5)
+    savegame = SavegameFactory()
     terrain = TerrainFactory()
 
     # Create tile on edge

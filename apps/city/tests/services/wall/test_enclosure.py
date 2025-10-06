@@ -1,3 +1,4 @@
+import factory
 import pytest
 
 from apps.city.services.wall.enclosure import WallEnclosureService
@@ -13,16 +14,26 @@ from apps.city.tests.factories import (
 )
 
 
+def create_tiles_batch(savegame, size, terrain, building=None):
+    """Helper to batch create tiles for a square map."""
+    return TileFactory.create_batch(
+        size * size,
+        savegame=savegame,
+        terrain=terrain,
+        building=building,
+        x=factory.Sequence(lambda n: n % size),
+        y=factory.Sequence(lambda n: n // size),
+    )
+
+
 @pytest.mark.django_db
 def test_wall_enclosure_service_no_city_buildings():
     """Test that service returns False when there are no city buildings."""
-    savegame = SavegameFactory(map_size=5)
+    savegame = SavegameFactory()
     terrain = TerrainFactory()
 
     # Create map without city buildings
-    for x in range(5):
-        for y in range(5):
-            TileFactory(savegame=savegame, x=x, y=y, terrain=terrain, building=None)
+    create_tiles_batch(savegame, 5, terrain, building=None)
 
     service = WallEnclosureService(savegame=savegame)
     result = service.process()
@@ -33,7 +44,7 @@ def test_wall_enclosure_service_no_city_buildings():
 @pytest.mark.django_db
 def test_wall_enclosure_service_city_not_enclosed():
     """Test that service returns False when city buildings are not enclosed by walls."""
-    savegame = SavegameFactory(map_size=5)
+    savegame = SavegameFactory()
     terrain = TerrainFactory()
 
     # Create city building type
@@ -57,7 +68,7 @@ def test_wall_enclosure_service_city_not_enclosed():
 @pytest.mark.django_db
 def test_wall_enclosure_service_city_enclosed_by_walls():
     """Test that service returns True when city buildings are enclosed by walls."""
-    savegame = SavegameFactory(map_size=5)
+    savegame = SavegameFactory()
     terrain = TerrainFactory()
 
     # Create building types
@@ -94,7 +105,7 @@ def test_wall_enclosure_service_city_enclosed_by_walls():
 @pytest.mark.django_db
 def test_wall_enclosure_service_gap_in_wall():
     """Test that service returns False when there is a gap in the wall."""
-    savegame = SavegameFactory(map_size=5)
+    savegame = SavegameFactory()
     terrain = TerrainFactory()
 
     # Create building types
@@ -130,7 +141,7 @@ def test_wall_enclosure_service_gap_in_wall():
 @pytest.mark.django_db
 def test_wall_enclosure_service_multiple_city_buildings():
     """Test that service works with multiple city buildings inside walls."""
-    savegame = SavegameFactory(map_size=5)
+    savegame = SavegameFactory()
     terrain = TerrainFactory()
 
     # Create building types
@@ -160,7 +171,7 @@ def test_wall_enclosure_service_multiple_city_buildings():
 @pytest.mark.django_db
 def test_wall_enclosure_service_city_building_outside_wall():
     """Test that service returns False when a city building is outside the wall."""
-    savegame = SavegameFactory(map_size=5)
+    savegame = SavegameFactory()
     terrain = TerrainFactory()
 
     # Create building types
@@ -196,7 +207,7 @@ def test_wall_enclosure_service_city_building_outside_wall():
 @pytest.mark.django_db
 def test_wall_enclosure_service_starts_from_unique_building():
     """Test that service prefers starting from a unique building."""
-    savegame = SavegameFactory(map_size=5)
+    savegame = SavegameFactory()
     terrain = TerrainFactory()
 
     # Create building types
@@ -233,7 +244,7 @@ def test_wall_enclosure_service_starts_from_unique_building():
 @pytest.mark.django_db
 def test_wall_enclosure_service_3x3_map():
     """Test enclosure detection on a smaller 3x3 map."""
-    savegame = SavegameFactory(map_size=3)
+    savegame = SavegameFactory()
     terrain = TerrainFactory()
 
     # Create building types
@@ -263,7 +274,7 @@ def test_wall_enclosure_service_3x3_map():
 @pytest.mark.django_db
 def test_wall_enclosure_service_water_only_does_not_enclose():
     """Test that a city cannot be enclosed by water alone without walls."""
-    savegame = SavegameFactory(map_size=5)
+    savegame = SavegameFactory()
     land_terrain = TerrainFactory(is_water=False)
     water_terrain = WaterTerrainFactory()
 
@@ -299,7 +310,7 @@ def test_wall_enclosure_service_water_only_does_not_enclose():
 @pytest.mark.django_db
 def test_wall_enclosure_service_gap_in_water():
     """Test that a gap in water terrain is detected (city not enclosed)."""
-    savegame = SavegameFactory(map_size=5)
+    savegame = SavegameFactory()
     land_terrain = TerrainFactory(is_water=False)
     water_terrain = WaterTerrainFactory()
 
@@ -334,7 +345,7 @@ def test_wall_enclosure_service_gap_in_water():
 @pytest.mark.django_db
 def test_wall_enclosure_service_mixed_water_and_walls():
     """Test that water does not work with walls to enclose a city - only walls count."""
-    savegame = SavegameFactory(map_size=5)
+    savegame = SavegameFactory()
     land_terrain = TerrainFactory(is_water=False)
     water_terrain = WaterTerrainFactory()
 
@@ -386,7 +397,7 @@ def test_wall_enclosure_service_mixed_water_and_walls():
 @pytest.mark.django_db
 def test_wall_enclosure_service_with_missing_tiles():
     """Test that service handles missing tiles gracefully (Tile.DoesNotExist exception)."""
-    savegame = SavegameFactory(map_size=5)
+    savegame = SavegameFactory()
     terrain = TerrainFactory()
 
     # Create building types

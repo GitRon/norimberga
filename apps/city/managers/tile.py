@@ -14,7 +14,7 @@ class TileQuerySet(models.QuerySet):
         return self.filter(savegame=savegame)
 
     def filter_adjacent_tiles(self, *, tile: "Tile") -> models.QuerySet:
-        service = MapCoordinatesService(map_size=tile.savegame.map_size)
+        service = MapCoordinatesService()
         adjacent_coordinates = service.get_adjacent_coordinates(x=tile.x, y=tile.y)
         filter_condition = Q(id=-1)
         for coordinates in adjacent_coordinates:

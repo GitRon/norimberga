@@ -73,7 +73,11 @@ module.exports = {
         container: {
             center: true,
         },
-        extend: {},
+        extend: {
+            gridTemplateColumns: {
+                '20': 'repeat(20, minmax(0, 1fr))',
+            },
+        },
     },
     plugins: [
         require('@tailwindcss/forms'),

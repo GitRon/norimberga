@@ -122,8 +122,7 @@ def test_wall_enclosure_service_city_enclosed_by_walls():
 @pytest.mark.django_db
 def test_wall_enclosure_service_gap_in_wall():
     """Test that service returns False when there is a gap in the wall."""
-    from apps.city.constants import MAP_SIZE
-
+    map_size = 10
     savegame = SavegameFactory()
     terrain = TerrainFactory()
 
@@ -132,27 +131,26 @@ def test_wall_enclosure_service_gap_in_wall():
     city_type = BuildingTypeFactory(is_city=True, is_wall=False, allowed_terrains=[terrain])
 
     # Create a smaller enclosed area with walls, but create enough tiles for the service to work
-    # We'll create tiles in a 7x7 area centered in the map, with a gap in the wall
-    # Since MAP_SIZE is fixed, we need to create tiles that allow flood fill to reach an edge
+    # We'll create tiles in a 10x10 map, with a gap in the wall
 
     # Create all tiles for the map using bulk_create for performance
     tiles = [
-        TileFactory.build(savegame=savegame, x=i % MAP_SIZE, y=i // MAP_SIZE, terrain=terrain, building=None)
-        for i in range(MAP_SIZE * MAP_SIZE)
+        TileFactory.build(savegame=savegame, x=i % map_size, y=i // map_size, terrain=terrain, building=None)
+        for i in range(map_size * map_size)
     ]
     Tile.objects.bulk_create(tiles)
 
-    # Now add walls in a ring around position (10, 10) with a gap
+    # Now add walls in a ring around position (3, 3) with a gap
     # W W W W W
     # W C C C W
-    # W C C C .  <- gap at (14, 12) allows escape to edge
+    # W C C C .  <- gap at (7, 5) allows escape to edge
     # W C C C W
     # W W W W W
 
     for dx in range(5):
         for dy in range(5):
-            x, y = 10 + dx, 10 + dy
-            # Walls on the edges, except gap at (14, 12)
+            x, y = 3 + dx, 3 + dy
+            # Walls on the edges, except gap at (7, 5)
             if (dx == 0 or dx == 4 or dy == 0 or dy == 4) and not (dx == 4 and dy == 2):
                 wall = BuildingFactory(building_type=wall_type)
                 tile = Tile.objects.get(savegame=savegame, x=x, y=y)

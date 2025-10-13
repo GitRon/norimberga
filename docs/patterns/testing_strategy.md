@@ -26,6 +26,7 @@ Here are a few rules to keep in mind when writing unittests:
   functionality. Mostly, a happy-path test is better than mocking.
 * If you mock, always use `import mock` for mockings to have a consistent way of working with `patch`
   (`mock.patch` instead of `patch`)
+* For higher level methods, prefer testing the happy path over mocking
 * Ensure that you don't forget to create a `__init__.py` file per new Python package you've created. Otherwise,
   unittests won't be executed.
 * Never create objects directly. Always use a factory_boy factory. Create one factory file per Django app.

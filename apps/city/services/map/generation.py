@@ -21,7 +21,7 @@ class MapGenerationService:
             terrain = Terrain.objects.filter(probability__gte=dice).exclude(name="River").order_by("?").first()
         return terrain
 
-    def _is_edge_tile(self, tile: Tile) -> bool:
+    def _is_edge_tile(self, *, tile: Tile) -> bool:
         """Check if a tile is on the edge of the map based on the current map size."""
         max_coord = self.map_size - 1
         return tile.x == 0 or tile.y == 0 or tile.x == max_coord or tile.y == max_coord
@@ -77,7 +77,7 @@ class MapGenerationService:
         # Get all non-edge tiles that could potentially have buildings
         tiles = list(self.savegame.tiles.select_related("terrain").all())
         # Filter out edge tiles
-        tiles = [t for t in tiles if not self._is_edge_tile(t)]
+        tiles = [t for t in tiles if not self._is_edge_tile(tile=t)]
 
         if not tiles:
             return

@@ -11,6 +11,7 @@
       "effect_coins": null,
       "effect_population": null,
       "cooldown_years": 2,
+      "required_milestone": null,
       "is_active": true
     }
   },
@@ -26,6 +27,7 @@
       "effect_coins": null,
       "effect_population": null,
       "cooldown_years": 3,
+      "required_milestone": null,
       "is_active": true
     }
   },
@@ -41,6 +43,7 @@
       "effect_coins": 500,
       "effect_population": null,
       "cooldown_years": 5,
+      "required_milestone": null,
       "is_active": true
     }
   },
@@ -56,6 +59,7 @@
       "effect_coins": null,
       "effect_population": null,
       "cooldown_years": 4,
+      "required_milestone": null,
       "is_active": true
     }
   },
@@ -71,6 +75,71 @@
       "effect_coins": null,
       "effect_population": null,
       "cooldown_years": 2,
+      "required_milestone": null,
+      "is_active": true
+    }
+  },
+  {
+    "model": "edict.edict",
+    "pk": 6,
+    "fields": {
+      "name": "Establish Trade Charter",
+      "description": "Grant official trade privileges to your city, attracting wealthy merchants and increasing commerce.",
+      "cost_coins": 500,
+      "cost_population": null,
+      "effect_unrest": -5,
+      "effect_coins": 200,
+      "effect_population": 20,
+      "cooldown_years": 10,
+      "required_milestone": 4,
+      "is_active": true
+    }
+  },
+  {
+    "model": "edict.edict",
+    "pk": 7,
+    "fields": {
+      "name": "City Privileges",
+      "description": "Petition the Emperor for special privileges that enhance your city's autonomy and prestige.",
+      "cost_coins": 1000,
+      "cost_population": null,
+      "effect_unrest": -25,
+      "effect_coins": null,
+      "effect_population": 50,
+      "cooldown_years": 15,
+      "required_milestone": 6,
+      "is_active": true
+    }
+  },
+  {
+    "model": "edict.edict",
+    "pk": 8,
+    "fields": {
+      "name": "Mint City Coinage",
+      "description": "Gain the right to mint your own coins, a significant step towards economic independence.",
+      "cost_coins": 800,
+      "cost_population": null,
+      "effect_unrest": 0,
+      "effect_coins": 300,
+      "effect_population": null,
+      "cooldown_years": 8,
+      "required_milestone": 10,
+      "is_active": true
+    }
+  },
+  {
+    "model": "edict.edict",
+    "pk": 9,
+    "fields": {
+      "name": "Imperial Protection",
+      "description": "Secure direct protection from the Emperor, reducing external threats and unrest.",
+      "cost_coins": 2000,
+      "cost_population": null,
+      "effect_unrest": -30,
+      "effect_coins": null,
+      "effect_population": null,
+      "cooldown_years": 20,
+      "required_milestone": 8,
       "is_active": true
     }
   }

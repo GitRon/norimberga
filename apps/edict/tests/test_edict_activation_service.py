@@ -241,3 +241,62 @@ def test_process_does_not_create_log_when_validation_fails():
 
     log_count = EdictLog.objects.filter(savegame=savegame, edict=edict).count()
     assert log_count == 0
+
+
+@pytest.mark.django_db
+def test_process_fails_when_required_milestone_not_completed():
+    from apps.milestone.tests.factories import MilestoneFactory
+
+    savegame = SavegameFactory(coins=500)
+    milestone = MilestoneFactory(name="Small Town")
+    edict = EdictFactory(cost_coins=100, required_milestone=milestone)
+    service = EdictActivationService(savegame=savegame, edict=edict)
+
+    result = service.process()
+
+    assert result.success is False
+    assert "Small Town" in result.message
+    assert "milestone" in result.message.lower()
+
+
+@pytest.mark.django_db
+def test_process_succeeds_when_required_milestone_completed():
+    from apps.milestone.tests.factories import MilestoneFactory, MilestoneLogFactory
+
+    savegame = SavegameFactory(coins=500)
+    milestone = MilestoneFactory(name="Small Town")
+    MilestoneLogFactory(savegame=savegame, milestone=milestone)
+    edict = EdictFactory(cost_coins=100, required_milestone=milestone)
+    service = EdictActivationService(savegame=savegame, edict=edict)
+
+    result = service.process()
+
+    assert result.success is True
+
+
+@pytest.mark.django_db
+def test_process_succeeds_when_no_milestone_required():
+    savegame = SavegameFactory(coins=500)
+    edict = EdictFactory(cost_coins=100, required_milestone=None)
+    service = EdictActivationService(savegame=savegame, edict=edict)
+
+    result = service.process()
+
+    assert result.success is True
+
+
+@pytest.mark.django_db
+def test_process_does_not_modify_savegame_when_milestone_not_completed():
+    from apps.milestone.tests.factories import MilestoneFactory
+
+    initial_coins = 500
+    savegame = SavegameFactory(coins=initial_coins, unrest=50)
+    milestone = MilestoneFactory(name="Small Town")
+    edict = EdictFactory(cost_coins=100, effect_unrest=-10, required_milestone=milestone)
+    service = EdictActivationService(savegame=savegame, edict=edict)
+
+    service.process()
+
+    savegame.refresh_from_db()
+    assert savegame.coins == initial_coins
+    assert savegame.unrest == 50

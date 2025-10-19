@@ -120,3 +120,51 @@ def test_get_available_edicts_for_savegame_returns_edicts_ordered_by_name():
 
     assert result[0]["edict"] == edict_a
     assert result[1]["edict"] == edict_z
+
+
+@pytest.mark.django_db
+def test_get_available_edicts_for_savegame_marks_edict_unavailable_when_milestone_not_completed():
+    from apps.edict.models import Edict
+    from apps.milestone.tests.factories import MilestoneFactory
+
+    savegame = SavegameFactory()
+    milestone = MilestoneFactory(name="Small Town")
+    Edict.objects.all().delete()
+    EdictFactory(name="Special Edict", required_milestone=milestone)
+
+    result = get_available_edicts_for_savegame(savegame=savegame)
+
+    assert result[0]["is_available"] is False
+    assert "Small Town" in result[0]["unavailable_reason"]
+    assert result[0]["can_afford"] is False
+
+
+@pytest.mark.django_db
+def test_get_available_edicts_for_savegame_marks_edict_available_when_milestone_completed():
+    from apps.edict.models import Edict
+    from apps.milestone.tests.factories import MilestoneFactory, MilestoneLogFactory
+
+    savegame = SavegameFactory()
+    milestone = MilestoneFactory(name="Small Town")
+    MilestoneLogFactory(savegame=savegame, milestone=milestone)
+    Edict.objects.all().delete()
+    EdictFactory(name="Special Edict", required_milestone=milestone, cost_coins=100)
+
+    result = get_available_edicts_for_savegame(savegame=savegame)
+
+    assert result[0]["is_available"] is True
+    assert result[0]["unavailable_reason"] is None
+
+
+@pytest.mark.django_db
+def test_get_available_edicts_for_savegame_when_edict_has_no_milestone_requirement():
+    from apps.edict.models import Edict
+
+    savegame = SavegameFactory()
+    Edict.objects.all().delete()
+    EdictFactory(required_milestone=None)
+
+    result = get_available_edicts_for_savegame(savegame=savegame)
+
+    assert result[0]["is_available"] is True
+    assert result[0]["unavailable_reason"] is None

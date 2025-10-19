@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 from apps.city.models import Savegame
 from apps.edict.models import Edict, EdictLog
+from apps.milestone.selectors.milestone import get_completed_milestone_ids
 
 
 @dataclass(kw_only=True)
@@ -30,6 +31,11 @@ class EdictActivationService:
         if not self.edict.is_active:
             return EdictActivationResult(success=False, message="This edict is not currently available.")
 
+        # Check milestone requirement
+        milestone_validation = self._validate_milestone_requirement()
+        if not milestone_validation.success:
+            return milestone_validation
+
         # Check cooldown
         if not self._is_edict_available():
             return EdictActivationResult(
@@ -57,6 +63,21 @@ class EdictActivationService:
         self.savegame.save()
 
         return EdictActivationResult(success=True, message=f"Edict '{self.edict.name}' has been activated!")
+
+    def _validate_milestone_requirement(self) -> EdictActivationResult:
+        """Validate that required milestone has been completed."""
+        if self.edict.required_milestone_id is None:
+            return EdictActivationResult(success=True, message="")
+
+        completed_milestone_ids = get_completed_milestone_ids(savegame=self.savegame)
+        if self.edict.required_milestone_id not in completed_milestone_ids:
+            milestone_name = self.edict.required_milestone.name
+            return EdictActivationResult(
+                success=False,
+                message=f"This edict requires the '{milestone_name}' milestone to be completed first.",
+            )
+
+        return EdictActivationResult(success=True, message="")
 
     def _is_edict_available(self) -> bool:
         """Check if edict is available based on cooldown."""

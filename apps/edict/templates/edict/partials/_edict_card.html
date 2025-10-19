@@ -84,6 +84,20 @@
         </div>
     </div>
 
+    <!-- Milestone Requirement -->
+    {% if edict_data.edict.required_milestone %}
+        <div class="border-t border-gray-200 pt-4 mb-4">
+            <div class="flex items-center text-sm">
+                <svg class="w-4 h-4 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span class="{% if not edict_data.is_available and 'milestone' in edict_data.unavailable_reason|lower %}text-red-600{% else %}text-gray-700{% endif %}">
+                    <strong>Requires:</strong> {{ edict_data.edict.required_milestone.name }}
+                </span>
+            </div>
+        </div>
+    {% endif %}
+
     <!-- Cooldown Info -->
     {% if edict_data.edict.cooldown_years %}
         <div class="text-xs text-gray-500 mb-4">

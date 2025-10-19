@@ -201,6 +201,23 @@ def test_process_succeeds_when_no_cooldown_defined():
 
 
 @pytest.mark.django_db
+def test_process_succeeds_when_edict_has_cooldown_but_never_activated():
+    """Test that edict with cooldown can be activated for the first time (no previous log)."""
+    savegame = SavegameFactory(current_year=1200)
+    edict = EdictFactory(cooldown_years=3)
+    # No EdictLog created - this is the first time activation
+    service = EdictActivationService(savegame=savegame, edict=edict)
+
+    result = service.process()
+
+    assert result.success is True
+    # Verify log was created
+    log = EdictLog.objects.filter(savegame=savegame, edict=edict).first()
+    assert log is not None
+    assert log.activated_at_year == 1200
+
+
+@pytest.mark.django_db
 def test_process_does_not_modify_savegame_when_validation_fails():
     initial_coins = 50
     savegame = SavegameFactory(coins=initial_coins, unrest=50)

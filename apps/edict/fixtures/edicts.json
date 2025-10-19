@@ -1,0 +1,77 @@
+[
+  {
+    "model": "edict.edict",
+    "pk": 1,
+    "fields": {
+      "name": "Give Bread to the Poor",
+      "description": "Distribute bread to the poorest citizens to ease their suffering and reduce unrest.",
+      "cost_coins": 100,
+      "cost_population": null,
+      "effect_unrest": -10,
+      "effect_coins": null,
+      "effect_population": null,
+      "cooldown_years": 2,
+      "is_active": true
+    }
+  },
+  {
+    "model": "edict.edict",
+    "pk": 2,
+    "fields": {
+      "name": "Grand Festival",
+      "description": "Organize a magnificent festival with games, music, and feasting to keep the people happy.",
+      "cost_coins": 200,
+      "cost_population": null,
+      "effect_unrest": -15,
+      "effect_coins": null,
+      "effect_population": null,
+      "cooldown_years": 3,
+      "is_active": true
+    }
+  },
+  {
+    "model": "edict.edict",
+    "pk": 3,
+    "fields": {
+      "name": "Conscription",
+      "description": "Force able-bodied citizens into military service. They pay a fee to avoid service, but this is unpopular.",
+      "cost_coins": null,
+      "cost_population": 50,
+      "effect_unrest": 20,
+      "effect_coins": 500,
+      "effect_population": null,
+      "cooldown_years": 5,
+      "is_active": true
+    }
+  },
+  {
+    "model": "edict.edict",
+    "pk": 4,
+    "fields": {
+      "name": "Tax Holiday",
+      "description": "Suspend all taxes for one year to win the favor of merchants and citizens alike.",
+      "cost_coins": 300,
+      "cost_population": null,
+      "effect_unrest": -20,
+      "effect_coins": null,
+      "effect_population": null,
+      "cooldown_years": 4,
+      "is_active": true
+    }
+  },
+  {
+    "model": "edict.edict",
+    "pk": 5,
+    "fields": {
+      "name": "Public Works",
+      "description": "Hire unemployed citizens for public construction projects, reducing unrest and boosting morale.",
+      "cost_coins": 150,
+      "cost_population": null,
+      "effect_unrest": -12,
+      "effect_coins": null,
+      "effect_population": null,
+      "cooldown_years": 2,
+      "is_active": true
+    }
+  }
+]

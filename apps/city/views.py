@@ -10,7 +10,6 @@ from apps.city.forms.tile import TileBuildingForm
 from apps.city.mixins import SavegameRequiredMixin
 from apps.city.models import Savegame, Tile
 from apps.city.selectors.savegame import get_balance_data
-from apps.city.services.building.housing import BuildingHousingService
 from apps.city.services.map.generation import MapGenerationService
 from apps.city.services.wall.enclosure import WallEnclosureService
 
@@ -19,36 +18,13 @@ class SavegameValueView(generic.DetailView):
     model = Savegame
     template_name = "savegame/partials/_nav_values.html"
 
-    def get_context_data(self, **kwargs) -> dict:
-        context = super().get_context_data(**kwargs)
-        context["max_housing_space"] = BuildingHousingService(savegame=self.object).calculate_max_space()
-        return context
-
 
 class NavbarValuesView(generic.TemplateView):
     template_name = "partials/_navbar_values.html"
 
-    def get_context_data(self, **kwargs) -> dict:
-        context = super().get_context_data(**kwargs)
-        if self.request.user.is_authenticated:
-            savegame = Savegame.objects.filter(user=self.request.user, is_active=True).first()
-            if savegame:
-                context["savegame"] = savegame
-                context["max_housing_space"] = BuildingHousingService(savegame=savegame).calculate_max_space()
-                context["is_enclosed"] = savegame.is_enclosed
-        return context
-
 
 class LandingPageView(SavegameRequiredMixin, generic.TemplateView):
     template_name = "city/landing_page.html"
-
-    def get_context_data(self, **kwargs) -> dict:
-        context = super().get_context_data(**kwargs)
-        # TODO(RV): move to context processor
-        savegame = Savegame.objects.filter(user=self.request.user, is_active=True).first()
-        if savegame:
-            context["max_housing_space"] = BuildingHousingService(savegame=savegame).calculate_max_space()
-        return context
 
 
 class CityMapView(generic.TemplateView):

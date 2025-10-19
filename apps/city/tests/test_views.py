@@ -15,9 +15,6 @@ from apps.city.tests.factories import (
 )
 from apps.city.views import (
     BalanceView,
-    LandingPageView,
-    NavbarValuesView,
-    SavegameValueView,
     TileBuildView,
     TileDemolishView,
 )
@@ -25,126 +22,38 @@ from apps.city.views import (
 
 # SavegameValueView Tests
 @pytest.mark.django_db
-def test_savegame_value_view_get_context_data():
-    """Test SavegameValueView includes max_housing_space in context."""
-    savegame = SavegameFactory()
-
-    with mock.patch("apps.city.views.BuildingHousingService") as mock_service:
-        mock_instance = mock_service.return_value
-        mock_instance.calculate_max_space.return_value = 50
-
-        view = SavegameValueView()
-        view.object = savegame
-
-        context = view.get_context_data()
-
-        assert context["max_housing_space"] == 50
-        mock_service.assert_called_once()
-        mock_instance.calculate_max_space.assert_called_once()
-
-
-@pytest.mark.django_db
 def test_savegame_value_view_response(authenticated_client, user):
     """Test SavegameValueView responds correctly."""
     savegame = SavegameFactory(user=user, is_active=True)
 
-    with mock.patch("apps.city.views.BuildingHousingService"):
-        response = authenticated_client.get(reverse("city:savegame-value", kwargs={"pk": savegame.pk}))
+    response = authenticated_client.get(reverse("city:savegame-value", kwargs={"pk": savegame.pk}))
 
-        assert response.status_code == 200
-        assert "savegame/partials/_nav_values.html" in [t.name for t in response.templates]
+    assert response.status_code == 200
+    assert "savegame/partials/_nav_values.html" in [t.name for t in response.templates]
 
 
 # NavbarValuesView Tests
-@pytest.mark.django_db
-def test_navbar_values_view_get_context_data_authenticated(request_factory, user):
-    """Test NavbarValuesView includes savegame and max_housing_space in context for authenticated user."""
-    savegame = SavegameFactory(user=user, is_active=True, is_enclosed=True)
-
-    request = request_factory.get("/")
-    request.user = user
-
-    with mock.patch("apps.city.views.BuildingHousingService") as mock_housing_service:
-        mock_housing_instance = mock_housing_service.return_value
-        mock_housing_instance.calculate_max_space.return_value = 100
-
-        view = NavbarValuesView()
-        view.request = request
-
-        context = view.get_context_data()
-
-        assert "savegame" in context
-        assert context["savegame"] == savegame
-        assert "max_housing_space" in context
-        assert context["max_housing_space"] == 100
-        assert "is_enclosed" in context
-        assert context["is_enclosed"] is True
-        mock_housing_service.assert_called_once_with(savegame=savegame)
-        mock_housing_instance.calculate_max_space.assert_called_once()
-
-
-@pytest.mark.django_db
-def test_navbar_values_view_get_context_data_unauthenticated(request_factory):
-    """Test NavbarValuesView doesn't include savegame for unauthenticated user."""
-    from django.contrib.auth.models import AnonymousUser
-
-    request = request_factory.get("/")
-    request.user = AnonymousUser()
-
-    view = NavbarValuesView()
-    view.request = request
-
-    context = view.get_context_data()
-
-    assert "savegame" not in context or context.get("savegame") is None
-
-
 @pytest.mark.django_db
 def test_navbar_values_view_response(authenticated_client, user):
     """Test NavbarValuesView returns correct template."""
     SavegameFactory(user=user, is_active=True)
 
-    with (
-        mock.patch("apps.city.views.BuildingHousingService"),
-        mock.patch("apps.city.views.WallEnclosureService"),
-    ):
-        response = authenticated_client.get(reverse("city:navbar-values"))
+    response = authenticated_client.get(reverse("city:navbar-values"))
 
-        assert response.status_code == 200
-        assert "partials/_navbar_values.html" in [t.name for t in response.templates]
+    assert response.status_code == 200
+    assert "partials/_navbar_values.html" in [t.name for t in response.templates]
 
 
 # LandingPageView Tests
-@pytest.mark.django_db
-def test_landing_page_view_get_context_data(request_factory, user):
-    """Test LandingPageView includes max_housing_space in context."""
-    SavegameFactory(user=user, is_active=True)
-
-    with mock.patch("apps.city.views.BuildingHousingService") as mock_service:
-        mock_instance = mock_service.return_value
-        mock_instance.calculate_max_space.return_value = 75
-
-        request = request_factory.get("/")
-        request.user = user
-        view = LandingPageView()
-        view.request = request
-        context = view.get_context_data()
-
-        assert context["max_housing_space"] == 75
-        mock_service.assert_called_once()
-        mock_instance.calculate_max_space.assert_called_once()
-
-
 @pytest.mark.django_db
 def test_landing_page_view_response(authenticated_client, user):
     """Test LandingPageView responds correctly."""
     SavegameFactory(user=user, is_active=True)
 
-    with mock.patch("apps.city.views.BuildingHousingService"):
-        response = authenticated_client.get(reverse("city:landing-page"))
+    response = authenticated_client.get(reverse("city:landing-page"))
 
-        assert response.status_code == 200
-        assert "city/landing_page.html" in [t.name for t in response.templates]
+    assert response.status_code == 200
+    assert "city/landing_page.html" in [t.name for t in response.templates]
 
 
 # CityMapView Tests

@@ -25,6 +25,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("account/", include("apps.account.urls", namespace="account")),
     path("city/", include("apps.city.urls", namespace="city")),
+    path("edict/", include("apps.edict.urls", namespace="edict")),
     path("milestone/", include("apps.milestone.urls", namespace="milestone")),
     path("round/", include("apps.round.urls", namespace="round")),
     path(

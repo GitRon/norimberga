@@ -52,6 +52,7 @@ LOCAL_APPS = [
     "apps.city",
     "apps.config",
     "apps.core",
+    "apps.edict",
     "apps.event",
     "apps.milestone",
     "apps.round",

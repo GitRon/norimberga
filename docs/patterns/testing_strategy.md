@@ -31,6 +31,7 @@ Here are a few rules to keep in mind when writing unittests:
   unittests won't be executed.
 * Never create objects directly. Always use a factory_boy factory. Create one factory file per Django app.
 * Try to create objects from factories in batches to optimize runtime
+* Use `my_obj = MyFactory.create()` over `my_obj = MyFactory()` to avoid IDE confusion about types
 * Use semantically useful names like "manufacturer_with_product_id" instead of "mf1"
 * Avoid type-hints in variable names like `mymodel_qs`.
 * Ensure that all code branches are covered. This doesn't say anything about test quality but at least gives the

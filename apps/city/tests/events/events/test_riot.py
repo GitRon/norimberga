@@ -352,6 +352,33 @@ def test_riot_event_prepare_effect_remove_building_1_with_one_building():
 
 
 @pytest.mark.django_db
+def test_riot_event_prepare_effect_remove_building_2_with_three_buildings():
+    """Test _prepare_effect_remove_building_2 returns effect when third building available.
+
+    Note: In normal game logic, this scenario cannot occur because random.randint(0, 2)
+    limits demolished_buildings_count to at most 2, meaning affected_tiles can only
+    contain 0-2 tiles. We manually override affected_tiles here to test the code path.
+    """
+    savegame = SavegameFactory.create(population=100, unrest=75)
+    building_type = BuildingTypeFactory.create(is_unique=False)
+    buildings = BuildingFactory.create_batch(3, building_type=building_type)
+    tiles = [TileFactory.create(savegame=savegame, building=building) for building in buildings]
+
+    with mock.patch("apps.city.events.events.riot.random.randint") as mock_randint:
+        mock_randint.side_effect = [7, 2]
+
+        event = RiotEvent(savegame=savegame)
+
+        # Manually override affected_tiles to test the edge case where 3 buildings are affected
+        event.affected_tiles = tiles
+
+        effect = event._prepare_effect_remove_building_2()
+
+        assert isinstance(effect, RemoveBuilding)
+        assert effect.tile.id in [tile.id for tile in tiles]
+
+
+@pytest.mark.django_db
 def test_riot_event_prepare_effect_remove_building_2_returns_none():
     """Test _prepare_effect_remove_building_2 returns None when only two buildings can be demolished."""
     savegame = SavegameFactory.create(population=100, unrest=75)

@@ -3,7 +3,7 @@
     "model": "city.building",
     "pk": 1,
     "fields": {
-      "name": "Small House",
+      "name": "Peasant Cottage",
       "building_type": 1,
       "level": 1,
       "taxes": 3,
@@ -16,7 +16,7 @@
     "model": "city.building",
     "pk": 2,
     "fields": {
-      "name": "Medium House",
+      "name": "Burgher House",
       "building_type": 1,
       "level": 2,
       "taxes": 6,
@@ -29,7 +29,7 @@
     "model": "city.building",
     "pk": 3,
     "fields": {
-      "name": "Large House",
+      "name": "Manor House",
       "building_type": 1,
       "level": 3,
       "taxes": 12,
@@ -42,7 +42,7 @@
     "model": "city.building",
     "pk": 4,
     "fields": {
-      "name": "Small Workshop",
+      "name": "Tinker’s Shed",
       "building_type": 2,
       "level": 1,
       "taxes": 7,
@@ -55,7 +55,7 @@
     "model": "city.building",
     "pk": 5,
     "fields": {
-      "name": "Medium Workshop",
+      "name": "Artisan Workshop",
       "building_type": 2,
       "level": 2,
       "taxes": 14,
@@ -68,7 +68,7 @@
     "model": "city.building",
     "pk": 6,
     "fields": {
-      "name": "Large Workshop",
+      "name": "Guildhall",
       "building_type": 2,
       "level": 3,
       "taxes": 28,
@@ -94,7 +94,7 @@
     "model": "city.building",
     "pk": 8,
     "fields": {
-      "name": "Wooden Wall",
+      "name": "Timberwall",
       "building_type": 3,
       "level": 2,
       "taxes": 0,
@@ -107,7 +107,7 @@
     "model": "city.building",
     "pk": 9,
     "fields": {
-      "name": "Stone Wall",
+      "name": "Steinmauer",
       "building_type": 3,
       "level": 3,
       "taxes": 0,
@@ -120,7 +120,7 @@
     "model": "city.building",
     "pk": 10,
     "fields": {
-      "name": "Small Market Square",
+      "name": "Village Market",
       "building_type": 4,
       "level": 1,
       "taxes": 10,
@@ -133,7 +133,7 @@
     "model": "city.building",
     "pk": 11,
     "fields": {
-      "name": "Medium Market Square",
+      "name": "Town Market",
       "building_type": 4,
       "level": 2,
       "taxes": 20,
@@ -146,7 +146,7 @@
     "model": "city.building",
     "pk": 12,
     "fields": {
-      "name": "Large Market Square",
+      "name": "Great Market",
       "building_type": 4,
       "level": 3,
       "taxes": 40,
@@ -159,7 +159,7 @@
     "model": "city.building",
     "pk": 13,
     "fields": {
-      "name": "Small Mine",
+      "name": "Prospector’s Shaft",
       "building_type": 5,
       "level": 1,
       "taxes": 7,
@@ -172,7 +172,7 @@
     "model": "city.building",
     "pk": 14,
     "fields": {
-      "name": "Medium Mine",
+      "name": "Deep Mine",
       "building_type": 5,
       "level": 2,
       "taxes": 14,
@@ -185,7 +185,7 @@
     "model": "city.building",
     "pk": 15,
     "fields": {
-      "name": "Large Mine",
+      "name": "Vast Excavation",
       "building_type": 5,
       "level": 3,
       "taxes": 28,
@@ -198,7 +198,7 @@
     "model": "city.building",
     "pk": 16,
     "fields": {
-      "name": "Small Quarry",
+      "name": "Stonecutter’s Pit",
       "building_type": 6,
       "level": 1,
       "taxes": 4,
@@ -211,7 +211,7 @@
     "model": "city.building",
     "pk": 17,
     "fields": {
-      "name": "Medium Quarry",
+      "name": "Rock Quarry",
       "building_type": 6,
       "level": 2,
       "taxes": 8,
@@ -224,7 +224,7 @@
     "model": "city.building",
     "pk": 18,
     "fields": {
-      "name": "Large Quarry",
+      "name": "Mason’s Extraction",
       "building_type": 6,
       "level": 3,
       "taxes": 16,
@@ -237,7 +237,7 @@
     "model": "city.building",
     "pk": 19,
     "fields": {
-      "name": "Small Lumberjack",
+      "name": "Forester’s Hut",
       "building_type": 7,
       "level": 1,
       "taxes": 3,
@@ -250,7 +250,7 @@
     "model": "city.building",
     "pk": 20,
     "fields": {
-      "name": "Medium Lumberjack",
+      "name": "Logger’s Camp",
       "building_type": 7,
       "level": 2,
       "taxes": 6,
@@ -263,7 +263,7 @@
     "model": "city.building",
     "pk": 21,
     "fields": {
-      "name": "Large Lumberjack",
+      "name": "Sawmill",
       "building_type": 7,
       "level": 3,
       "taxes": 12,
@@ -276,7 +276,7 @@
     "model": "city.building",
     "pk": 22,
     "fields": {
-      "name": "Small Farm",
+      "name": "Croft",
       "building_type": 8,
       "level": 1,
       "taxes": 2,
@@ -289,7 +289,7 @@
     "model": "city.building",
     "pk": 23,
     "fields": {
-      "name": "Medium Farm",
+      "name": "Farmstead",
       "building_type": 8,
       "level": 2,
       "taxes": 4,
@@ -302,7 +302,7 @@
     "model": "city.building",
     "pk": 24,
     "fields": {
-      "name": "Large Farm",
+      "name": "Estate Farm",
       "building_type": 8,
       "level": 3,
       "taxes": 8,
@@ -315,7 +315,7 @@
     "model": "city.building",
     "pk": 25,
     "fields": {
-      "name": "Small Fishery",
+      "name": "Fisher’s Shack",
       "building_type": 9,
       "level": 1,
       "taxes": 3,
@@ -328,7 +328,7 @@
     "model": "city.building",
     "pk": 26,
     "fields": {
-      "name": "Medium Fishery",
+      "name": "River Wharf",
       "building_type": 9,
       "level": 2,
       "taxes": 6,
@@ -341,7 +341,7 @@
     "model": "city.building",
     "pk": 27,
     "fields": {
-      "name": "Large Fishery",
+      "name": "Harbor Fishery",
       "building_type": 9,
       "level": 3,
       "taxes": 12,

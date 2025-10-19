@@ -1,7 +1,8 @@
 import pytest
 
 from apps.city.services.building.housing import BuildingHousingService
-from apps.city.tests.factories import BuildingFactory, BuildingTypeFactory, SavegameFactory, TileFactory
+from apps.city.tests.factories import BuildingFactory, BuildingTypeFactory, TileFactory
+from apps.savegame.tests.factories import SavegameFactory
 
 
 @pytest.mark.django_db

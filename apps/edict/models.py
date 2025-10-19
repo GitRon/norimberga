@@ -1,6 +1,6 @@
 from django.db import models
 
-from apps.city.models import Savegame
+from apps.savegame.models import Savegame
 
 
 class Edict(models.Model):

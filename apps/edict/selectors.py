@@ -1,5 +1,5 @@
-from apps.city.models import Savegame
 from apps.edict.models import Edict, EdictLog
+from apps.savegame.models import Savegame
 
 
 def get_available_edicts_for_savegame(*, savegame: Savegame) -> list[dict]:

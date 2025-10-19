@@ -4,8 +4,8 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views import generic
 
-from apps.city.mixins import SavegameRequiredMixin
-from apps.city.tests.factories import SavegameFactory
+from apps.savegame.mixins.savegame import SavegameRequiredMixin
+from apps.savegame.tests.factories import SavegameFactory
 
 
 class _TestView(SavegameRequiredMixin, generic.TemplateView):
@@ -25,7 +25,7 @@ def test_savegame_required_mixin_redirects_without_active_savegame(request_facto
     response = view.dispatch(request)
 
     assert isinstance(response, HttpResponseRedirect)
-    assert response.url == reverse("city:savegame-list")
+    assert response.url == reverse("savegame:savegame-list")
 
 
 @pytest.mark.django_db
@@ -39,7 +39,7 @@ def test_savegame_required_mixin_redirects_with_inactive_savegame(request_factor
     response = view.dispatch(request)
 
     assert isinstance(response, HttpResponseRedirect)
-    assert response.url == reverse("city:savegame-list")
+    assert response.url == reverse("savegame:savegame-list")
 
 
 @pytest.mark.django_db
@@ -67,7 +67,7 @@ def test_savegame_required_mixin_allows_unauthenticated_user(request_factory):
     response = view(request)
 
     # Should not redirect to savegame list (authentication should be handled by LoginRequiredMixin)
-    assert not isinstance(response, HttpResponseRedirect) or response.url != reverse("city:savegame-list")
+    assert not isinstance(response, HttpResponseRedirect) or response.url != reverse("savegame:savegame-list")
 
 
 @pytest.mark.django_db

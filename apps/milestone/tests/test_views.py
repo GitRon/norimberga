@@ -3,9 +3,9 @@ from unittest import mock
 import pytest
 from django.urls import reverse
 
-from apps.city.tests.factories import SavegameFactory
 from apps.milestone.tests.factories import MilestoneFactory
 from apps.milestone.views import MilestoneListView
+from apps.savegame.tests.factories import SavegameFactory
 
 
 @pytest.mark.django_db

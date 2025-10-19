@@ -1,10 +1,10 @@
 import pytest
 from django.urls import reverse
 
-from apps.city.tests.factories import SavegameFactory
 from apps.edict.models import EdictLog
 from apps.edict.tests.factories import EdictFactory
 from apps.edict.views import EdictListView
+from apps.savegame.tests.factories import SavegameFactory
 
 
 @pytest.mark.django_db

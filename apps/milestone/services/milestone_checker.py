@@ -1,9 +1,9 @@
 import importlib
 
-from apps.city.models import Savegame
 from apps.milestone.conditions.abstract import AbstractCondition
 from apps.milestone.models import Milestone, MilestoneLog
 from apps.milestone.selectors.milestone import get_available_milestones
+from apps.savegame.models import Savegame
 
 
 class MilestoneCheckerService:

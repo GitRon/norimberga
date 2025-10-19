@@ -4,8 +4,8 @@ from django.contrib import messages
 
 from apps.city.events.effects.savegame.decrease_coins import DecreaseCoins
 from apps.city.events.effects.savegame.decrease_population_absolute import DecreasePopulationAbsolute
-from apps.city.models import Savegame
 from apps.event.events.events.base_event import BaseEvent
+from apps.savegame.models import Savegame
 
 
 class Event(BaseEvent):

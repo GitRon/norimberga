@@ -10,10 +10,10 @@ from apps.city.events.events.pillage import Event as PillageEvent
 from apps.city.tests.factories import (
     BuildingFactory,
     BuildingTypeFactory,
-    SavegameFactory,
     TileFactory,
     WallBuildingTypeFactory,
 )
+from apps.savegame.tests.factories import SavegameFactory
 
 
 @pytest.mark.django_db

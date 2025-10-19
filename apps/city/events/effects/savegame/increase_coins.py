@@ -1,4 +1,4 @@
-from apps.city.models import Savegame
+from apps.savegame.models import Savegame
 
 
 class IncreaseCoins:

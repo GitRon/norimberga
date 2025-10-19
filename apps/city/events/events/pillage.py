@@ -6,8 +6,9 @@ from django.template.defaultfilters import pluralize
 from apps.city.events.effects.building.remove_building import RemoveBuilding
 from apps.city.events.effects.savegame.decrease_coins import DecreaseCoins
 from apps.city.events.effects.savegame.decrease_population_absolute import DecreasePopulationAbsolute
-from apps.city.models import Savegame, Tile
+from apps.city.models import Tile
 from apps.event.events.events.base_event import BaseEvent
+from apps.savegame.models import Savegame
 
 
 class Event(BaseEvent):

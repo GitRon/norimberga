@@ -1,7 +1,7 @@
 import pytest
 
-from apps.city.context_processors.savegame import get_current_savegame
-from apps.city.tests.factories import SavegameFactory
+from apps.savegame.context_processors.savegame import get_current_savegame
+from apps.savegame.tests.factories import SavegameFactory
 
 
 @pytest.mark.django_db

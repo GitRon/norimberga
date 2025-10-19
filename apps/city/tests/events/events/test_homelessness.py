@@ -4,7 +4,8 @@ import pytest
 
 from apps.city.events.effects.savegame.increase_unrest_absolute import IncreaseUnrestAbsolute
 from apps.city.events.events.homelessness import Event as HomelessnessEvent
-from apps.city.tests.factories import BuildingFactory, HouseBuildingTypeFactory, SavegameFactory, TileFactory
+from apps.city.tests.factories import BuildingFactory, HouseBuildingTypeFactory, TileFactory
+from apps.savegame.tests.factories import SavegameFactory
 
 
 @pytest.mark.django_db

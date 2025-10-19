@@ -28,6 +28,7 @@ urlpatterns = [
     path("edict/", include("apps.edict.urls", namespace="edict")),
     path("milestone/", include("apps.milestone.urls", namespace="milestone")),
     path("round/", include("apps.round.urls", namespace="round")),
+    path("savegame/", include("apps.savegame.urls", namespace="savegame")),
     path(
         "",
         RedirectView.as_view(url=reverse_lazy("city:landing-page")),

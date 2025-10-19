@@ -3,7 +3,7 @@ from unittest import mock
 import pytest
 
 from apps.city.events.effects.savegame.increase_population_relative import IncreasePopulationRelative
-from apps.city.tests.factories import SavegameFactory
+from apps.savegame.tests.factories import SavegameFactory
 
 
 @pytest.mark.django_db

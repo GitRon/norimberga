@@ -50,6 +50,7 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     "apps.account",
     "apps.city",
+    "apps.coat_of_arms",
     "apps.config",
     "apps.core",
     "apps.edict",

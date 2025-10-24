@@ -1,5 +1,6 @@
 import random
 from dataclasses import dataclass
+from pathlib import Path
 
 import svgwrite
 
@@ -19,8 +20,16 @@ TINCTURES = {
 
 CHARGES = ["lion rampant", "eagle displayed", "cross pattee", "fleur-de-lis", "chevron", "bend"]
 
+MOTTOS = [
+    None,
+    "Fortune favors the bold",
+    "Honor and Glory",
+    "By Steel and Faith",
+    "Ever Forward",
+]
 
-@dataclass
+
+@dataclass(kw_only=True)
 class HeraldicShield:
     shape: str
     division: str
@@ -29,73 +38,83 @@ class HeraldicShield:
     motto: str | None = None
 
 
-def generate_shield() -> HeraldicShield:
-    shape = random.choice(SHIELD_SHAPES)
-    division = random.choice(DIVISIONS)
-    tinctures = random.sample(list(TINCTURES.keys()), k=2)
+class CoatOfArmsGeneratorService:
+    """Service for generating heraldic coat of arms shields as SVG files."""
 
-    # Apply heraldic rule: no metal on metal, no color on color
-    metals = {"argent", "or"}
-    colors = set(TINCTURES.keys()) - metals
-    if tinctures[0] in metals and tinctures[1] in metals:
-        tinctures[1] = random.choice(list(colors))
-    elif tinctures[0] in colors and tinctures[1] in colors:
-        tinctures[1] = random.choice(list(metals))
+    def process(self, *, output_path: str | Path = "shield.svg") -> Path:
+        """
+        Generate a coat of arms and save it as an SVG file.
+        """
+        shield = self._generate_shield()
+        return self._render_shield_svg(shield=shield, output_path=output_path)
 
-    charges = random.sample(CHARGES, k=random.randint(1, 2))
+    def _generate_shield(self) -> HeraldicShield:
+        """Generate a random heraldic shield with proper heraldic rules."""
+        shape = random.choice(SHIELD_SHAPES)
+        division = random.choice(DIVISIONS)
+        tinctures = random.sample(list(TINCTURES.keys()), k=2)
 
-    motto = random.choice(
-        [
-            None,
-            "Fortune favors the bold",
-            "Honor and Glory",
-            "By Steel and Faith",
-            "Ever Forward",
-        ]
-    )
+        # Apply heraldic rule: no metal on metal, no color on color
+        tinctures = self._apply_heraldic_rules(tinctures=tinctures)
 
-    return HeraldicShield(shape, division, tinctures, charges, motto)
+        charges = random.sample(CHARGES, k=random.randint(1, 2))
+        motto = random.choice(MOTTOS)
 
+        return HeraldicShield(shape=shape, division=division, tinctures=tinctures, charges=charges, motto=motto)
 
-def render_shield_svg(shield: HeraldicShield, filename="shield.svg"):
-    dwg = svgwrite.Drawing(filename, size=("400px", "500px"))
+    def _apply_heraldic_rules(self, *, tinctures: list[str]) -> list[str]:
+        """
+        Apply the rule of tincture: no metal on metal, no color on color.
+        """
+        metals = {"argent", "or"}
+        colors = set(TINCTURES.keys()) - metals
 
-    # Background color 1
-    dwg.add(dwg.rect(insert=(0, 0), size=("400px", "500px"), fill=TINCTURES[shield.tinctures[0]]))
+        if tinctures[0] in metals and tinctures[1] in metals:
+            tinctures[1] = random.choice(list(colors))
+        elif tinctures[0] in colors and tinctures[1] in colors:
+            tinctures[1] = random.choice(list(metals))
 
-    # Division
-    if shield.division == "per pale":
-        dwg.add(dwg.rect(insert=("200px", 0), size=("200px", "500px"), fill=TINCTURES[shield.tinctures[1]]))
-    elif shield.division == "per fess":
-        dwg.add(dwg.rect(insert=(0, "250px"), size=("400px", "250px"), fill=TINCTURES[shield.tinctures[1]]))
-    elif shield.division == "quarterly":
-        dwg.add(dwg.rect(insert=(0, 0), size=("200px", "250px"), fill=TINCTURES[shield.tinctures[1]]))
-        dwg.add(dwg.rect(insert=("200px", "250px"), size=("200px", "250px"), fill=TINCTURES[shield.tinctures[1]]))
+        return tinctures
 
-    # Charges (text placeholders)
-    for i, charge in enumerate(shield.charges):
-        dwg.add(
-            dwg.text(charge, insert=("50%", f"{60 + i * 30}%"), text_anchor="middle", font_size="20px", fill="black")
-        )
+    def _render_shield_svg(self, *, shield: HeraldicShield, output_path: str | Path) -> Path:
+        """
+        Render a heraldic shield to an SVG file.
+        """
+        output_path = Path(output_path)
+        dwg = svgwrite.Drawing(str(output_path), size=("400px", "500px"))
 
-    # Motto at bottom
-    if shield.motto:
-        dwg.add(
-            dwg.text(
-                shield.motto,
-                insert=("50%", "95%"),
-                text_anchor="middle",
-                font_size="14px",
-                font_style="italic",
-                fill="black",
+        # Background color 1
+        dwg.add(dwg.rect(insert=(0, 0), size=("400px", "500px"), fill=TINCTURES[shield.tinctures[0]]))
+
+        # Division
+        if shield.division == "per pale":
+            dwg.add(dwg.rect(insert=("200px", 0), size=("200px", "500px"), fill=TINCTURES[shield.tinctures[1]]))
+        elif shield.division == "per fess":
+            dwg.add(dwg.rect(insert=(0, "250px"), size=("400px", "250px"), fill=TINCTURES[shield.tinctures[1]]))
+        elif shield.division == "quarterly":
+            dwg.add(dwg.rect(insert=(0, 0), size=("200px", "250px"), fill=TINCTURES[shield.tinctures[1]]))
+            dwg.add(dwg.rect(insert=("200px", "250px"), size=("200px", "250px"), fill=TINCTURES[shield.tinctures[1]]))
+
+        # Charges (text placeholders)
+        for i, charge in enumerate(shield.charges):
+            dwg.add(
+                dwg.text(
+                    charge, insert=("50%", f"{60 + i * 30}%"), text_anchor="middle", font_size="20px", fill="black"
+                )
             )
-        )
 
-    dwg.save()
-    print(f"Saved generated shield as {filename}")
+        # Motto at bottom
+        if shield.motto:
+            dwg.add(
+                dwg.text(
+                    shield.motto,
+                    insert=("50%", "95%"),
+                    text_anchor="middle",
+                    font_size="14px",
+                    font_style="italic",
+                    fill="black",
+                )
+            )
 
-
-if __name__ == "__main__":
-    shield = generate_shield()
-    print(shield)
-    render_shield_svg(shield)
+        dwg.save()
+        return output_path

@@ -1,7 +1,8 @@
 import pytest
 
-from apps.city.managers.savegame import SavegameManager
-from apps.city.tests.factories import BuildingFactory, SavegameFactory, TileFactory
+from apps.city.tests.factories import BuildingFactory, TileFactory
+from apps.savegame.managers.savegame import SavegameManager
+from apps.savegame.tests.factories import SavegameFactory
 
 
 def test_savegame_manager_from_queryset():
@@ -210,7 +211,7 @@ def test_savegame_manager_aggregate_multiple_savegames():
 @pytest.mark.django_db
 def test_savegame_manager_integration():
     """Test SavegameManager works with actual model queries."""
-    from apps.city.models import Savegame
+    from apps.savegame.models import Savegame
 
     savegame = SavegameFactory()
 

@@ -3,9 +3,9 @@ import random
 from django.contrib import messages
 
 from apps.city.events.effects.savegame.increase_unrest_absolute import IncreaseUnrestAbsolute
-from apps.city.models import Savegame
 from apps.city.services.building.housing import BuildingHousingService
 from apps.event.events.events.base_event import BaseEvent
+from apps.savegame.models import Savegame
 
 
 class Event(BaseEvent):

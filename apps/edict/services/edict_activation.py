@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
-from apps.city.models import Savegame
 from apps.edict.models import Edict, EdictLog
+from apps.savegame.models import Savegame
 
 
 @dataclass(kw_only=True)

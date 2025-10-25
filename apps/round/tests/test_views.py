@@ -19,7 +19,7 @@ def test_round_view_http_method_names():
 @pytest.mark.django_db
 def test_round_view_post_with_events(request_factory):
     """Test RoundView processes events and adds messages."""
-    from apps.city.tests.factories import SavegameFactory, UserFactory
+    from apps.savegame.tests.factories import SavegameFactory, UserFactory
 
     # Create user and savegame
     user = UserFactory()
@@ -81,7 +81,7 @@ def test_round_view_post_with_events(request_factory):
 @pytest.mark.django_db
 def test_round_view_post_with_no_events(request_factory):
     """Test RoundView handles case when no events occur."""
-    from apps.city.tests.factories import SavegameFactory, UserFactory
+    from apps.savegame.tests.factories import SavegameFactory, UserFactory
 
     # Create user and savegame
     user = UserFactory()
@@ -122,7 +122,7 @@ def test_round_view_post_with_no_events(request_factory):
 @pytest.mark.django_db
 def test_round_view_post_response_headers(request_factory):
     """Test RoundView sets correct HTMX trigger headers."""
-    from apps.city.tests.factories import SavegameFactory, UserFactory
+    from apps.savegame.tests.factories import SavegameFactory, UserFactory
 
     # Create user and savegame
     user = UserFactory()
@@ -158,7 +158,7 @@ def test_round_view_post_response_headers(request_factory):
 @pytest.mark.django_db
 def test_round_view_post_via_client(authenticated_client, user):
     """Test RoundView responds correctly via Django test client."""
-    from apps.city.tests.factories import SavegameFactory
+    from apps.savegame.tests.factories import SavegameFactory
 
     # Create savegame
     SavegameFactory(user=user, is_active=True)
@@ -190,7 +190,7 @@ def test_round_view_get_not_allowed(authenticated_client):
 @pytest.mark.django_db
 def test_round_view_event_processing_order(request_factory):
     """Test RoundView processes events in the order returned by service."""
-    from apps.city.tests.factories import SavegameFactory, UserFactory
+    from apps.savegame.tests.factories import SavegameFactory, UserFactory
 
     # Create user and savegame
     user = UserFactory()
@@ -236,7 +236,7 @@ def test_round_view_event_processing_order(request_factory):
 @pytest.mark.django_db
 def test_round_view_single_event(request_factory):
     """Test RoundView handles single event correctly."""
-    from apps.city.tests.factories import SavegameFactory, UserFactory
+    from apps.savegame.tests.factories import SavegameFactory, UserFactory
 
     # Create user and savegame
     user = UserFactory()
@@ -283,7 +283,7 @@ def test_round_view_single_event(request_factory):
 @pytest.mark.django_db
 def test_round_view_no_active_savegame(request_factory):
     """Test RoundView returns 400 when no active savegame found."""
-    from apps.city.tests.factories import UserFactory
+    from apps.account.tests.factories import UserFactory
 
     # Create user without active savegame
     user = UserFactory()
@@ -304,7 +304,7 @@ def test_round_view_no_active_savegame(request_factory):
 @pytest.mark.django_db
 def test_round_view_increments_year(request_factory):
     """Test RoundView increments the current year."""
-    from apps.city.tests.factories import SavegameFactory, UserFactory
+    from apps.savegame.tests.factories import SavegameFactory, UserFactory
 
     # Create user and savegame with initial year
     user = UserFactory()
@@ -336,7 +336,7 @@ def test_round_view_increments_year(request_factory):
 @pytest.mark.django_db
 def test_round_view_triggers_navbar_update(request_factory):
     """Test RoundView triggers navbar update event."""
-    from apps.city.tests.factories import SavegameFactory, UserFactory
+    from apps.savegame.tests.factories import SavegameFactory, UserFactory
 
     # Create user and savegame with initial year
     user = UserFactory()

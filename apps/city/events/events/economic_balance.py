@@ -2,9 +2,9 @@ from django.contrib import messages
 
 from apps.city.events.effects.savegame.decrease_coins import DecreaseCoins
 from apps.city.events.effects.savegame.increase_coins import IncreaseCoins
-from apps.city.models import Savegame
-from apps.city.selectors.savegame import get_balance_data
 from apps.event.events.events.base_event import BaseEvent
+from apps.savegame.models import Savegame
+from apps.savegame.selectors.savegame import get_balance_data
 
 
 class Event(BaseEvent):

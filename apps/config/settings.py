@@ -57,6 +57,7 @@ LOCAL_APPS = [
     "apps.event",
     "apps.milestone",
     "apps.round",
+    "apps.savegame",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS + THIRD_PARTY_APPS
@@ -86,7 +87,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 # Custom
-                "apps.city.context_processors.savegame.get_current_savegame",
+                "apps.savegame.context_processors.savegame.get_current_savegame",
             ],
         },
     },

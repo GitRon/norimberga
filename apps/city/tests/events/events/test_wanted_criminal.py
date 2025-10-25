@@ -4,7 +4,7 @@ import pytest
 
 from apps.city.events.effects.savegame.increase_coins import IncreaseCoins
 from apps.city.events.events.wanted_criminal import Event as WantedCriminalEvent
-from apps.city.tests.factories import SavegameFactory
+from apps.savegame.tests.factories import SavegameFactory
 
 
 @pytest.mark.django_db

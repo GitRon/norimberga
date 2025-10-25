@@ -1,8 +1,8 @@
 from django.views import generic
 
-from apps.city.mixins import SavegameRequiredMixin
-from apps.city.models import Savegame
 from apps.milestone.services.milestone_tree import MilestoneTreeService
+from apps.savegame.mixins.savegame import SavegameRequiredMixin
+from apps.savegame.models import Savegame
 
 
 class MilestoneListView(SavegameRequiredMixin, generic.TemplateView):

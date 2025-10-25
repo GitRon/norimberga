@@ -7,11 +7,11 @@ from apps.city.forms.tile import TileBuildingForm
 from apps.city.tests.factories import (
     BuildingFactory,
     BuildingTypeFactory,
-    SavegameFactory,
     TerrainFactory,
     TileFactory,
     UniqueBuildingTypeFactory,
 )
+from apps.savegame.tests.factories import SavegameFactory
 
 
 @pytest.mark.django_db

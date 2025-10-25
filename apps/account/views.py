@@ -7,7 +7,7 @@ from django.utils.decorators import method_decorator
 from django.views import generic
 
 from apps.account.forms.user import UserRegistrationForm
-from apps.city.models import Savegame
+from apps.savegame.models import Savegame
 
 
 @method_decorator(login_not_required, name="dispatch")
@@ -39,4 +39,4 @@ class UserRegistrationView(generic.CreateView):
         if has_savegame:
             return HttpResponseRedirect(reverse_lazy("city:landing-page"))
 
-        return HttpResponseRedirect(reverse_lazy("city:savegame-list"))
+        return HttpResponseRedirect(reverse_lazy("savegame:savegame-list"))

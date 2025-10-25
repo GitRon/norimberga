@@ -1,5 +1,5 @@
-from apps.city.models import Savegame
 from apps.city.services.building.housing import BuildingHousingService
+from apps.savegame.models import Savegame
 
 
 class IncreasePopulationAbsolute:

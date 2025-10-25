@@ -8,12 +8,12 @@ from apps.city.tests.factories import (
     BuildingFactory,
     BuildingTypeFactory,
     HouseBuildingTypeFactory,
-    SavegameFactory,
     TerrainFactory,
     TileFactory,
     UniqueBuildingTypeFactory,
     WallBuildingTypeFactory,
 )
+from apps.savegame.tests.factories import SavegameFactory
 
 
 # Savegame Model Tests

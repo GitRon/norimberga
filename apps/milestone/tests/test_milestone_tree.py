@@ -1,8 +1,8 @@
 import pytest
 
-from apps.city.tests.factories import SavegameFactory
 from apps.milestone.services.milestone_tree import MilestoneTreeService
 from apps.milestone.tests.factories import MilestoneConditionFactory, MilestoneFactory, MilestoneLogFactory
+from apps.savegame.tests.factories import SavegameFactory
 
 
 @pytest.mark.django_db

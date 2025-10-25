@@ -2,8 +2,9 @@ import random
 from random import randint
 
 from apps.city.constants import INITIAL_COUNTRY_BUILDINGS, MAP_SIZE
-from apps.city.models import Building, BuildingType, Savegame, Terrain, Tile
+from apps.city.models import Building, BuildingType, Terrain, Tile
 from apps.city.services.map.coordinates import MapCoordinatesService
+from apps.savegame.models import Savegame
 
 
 class MapGenerationService:

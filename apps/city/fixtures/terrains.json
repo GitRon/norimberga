@@ -51,6 +51,16 @@
   },
   {
     "model": "city.terrain",
+    "pk": 6,
+    "fields": {
+      "name": "Plains",
+      "color_class": "bg-yellow-200",
+      "probability": 20,
+      "is_water": false
+    }
+  },
+  {
+    "model": "city.terrain",
     "pk": 7,
     "fields": {
       "name": "River",

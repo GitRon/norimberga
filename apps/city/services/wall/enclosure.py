@@ -1,5 +1,6 @@
-from apps.city.models import Savegame, Tile
+from apps.city.models import Tile
 from apps.city.services.map.coordinates import MapCoordinatesService
+from apps.savegame.models import Savegame
 
 
 class WallEnclosureService:

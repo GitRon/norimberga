@@ -1,7 +1,7 @@
 import factory
 
-from apps.city.tests.factories import SavegameFactory
 from apps.milestone.models import Milestone, MilestoneCondition, MilestoneLog
+from apps.savegame.tests.factories import SavegameFactory
 
 
 class MilestoneFactory(factory.django.DjangoModelFactory):

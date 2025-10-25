@@ -1,7 +1,7 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse_lazy
 
-from apps.city.models import Savegame
+from apps.savegame.models import Savegame
 
 
 class SavegameRequiredMixin:
@@ -15,5 +15,5 @@ class SavegameRequiredMixin:
         if request.user.is_authenticated:
             savegame = Savegame.objects.filter(user=request.user, is_active=True).first()
             if not savegame:
-                return HttpResponseRedirect(reverse_lazy("city:savegame-list"))
+                return HttpResponseRedirect(reverse_lazy("savegame:savegame-list"))
         return super().dispatch(request, *args, **kwargs)

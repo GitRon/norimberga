@@ -4,7 +4,6 @@ from unittest import mock
 
 import pytest
 
-from apps.city.tests.factories import SavegameFactory
 from apps.event.services.selection import EventSelectionService
 from apps.event.tests.factories import (
     HighProbabilityEvent,
@@ -12,6 +11,7 @@ from apps.event.tests.factories import (
     MockEvent,
     ZeroProbabilityEvent,
 )
+from apps.savegame.tests.factories import SavegameFactory
 
 
 @pytest.mark.django_db

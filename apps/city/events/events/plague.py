@@ -3,8 +3,8 @@ import random
 from django.contrib import messages
 
 from apps.city.events.effects.savegame.decrease_population_relative import DecreasePopulationRelative
-from apps.city.models import Savegame
 from apps.event.events.events.base_event import BaseEvent
+from apps.savegame.models import Savegame
 
 
 class Event(BaseEvent):

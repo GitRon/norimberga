@@ -8,11 +8,11 @@ from apps.city.tests.factories import (
     BuildingFactory,
     CountryBuildingTypeFactory,
     RiverTerrainFactory,
-    SavegameFactory,
     TerrainFactory,
     TileFactory,
     WaterTerrainFactory,
 )
+from apps.savegame.tests.factories import SavegameFactory
 
 
 def create_tiles_batch(savegame, size, terrain=None):

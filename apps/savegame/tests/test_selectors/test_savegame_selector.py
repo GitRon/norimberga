@@ -1,7 +1,8 @@
 import pytest
 
-from apps.city.selectors.savegame import get_balance_data
-from apps.city.tests.factories import BuildingFactory, SavegameFactory, TileFactory
+from apps.city.tests.factories import BuildingFactory, TileFactory
+from apps.savegame.selectors.savegame import get_balance_data
+from apps.savegame.tests.factories import SavegameFactory
 
 
 @pytest.mark.django_db

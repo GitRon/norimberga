@@ -1,7 +1,7 @@
 import factory
 
-from apps.city.tests.factories import SavegameFactory
 from apps.edict.models import Edict, EdictLog
+from apps.savegame.tests.factories import SavegameFactory
 
 
 class EdictFactory(factory.django.DjangoModelFactory):

@@ -27,7 +27,7 @@ def test_savegame_list_view_displays_user_savegames(authenticated_client, user):
     response = authenticated_client.get(reverse("savegame:savegame-list"))
 
     assert response.status_code == 200
-    assert "city/savegame_list.html" in [t.name for t in response.templates]
+    assert "savegame/savegame_list.html" in [t.name for t in response.templates]
     savegames = list(response.context["savegames"])
     assert len(savegames) == 2
     assert savegame1 in savegames
@@ -255,6 +255,25 @@ def test_savegame_create_view_deactivates_existing_savegames(authenticated_clien
     # Verify new savegame is active
     new_savegame = Savegame.objects.get(user=user, city_name="New City")
     assert new_savegame.is_active is True
+
+
+@pytest.mark.django_db
+def test_savegame_create_view_generates_coat_of_arms(authenticated_client, user):
+    """Test SavegameCreateView generates a coat of arms for the new savegame."""
+    data = {
+        "city_name": "New City",
+    }
+
+    response = authenticated_client.post(reverse("savegame:savegame-create"), data=data, follow=False)
+
+    assert response.status_code == 302
+
+    # Verify savegame was created with coat of arms
+    savegame = Savegame.objects.get(user=user, city_name="New City")
+    assert savegame.coat_of_arms
+    assert savegame.coat_of_arms.name
+    assert "coat_of_arms" in savegame.coat_of_arms.name
+    assert savegame.coat_of_arms.name.endswith(".svg")
 
 
 # LandingPageView Tests

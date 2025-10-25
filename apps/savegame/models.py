@@ -14,6 +14,7 @@ class Savegame(models.Model):
         "Unrest", default=0, validators=(MinValueValidator(0), MaxValueValidator(100))
     )
     current_year = models.PositiveSmallIntegerField("Current year", default=1150)
+    coat_of_arms = models.ImageField("Coat of Arms", upload_to="coat_of_arms/", blank=True, null=True)
 
     is_active = models.BooleanField("Is active", default=False)
     is_enclosed = models.BooleanField("Is enclosed by wall", default=False)

@@ -50,6 +50,7 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     "apps.account",
     "apps.city",
+    "apps.coat_of_arms",
     "apps.config",
     "apps.core",
     "apps.edict",
@@ -149,6 +150,10 @@ STATICFILES_DIRS = (
     ROOT_DIR / "node_modules",
     ROOT_DIR / "static",
 )
+
+# Media files (User-uploaded files)
+MEDIA_URL = "media/"
+MEDIA_ROOT = ROOT_DIR / "media"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

@@ -303,3 +303,91 @@ def test_process_calls_generate_and_render(tmp_path):
         # Assert
         mock_generate.assert_called_once()
         mock_render.assert_called_once()
+
+
+def test_get_shield_path_heater():
+    """Test that _get_shield_path returns heater shield path."""
+    # Arrange
+    service = CoatOfArmsGeneratorService()
+
+    # Act
+    result = service._get_shield_path(shape="heater")
+
+    # Assert
+    assert isinstance(result, str)
+    assert result.startswith("M ")
+    assert "Z" in result
+
+
+def test_get_shield_path_round():
+    """Test that _get_shield_path returns round shield path."""
+    # Arrange
+    service = CoatOfArmsGeneratorService()
+
+    # Act
+    result = service._get_shield_path(shape="round")
+
+    # Assert
+    assert isinstance(result, str)
+    assert result.startswith("M ")
+    assert "Q" in result  # Quadratic bezier curves for rounded shape
+    assert "Z" in result
+
+
+def test_get_shield_path_kite():
+    """Test that _get_shield_path returns kite shield path."""
+    # Arrange
+    service = CoatOfArmsGeneratorService()
+
+    # Act
+    result = service._get_shield_path(shape="kite")
+
+    # Assert
+    assert isinstance(result, str)
+    assert result.startswith("M ")
+    assert "Z" in result
+
+
+def test_get_shield_path_unknown_defaults_to_heater():
+    """Test that _get_shield_path defaults to heater for unknown shapes."""
+    # Arrange
+    service = CoatOfArmsGeneratorService()
+
+    # Act
+    result = service._get_shield_path(shape="unknown")
+    heater = service._get_shield_path(shape="heater")
+
+    # Assert
+    assert result == heater
+
+
+def test_render_shield_svg_includes_clipping_path(tmp_path):
+    """Test that rendered SVG includes clipping path for shield shape."""
+    # Arrange
+    service = CoatOfArmsGeneratorService()
+    shield = HeraldicShieldFactory.create(shape="heater")
+    output_path = tmp_path / "test_shield.svg"
+
+    # Act
+    service._render_shield_svg(shield=shield, output_path=output_path)
+
+    # Assert
+    content = output_path.read_text()
+    assert "clipPath" in content
+    assert "shield-clip" in content
+
+
+def test_render_shield_svg_includes_shield_border(tmp_path):
+    """Test that rendered SVG includes shield border."""
+    # Arrange
+    service = CoatOfArmsGeneratorService()
+    shield = HeraldicShieldFactory.create()
+    output_path = tmp_path / "test_shield.svg"
+
+    # Act
+    service._render_shield_svg(shield=shield, output_path=output_path)
+
+    # Assert
+    content = output_path.read_text()
+    assert 'stroke="black"' in content
+    assert 'fill="none"' in content

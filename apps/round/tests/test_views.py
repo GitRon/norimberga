@@ -283,7 +283,7 @@ def test_round_view_single_event(request_factory):
 @pytest.mark.django_db
 def test_round_view_no_active_savegame(request_factory):
     """Test RoundView returns 400 when no active savegame found."""
-    from apps.city.tests.factories import UserFactory
+    from apps.account.tests.factories import UserFactory
 
     # Create user without active savegame
     user = UserFactory()

@@ -39,4 +39,4 @@ class UserRegistrationView(generic.CreateView):
         if has_savegame:
             return HttpResponseRedirect(reverse_lazy("city:landing-page"))
 
-        return HttpResponseRedirect(reverse_lazy("city:savegame-list"))
+        return HttpResponseRedirect(reverse_lazy("savegame:savegame-list"))

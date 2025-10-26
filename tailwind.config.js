@@ -81,5 +81,22 @@ module.exports = {
     },
     plugins: [
         require('@tailwindcss/forms'),
+        require('daisyui'),
     ],
+    daisyui: {
+        themes: [
+            {
+                light: {
+                    ...require("daisyui/src/theming/themes")["light"],
+                    "success": "#16a34a", // green-600
+                    "success-content": "#ffffff", // white text on success buttons
+                    "primary": "#2563eb", // blue-600
+                    "primary-content": "#ffffff", // white text on primary buttons
+                },
+            },
+        ],
+        base: true,
+        styled: true,
+        utils: true,
+    },
 }

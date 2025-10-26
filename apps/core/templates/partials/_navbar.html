@@ -1,73 +1,53 @@
 {% load static %}
-<nav class="bg-white border-gray-200">
-    <div class="max-w-screen-xl flex items-center justify-between p-4">
-        <div class="flex items-center gap-6">
-            <a href="{% url "city:landing-page" %}" class="flex items-center space-x-3 rtl:space-x-reverse">
-                {% if user.is_authenticated and savegame and savegame.coat_of_arms %}
-                    <img src="{{ savegame.coat_of_arms.url }}" class="h-16 -my-4" alt="{{ savegame.city_name }} Coat of Arms"/>
-                    <div class="flex flex-col">
-                        <span class="text-2xl font-semibold whitespace-nowrap">{{ savegame.city_name }}</span>
-                        <span class="text-xs text-gray-500">Norimberga</span>
-                    </div>
-                {% else %}
-                    <img src="{% static "img/logo.jpg" %}" class="h-8" alt="Norimberga Logo"/>
-                    <span class="self-center text-2xl font-semibold whitespace-nowrap">Norimberga</span>
-                {% endif %}
-            </a>
-
-            {% if user.is_authenticated and savegame %}
-                <div class="hidden w-full md:block md:w-auto">
-                    <ul class="font-medium flex flex-row space-x-8">
-                        <li>
-                            <a href="{% url "city:landing-page" %}"
-                               class="text-sm font-medium text-gray-700 hover:text-gray-900">Map</a>
-                        </li>
-                        <li>
-                            <a href="{% url "city:balance" %}"
-                               class="text-sm font-medium text-gray-700 hover:text-gray-900">Balance</a>
-                        </li>
-                        <li>
-                            <a href="{% url "edict:edict-list-view" %}"
-                               class="text-sm font-medium text-gray-700 hover:text-gray-900">Edicts</a>
-                        </li>
-                        <li>
-                            <a href="{% url "milestone:milestone-list-view" %}"
-                               class="text-sm font-medium text-gray-700 hover:text-gray-900">Milestones</a>
-                        </li>
-                    </ul>
+<nav class="navbar bg-base-100 border-b border-gray-200">
+    <div class="navbar-start">
+        <a href="{% url "city:landing-page" %}" class="flex items-center space-x-3">
+            {% if user.is_authenticated and savegame and savegame.coat_of_arms %}
+                <img src="{{ savegame.coat_of_arms.url }}" class="h-16 -my-4" alt="{{ savegame.city_name }} Coat of Arms"/>
+                <div class="flex flex-col">
+                    <span class="text-2xl font-semibold whitespace-nowrap">{{ savegame.city_name }}</span>
+                    <span class="text-xs text-gray-500">Norimberga</span>
                 </div>
+            {% else %}
+                <img src="{% static "img/logo.jpg" %}" class="h-8" alt="Norimberga Logo"/>
+                <span class="text-2xl font-semibold whitespace-nowrap">Norimberga</span>
             {% endif %}
-        </div>
+        </a>
 
-        {% if user.is_authenticated %}
-            <div class="flex items-center gap-4">
-                {% if savegame %}
-                    {% include "partials/_navbar_values.html" %}
-                {% endif %}
-
-                <div class="relative group">
-                    <button type="button"
-                            class="flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 focus:outline-none pb-2">
-                        <span>{{ user.first_name|default:user.username }}</span>
-                        <svg class="ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                        </svg>
-                    </button>
-
-                    <div class="hidden group-hover:block absolute right-0 top-full w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                        <a href="{% url 'savegame:savegame-list' %}"
-                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                            Savegames
-                        </a>
-                        <button hx-post="{% url 'account:logout' %}"
-                                hx-swap="none"
-                                hx-on::after-request="window.location.href='{% url 'account:login' %}'"
-                                class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                            Logout
-                        </button>
-                    </div>
-                </div>
-            </div>
+        {% if user.is_authenticated and savegame %}
+            <ul class="menu menu-horizontal px-4 hidden md:flex">
+                <li><a href="{% url "city:landing-page" %}">Map</a></li>
+                <li><a href="{% url "city:balance" %}">Balance</a></li>
+                <li><a href="{% url "edict:edict-list-view" %}">Edicts</a></li>
+                <li><a href="{% url "milestone:milestone-list-view" %}">Milestones</a></li>
+            </ul>
         {% endif %}
     </div>
+
+    {% if user.is_authenticated %}
+        <div class="navbar-end gap-4">
+            {% if savegame %}
+                {% include "partials/_navbar_values.html" %}
+            {% endif %}
+
+            <div class="dropdown dropdown-end">
+                <div tabindex="0" role="button" class="btn btn-ghost">
+                    {{ user.first_name|default:user.username }}
+                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 w-52 p-2 shadow">
+                    <li><a href="{% url 'savegame:savegame-list' %}">Savegames</a></li>
+                    <li>
+                        <button hx-post="{% url 'account:logout' %}"
+                                hx-swap="none"
+                                hx-on::after-request="window.location.href='{% url 'account:login' %}'">
+                            Logout
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    {% endif %}
 </nav>

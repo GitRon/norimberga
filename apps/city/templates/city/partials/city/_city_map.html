@@ -8,7 +8,7 @@
                      hx-get="{% url "city:tile-build" tile.id %}"
                      hx-target="#build-container"
                      hx-swap="innerHTML"
-                     onclick="document.getElementById('build-modal').classList.remove('hidden')">
+                     onclick="document.getElementById('build-modal').classList.add('modal-open')">
                     {% if tile.building %}
                         <div class="flex flex-col items-center justify-center h-full text-center px-0.5 overflow-hidden">
                             <span class="text-[0.45rem] sm:text-[0.5rem] md:text-[0.55rem] lg:text-[0.6rem] xl:text-[0.65rem] 2xl:text-xs font-bold text-gray-800 leading-tight break-words line-clamp-2">{{ tile.building.building_type.name }}</span>

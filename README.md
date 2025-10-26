@@ -21,4 +21,5 @@ challenges dealing with space within the city walls.
     * [Mono app approach](docs/patterns/mono_app_approach.md)
     * [ORM structure](docs/patterns/orm_structure.md)
     * [Services](docs/patterns/services.md)
+    * [UI Components](docs/patterns/ui_components.md)
     * [Testing strategy](docs/patterns/testing_strategy.md)

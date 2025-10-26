@@ -142,5 +142,37 @@
       "required_milestone": 8,
       "is_active": true
     }
+  },
+  {
+    "model": "edict.edict",
+    "pk": 10,
+    "fields": {
+      "name": "Nightwatch",
+      "description": "Establish a nightwatch to patrol the streets, maintaining order and reducing unrest among citizens.",
+      "cost_coins": 100,
+      "cost_population": null,
+      "effect_unrest": -8,
+      "effect_coins": null,
+      "effect_population": null,
+      "cooldown_years": 2,
+      "required_milestone": null,
+      "is_active": true
+    }
+  },
+  {
+    "model": "edict.edict",
+    "pk": 11,
+    "fields": {
+      "name": "Stapelrecht",
+      "description": "Establish staple rights requiring traders to offer their goods in your city first, generating income but causing minor resentment.",
+      "cost_coins": 400,
+      "cost_population": null,
+      "effect_unrest": 3,
+      "effect_coins": 200,
+      "effect_population": null,
+      "cooldown_years": 6,
+      "required_milestone": 7,
+      "is_active": true
+    }
   }
 ]

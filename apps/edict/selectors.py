@@ -1,4 +1,5 @@
 from apps.edict.models import Edict, EdictLog
+from apps.milestone.selectors.milestone import get_completed_milestone_ids
 from apps.savegame.models import Savegame
 
 
@@ -9,11 +10,14 @@ def get_available_edicts_for_savegame(*, savegame: Savegame) -> list[dict]:
     Returns:
         List of dicts containing edict and availability information
     """
-    edicts = Edict.objects.filter(is_active=True).order_by("name")
+    edicts = Edict.objects.filter(is_active=True).select_related("required_milestone").order_by("name")
+    completed_milestone_ids = get_completed_milestone_ids(savegame=savegame)
     result = []
 
     for edict in edicts:
-        availability_info = _get_edict_availability_info(savegame=savegame, edict=edict)
+        availability_info = _get_edict_availability_info(
+            savegame=savegame, edict=edict, completed_milestone_ids=completed_milestone_ids
+        )
         result.append(
             {
                 "edict": edict,
@@ -26,8 +30,16 @@ def get_available_edicts_for_savegame(*, savegame: Savegame) -> list[dict]:
     return result
 
 
-def _get_edict_availability_info(*, savegame: Savegame, edict: Edict) -> dict:
+def _get_edict_availability_info(*, savegame: Savegame, edict: Edict, completed_milestone_ids: set[int]) -> dict:
     """Get availability information for a specific edict."""
+    # Check milestone requirement
+    if edict.required_milestone_id is not None and edict.required_milestone_id not in completed_milestone_ids:
+        return {
+            "is_available": False,
+            "unavailable_reason": f"Requires milestone: {edict.required_milestone.name}",
+            "can_afford": False,
+        }
+
     # Check cooldown
     if edict.cooldown_years is not None:
         last_log = EdictLog.objects.filter(savegame=savegame, edict=edict).order_by("-activated_at_year").first()

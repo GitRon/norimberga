@@ -58,12 +58,16 @@ class MilestoneTreeService:
             for condition in milestone.milestone_conditions.all()
         ]
 
+        # Get edicts enabled by this milestone
+        enabled_edicts = list(milestone.edicts.filter(is_active=True).order_by("name"))
+
         milestone_data = {
             "milestone": milestone,
             "is_completed": is_completed,
             "is_available": parent_completed and not is_completed,
             "is_locked": not parent_completed,
             "conditions_verbose": conditions_verbose,
+            "enabled_edicts": enabled_edicts,
             "children": [],
         }
 
@@ -87,6 +91,7 @@ class MilestoneTreeService:
         - is_available: Whether this milestone is available to complete
         - is_locked: Whether this milestone is locked (parent not completed)
         - conditions_verbose: List of dicts with verbose condition info
+        - enabled_edicts: List of Edict instances unlocked by this milestone
         - children: List of child milestone nodes (recursive structure)
         """
         completed_milestone_ids = get_completed_milestone_ids(savegame=self.savegame)

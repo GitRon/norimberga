@@ -22,6 +22,16 @@ class Edict(models.Model):
     # Cooldown in years (nullable means no cooldown)
     cooldown_years = models.PositiveSmallIntegerField(null=True, blank=True)
 
+    # Optional milestone requirement (nullable means no milestone required)
+    required_milestone = models.ForeignKey(
+        "milestone.Milestone",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="edicts",
+        help_text="Milestone that must be completed before this edict becomes available",
+    )
+
     # Admin toggle
     is_active = models.BooleanField(default=True)
 

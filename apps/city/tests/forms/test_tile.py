@@ -481,3 +481,73 @@ def test_tile_building_form_crispy_helper():
 
     assert hasattr(form, "helper")
     assert form.helper.form_tag is False
+
+
+@pytest.mark.django_db
+def test_tile_building_form_clean_building_demolish_with_costs():
+    """Test form validation passes when demolishing building with costs."""
+    savegame = SavegameFactory(coins=50)
+    terrain = TerrainFactory()
+
+    building_type = BuildingTypeFactory(is_unique=False)
+    building = BuildingFactory(building_type=building_type, demolition_costs=30)
+
+    tile = TileFactory(savegame=savegame, terrain=terrain, building=building)
+
+    form = TileBuildingForm(savegame=savegame, instance=tile)
+    form.cleaned_data = {"building": None}  # Demolishing
+
+    result = form.clean_building()
+    assert result is None
+
+
+@pytest.mark.django_db
+def test_tile_building_form_clean_building_demolish_insufficient_coins():
+    """Test form validation fails when insufficient coins for demolition."""
+    savegame = SavegameFactory(coins=10)
+    terrain = TerrainFactory()
+
+    building_type = BuildingTypeFactory(is_unique=False)
+    building = BuildingFactory(building_type=building_type, demolition_costs=30)
+
+    tile = TileFactory(savegame=savegame, terrain=terrain, building=building)
+
+    form = TileBuildingForm(savegame=savegame, instance=tile)
+    form.cleaned_data = {"building": None}  # Trying to demolish
+
+    with pytest.raises(ValidationError) as exc_info:
+        form.clean_building()
+
+    assert "You don't have enough coins to demolish" in str(exc_info.value)
+
+
+@pytest.mark.django_db
+def test_tile_building_form_clean_building_demolish_ruins(ruins_building):
+    """Test form validation allows demolishing ruins despite being unique."""
+    savegame = SavegameFactory(coins=50)
+    terrain = TerrainFactory()
+
+    tile = TileFactory(savegame=savegame, terrain=terrain, building=ruins_building)
+
+    form = TileBuildingForm(savegame=savegame, instance=tile)
+    form.cleaned_data = {"building": None}  # Trying to demolish ruins
+
+    result = form.clean_building()
+    assert result is None  # Should allow demolishing ruins
+
+
+@pytest.mark.django_db
+def test_tile_building_form_clean_building_demolish_ruins_insufficient_coins(ruins_building):
+    """Test form validation fails when insufficient coins to demolish ruins."""
+    savegame = SavegameFactory(coins=10)  # Ruins cost 20 to demolish
+    terrain = TerrainFactory()
+
+    tile = TileFactory(savegame=savegame, terrain=terrain, building=ruins_building)
+
+    form = TileBuildingForm(savegame=savegame, instance=tile)
+    form.cleaned_data = {"building": None}  # Trying to demolish ruins
+
+    with pytest.raises(ValidationError) as exc_info:
+        form.clean_building()
+
+    assert "You don't have enough coins to demolish" in str(exc_info.value)

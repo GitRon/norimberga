@@ -59,10 +59,16 @@ class TileBuildingForm(forms.ModelForm):
         if building and building.building_costs > self.savegame.coins:
             raise ValidationError("You don't have enough coin.")
 
-        # Allow upgrading unique buildings, but prevent demolishing them
+        # Check demolition costs when demolishing
+        if self.instance.building and building is None:
+            if self.instance.building.demolition_costs > self.savegame.coins:
+                raise ValidationError("You don't have enough coins to demolish this building.")
+
+        # Allow upgrading unique buildings and demolishing ruins, but prevent demolishing other unique buildings
         if (
             self.instance.building
             and self.instance.building.building_type.is_unique
+            and self.instance.building.building_type.name != "Ruins"
             and (building is None or building.building_type != self.instance.building.building_type)
         ):
             raise ValidationError("You can't demolish a unique building.")

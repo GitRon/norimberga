@@ -28,8 +28,13 @@ class Terrain(models.Model):
 
 
 class BuildingType(models.Model):
+    class Type(models.IntegerChoices):
+        REGULAR = 1, "Regular"
+        RUINS = 2, "Ruins"
+
     name = models.CharField(max_length=50)
     allowed_terrains = models.ManyToManyField(Terrain, verbose_name="Allowed terrains")
+    type = models.IntegerField("Type", choices=Type.choices, default=Type.REGULAR)
 
     is_country = models.BooleanField("Is country building", default=False)
     is_city = models.BooleanField("Is city building", default=False)
@@ -51,6 +56,9 @@ class Building(models.Model):
 
     taxes = models.PositiveSmallIntegerField("Taxes", default=0, validators=(MinValueValidator(0),))
     building_costs = models.PositiveSmallIntegerField("Building costs", default=0, validators=(MinValueValidator(0),))
+    demolition_costs = models.PositiveSmallIntegerField(
+        "Demolition costs", default=0, validators=(MinValueValidator(0),)
+    )
     maintenance_costs = models.PositiveSmallIntegerField(
         "Maintenance costs", default=0, validators=(MinValueValidator(0),)
     )

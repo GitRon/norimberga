@@ -53,6 +53,7 @@ class BuildingFactory(factory.django.DjangoModelFactory):
     level = 1
     taxes = 10
     building_costs = 50
+    demolition_costs = 0
     maintenance_costs = 5
     housing_space = 2
 

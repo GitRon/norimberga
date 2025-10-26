@@ -1,5 +1,5 @@
-from apps.city.tests.factories import SavegameFactory
 from apps.milestone.conditions.population import MinPopulationCondition
+from apps.savegame.tests.factories import SavegameFactory
 
 
 def test_min_population_condition_init():

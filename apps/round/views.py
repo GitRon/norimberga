@@ -5,9 +5,9 @@ from django.contrib import messages
 from django.http import HttpResponse
 from django.views import generic
 
-from apps.city.models import Savegame
 from apps.city.services.wall.enclosure import WallEnclosureService
 from apps.event.services.selection import EventSelectionService
+from apps.savegame.models import Savegame
 
 
 class RoundView(generic.View):

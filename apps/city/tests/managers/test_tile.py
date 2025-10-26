@@ -6,9 +6,9 @@ from apps.city.managers.tile import TileManager, TileQuerySet
 from apps.city.tests.factories import (
     BuildingFactory,
     BuildingTypeFactory,
-    SavegameFactory,
     TileFactory,
 )
+from apps.savegame.tests.factories import SavegameFactory
 
 
 @pytest.mark.django_db

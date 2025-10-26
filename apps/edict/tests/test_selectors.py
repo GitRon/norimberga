@@ -1,8 +1,8 @@
 import pytest
 
-from apps.city.tests.factories import SavegameFactory
 from apps.edict.selectors import get_available_edicts_for_savegame
 from apps.edict.tests.factories import EdictFactory, EdictLogFactory
+from apps.savegame.tests.factories import SavegameFactory
 
 
 @pytest.mark.django_db

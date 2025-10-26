@@ -1,6 +1,6 @@
 from collections import defaultdict
 
-from apps.city.models import Savegame
+from apps.savegame.models import Savegame
 
 
 def get_balance_data(*, savegame: Savegame) -> dict:

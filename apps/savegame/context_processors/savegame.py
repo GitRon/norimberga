@@ -1,8 +1,10 @@
-from apps.city.models import Savegame
-from apps.city.services.building.housing import BuildingHousingService
+from apps.savegame.models import Savegame
 
 
 def get_current_savegame(request) -> dict:
+    # Import here to avoid circular imports
+    from apps.city.services.building.housing import BuildingHousingService
+
     savegame = None
     is_enclosed = False
     max_housing_space = 0

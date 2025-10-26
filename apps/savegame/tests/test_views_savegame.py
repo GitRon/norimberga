@@ -1,15 +1,16 @@
 import pytest
 from django.urls import reverse
 
-from apps.city.models import Savegame
-from apps.city.tests.factories import SavegameFactory, UserFactory
+from apps.account.tests.factories import UserFactory
+from apps.savegame.models import Savegame
+from apps.savegame.tests.factories import SavegameFactory
 
 
 # SavegameListView Tests
 @pytest.mark.django_db
 def test_savegame_list_view_requires_authentication(client):
     """Test SavegameListView requires user authentication."""
-    response = client.get(reverse("city:savegame-list"))
+    response = client.get(reverse("savegame:savegame-list"))
 
     assert response.status_code == 302
     assert reverse("account:login") in response.url
@@ -23,10 +24,10 @@ def test_savegame_list_view_displays_user_savegames(authenticated_client, user):
     other_user = UserFactory(username="otheruser")
     SavegameFactory(user=other_user, city_name="Other City")
 
-    response = authenticated_client.get(reverse("city:savegame-list"))
+    response = authenticated_client.get(reverse("savegame:savegame-list"))
 
     assert response.status_code == 200
-    assert "city/savegame_list.html" in [t.name for t in response.templates]
+    assert "savegame/savegame_list.html" in [t.name for t in response.templates]
     savegames = list(response.context["savegames"])
     assert len(savegames) == 2
     assert savegame1 in savegames
@@ -39,7 +40,7 @@ def test_savegame_list_view_displays_no_savegames_message(authenticated_client, 
     # Delete any savegames
     Savegame.objects.filter(user=user).delete()
 
-    response = authenticated_client.get(reverse("city:savegame-list"))
+    response = authenticated_client.get(reverse("savegame:savegame-list"))
 
     assert response.status_code == 200
     savegames = list(response.context["savegames"])
@@ -53,7 +54,7 @@ def test_savegame_list_view_orders_savegames_by_id_descending(authenticated_clie
     savegame2 = SavegameFactory(user=user, city_name="Second")
     savegame3 = SavegameFactory(user=user, city_name="Third")
 
-    response = authenticated_client.get(reverse("city:savegame-list"))
+    response = authenticated_client.get(reverse("savegame:savegame-list"))
 
     savegames = list(response.context["savegames"])
     assert savegames[0] == savegame3
@@ -66,7 +67,7 @@ def test_savegame_list_view_orders_savegames_by_id_descending(authenticated_clie
 def test_savegame_load_view_requires_authentication(client):
     """Test SavegameLoadView requires user authentication."""
     savegame = SavegameFactory()
-    response = client.post(reverse("city:savegame-load", kwargs={"pk": savegame.pk}))
+    response = client.post(reverse("savegame:savegame-load", kwargs={"pk": savegame.pk}))
 
     assert response.status_code == 302
     assert reverse("account:login") in response.url
@@ -78,7 +79,7 @@ def test_savegame_load_view_sets_savegame_as_active(authenticated_client, user):
     savegame1 = SavegameFactory(user=user, is_active=True)
     savegame2 = SavegameFactory(user=user, is_active=False)
 
-    response = authenticated_client.post(reverse("city:savegame-load", kwargs={"pk": savegame2.pk}))
+    response = authenticated_client.post(reverse("savegame:savegame-load", kwargs={"pk": savegame2.pk}))
 
     assert response.status_code == 200
     savegame1.refresh_from_db()
@@ -94,7 +95,7 @@ def test_savegame_load_view_deactivates_all_other_savegames(authenticated_client
     savegame2 = SavegameFactory(user=user, is_active=True)
     savegame3 = SavegameFactory(user=user, is_active=False)
 
-    response = authenticated_client.post(reverse("city:savegame-load", kwargs={"pk": savegame3.pk}))
+    response = authenticated_client.post(reverse("savegame:savegame-load", kwargs={"pk": savegame3.pk}))
 
     assert response.status_code == 200
     savegame1.refresh_from_db()
@@ -110,7 +111,7 @@ def test_savegame_load_view_redirects_to_landing_page(authenticated_client, user
     """Test SavegameLoadView redirects to landing page via HX-Redirect."""
     savegame = SavegameFactory(user=user)
 
-    response = authenticated_client.post(reverse("city:savegame-load", kwargs={"pk": savegame.pk}))
+    response = authenticated_client.post(reverse("savegame:savegame-load", kwargs={"pk": savegame.pk}))
 
     assert response.status_code == 200
     assert "HX-Redirect" in response
@@ -124,7 +125,7 @@ def test_savegame_load_view_only_loads_own_savegame(authenticated_client, user):
     other_savegame = SavegameFactory(user=other_user)
 
     with pytest.raises(Savegame.DoesNotExist):
-        authenticated_client.post(reverse("city:savegame-load", kwargs={"pk": other_savegame.pk}))
+        authenticated_client.post(reverse("savegame:savegame-load", kwargs={"pk": other_savegame.pk}))
 
 
 # SavegameDeleteView Tests
@@ -132,7 +133,7 @@ def test_savegame_load_view_only_loads_own_savegame(authenticated_client, user):
 def test_savegame_delete_view_requires_authentication(client):
     """Test SavegameDeleteView requires user authentication."""
     savegame = SavegameFactory()
-    response = client.delete(reverse("city:savegame-delete", kwargs={"pk": savegame.pk}))
+    response = client.delete(reverse("savegame:savegame-delete", kwargs={"pk": savegame.pk}))
 
     assert response.status_code == 302
     assert reverse("account:login") in response.url
@@ -143,7 +144,7 @@ def test_savegame_delete_view_deletes_inactive_savegame(authenticated_client, us
     """Test SavegameDeleteView deletes inactive savegame."""
     savegame = SavegameFactory(user=user, is_active=False)
 
-    response = authenticated_client.delete(reverse("city:savegame-delete", kwargs={"pk": savegame.pk}))
+    response = authenticated_client.delete(reverse("savegame:savegame-delete", kwargs={"pk": savegame.pk}))
 
     assert response.status_code == 302
     assert not Savegame.objects.filter(pk=savegame.pk).exists()
@@ -154,7 +155,7 @@ def test_savegame_delete_view_cannot_delete_active_savegame(authenticated_client
     """Test SavegameDeleteView cannot delete active savegame."""
     savegame = SavegameFactory(user=user, is_active=True)
 
-    response = authenticated_client.delete(reverse("city:savegame-delete", kwargs={"pk": savegame.pk}))
+    response = authenticated_client.delete(reverse("savegame:savegame-delete", kwargs={"pk": savegame.pk}))
 
     assert response.status_code == 404
     assert Savegame.objects.filter(pk=savegame.pk).exists()
@@ -166,7 +167,7 @@ def test_savegame_delete_view_cannot_delete_other_users_savegame(authenticated_c
     other_user = UserFactory(username="otheruser")
     other_savegame = SavegameFactory(user=other_user, is_active=False)
 
-    response = authenticated_client.delete(reverse("city:savegame-delete", kwargs={"pk": other_savegame.pk}))
+    response = authenticated_client.delete(reverse("savegame:savegame-delete", kwargs={"pk": other_savegame.pk}))
 
     assert response.status_code == 404
     assert Savegame.objects.filter(pk=other_savegame.pk).exists()
@@ -177,10 +178,10 @@ def test_savegame_delete_view_redirects_to_savegame_list(authenticated_client, u
     """Test SavegameDeleteView redirects to savegame list after deletion."""
     savegame = SavegameFactory(user=user, is_active=False)
 
-    response = authenticated_client.delete(reverse("city:savegame-delete", kwargs={"pk": savegame.pk}))
+    response = authenticated_client.delete(reverse("savegame:savegame-delete", kwargs={"pk": savegame.pk}))
 
     assert response.status_code == 302
-    assert response.url == reverse("city:savegame-list")
+    assert response.url == reverse("savegame:savegame-list")
 
 
 @pytest.mark.django_db
@@ -191,7 +192,7 @@ def test_savegame_delete_view_returns_ok_for_htmx_request(authenticated_client, 
     savegame = SavegameFactory(user=user, is_active=False)
 
     response = authenticated_client.delete(
-        reverse("city:savegame-delete", kwargs={"pk": savegame.pk}), HTTP_HX_REQUEST="true"
+        reverse("savegame:savegame-delete", kwargs={"pk": savegame.pk}), HTTP_HX_REQUEST="true"
     )
 
     assert response.status_code == HTTPStatus.OK
@@ -202,7 +203,7 @@ def test_savegame_delete_view_returns_ok_for_htmx_request(authenticated_client, 
 @pytest.mark.django_db
 def test_savegame_create_view_requires_authentication(client):
     """Test SavegameCreateView requires user authentication."""
-    response = client.get(reverse("city:savegame-create"))
+    response = client.get(reverse("savegame:savegame-create"))
 
     assert response.status_code == 302
     assert reverse("account:login") in response.url
@@ -215,7 +216,7 @@ def test_savegame_create_view_creates_savegame_and_generates_map(authenticated_c
         "city_name": "New City",
     }
 
-    response = authenticated_client.post(reverse("city:savegame-create"), data=data, follow=False)
+    response = authenticated_client.post(reverse("savegame:savegame-create"), data=data, follow=False)
 
     assert response.status_code == 302
     assert response.url == reverse("city:landing-page")
@@ -241,7 +242,7 @@ def test_savegame_create_view_deactivates_existing_savegames(authenticated_clien
         "city_name": "New City",
     }
 
-    response = authenticated_client.post(reverse("city:savegame-create"), data=data, follow=False)
+    response = authenticated_client.post(reverse("savegame:savegame-create"), data=data, follow=False)
 
     assert response.status_code == 302
 
@@ -256,6 +257,25 @@ def test_savegame_create_view_deactivates_existing_savegames(authenticated_clien
     assert new_savegame.is_active is True
 
 
+@pytest.mark.django_db
+def test_savegame_create_view_generates_coat_of_arms(authenticated_client, user):
+    """Test SavegameCreateView generates a coat of arms for the new savegame."""
+    data = {
+        "city_name": "New City",
+    }
+
+    response = authenticated_client.post(reverse("savegame:savegame-create"), data=data, follow=False)
+
+    assert response.status_code == 302
+
+    # Verify savegame was created with coat of arms
+    savegame = Savegame.objects.get(user=user, city_name="New City")
+    assert savegame.coat_of_arms
+    assert savegame.coat_of_arms.name
+    assert "coat_of_arms" in savegame.coat_of_arms.name
+    assert savegame.coat_of_arms.name.endswith(".svg")
+
+
 # LandingPageView Tests
 @pytest.mark.django_db
 def test_landing_page_view_redirects_to_savegame_list_when_no_active_savegame(authenticated_client, user):
@@ -265,7 +285,7 @@ def test_landing_page_view_redirects_to_savegame_list_when_no_active_savegame(au
     response = authenticated_client.get(reverse("city:landing-page"), follow=False)
 
     assert response.status_code == 302
-    assert response.url == reverse("city:savegame-list")
+    assert response.url == reverse("savegame:savegame-list")
 
 
 @pytest.mark.django_db

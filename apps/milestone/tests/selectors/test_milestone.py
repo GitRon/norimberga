@@ -1,6 +1,5 @@
 import pytest
 
-from apps.city.tests.factories import SavegameFactory
 from apps.milestone.selectors.milestone import (
     get_all_milestones_with_conditions,
     get_available_milestones,
@@ -9,6 +8,7 @@ from apps.milestone.selectors.milestone import (
     get_root_milestones,
 )
 from apps.milestone.tests.factories import MilestoneConditionFactory, MilestoneFactory, MilestoneLogFactory
+from apps.savegame.tests.factories import SavegameFactory
 
 
 @pytest.mark.django_db

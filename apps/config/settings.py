@@ -50,12 +50,14 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     "apps.account",
     "apps.city",
+    "apps.coat_of_arms",
     "apps.config",
     "apps.core",
     "apps.edict",
     "apps.event",
     "apps.milestone",
     "apps.round",
+    "apps.savegame",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS + THIRD_PARTY_APPS
@@ -85,7 +87,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 # Custom
-                "apps.city.context_processors.savegame.get_current_savegame",
+                "apps.savegame.context_processors.savegame.get_current_savegame",
             ],
         },
     },
@@ -149,6 +151,10 @@ STATICFILES_DIRS = (
     ROOT_DIR / "node_modules",
     ROOT_DIR / "static",
 )
+
+# Media files (User-uploaded files)
+MEDIA_URL = "media/"
+MEDIA_ROOT = ROOT_DIR / "media"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

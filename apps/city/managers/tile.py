@@ -6,7 +6,8 @@ from django.db.models import Q
 from apps.city.services.map.coordinates import MapCoordinatesService
 
 if typing.TYPE_CHECKING:
-    from apps.city.models import Savegame, Tile
+    from apps.city.models import Tile
+    from apps.savegame.models import Savegame
 
 
 class TileQuerySet(models.QuerySet):

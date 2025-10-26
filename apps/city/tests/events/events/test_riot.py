@@ -5,7 +5,8 @@ import pytest
 from apps.city.events.effects.building.remove_building import RemoveBuilding
 from apps.city.events.effects.savegame.decrease_population_absolute import DecreasePopulationAbsolute
 from apps.city.events.events.riot import Event as RiotEvent
-from apps.city.tests.factories import BuildingFactory, BuildingTypeFactory, SavegameFactory, TileFactory
+from apps.city.tests.factories import BuildingFactory, BuildingTypeFactory, TileFactory
+from apps.savegame.tests.factories import SavegameFactory
 
 
 @pytest.mark.django_db

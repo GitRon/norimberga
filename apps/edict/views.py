@@ -6,11 +6,11 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views import generic
 
-from apps.city.mixins import SavegameRequiredMixin
-from apps.city.models import Savegame
 from apps.edict.models import Edict
 from apps.edict.selectors import get_available_edicts_for_savegame
 from apps.edict.services.edict_activation import EdictActivationService
+from apps.savegame.mixins.savegame import SavegameRequiredMixin
+from apps.savegame.models import Savegame
 
 
 class EdictListView(SavegameRequiredMixin, generic.TemplateView):

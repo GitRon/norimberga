@@ -1,5 +1,5 @@
-from apps.city.models import Savegame
 from apps.milestone.models import Milestone, MilestoneLog
+from apps.savegame.models import Savegame
 
 
 def get_all_milestones_with_conditions() -> list[Milestone]:

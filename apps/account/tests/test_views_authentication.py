@@ -142,7 +142,7 @@ def test_user_registration_view_redirects_to_savegame_list_when_no_savegame(clie
     response = client.post(reverse("account:register"), data=data, follow=False)
 
     assert response.status_code == 302
-    assert response.url == reverse("city:savegame-list")
+    assert response.url == reverse("savegame:savegame-list")
 
 
 @pytest.mark.django_db

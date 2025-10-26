@@ -6,7 +6,8 @@ from django.contrib import messages
 from apps.city.events.effects.savegame.decrease_coins import DecreaseCoins
 from apps.city.events.effects.savegame.increase_coins import IncreaseCoins
 from apps.city.events.events.economic_balance import Event as EconomicBalanceEvent
-from apps.city.tests.factories import BuildingFactory, SavegameFactory, TerrainFactory, TileFactory
+from apps.city.tests.factories import BuildingFactory, TerrainFactory, TileFactory
+from apps.savegame.tests.factories import SavegameFactory
 
 
 @pytest.mark.django_db

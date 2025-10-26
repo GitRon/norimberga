@@ -2,7 +2,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Div, Field, Layout, Submit
 from django import forms
 
-from apps.city.models import Savegame
+from apps.savegame.models import Savegame
 
 
 class SavegameCreateForm(forms.ModelForm):
@@ -22,7 +22,7 @@ class SavegameCreateForm(forms.ModelForm):
             Field("city_name"),
             Div(
                 HTML(
-                    "<a href=\"{% url 'city:savegame-list' %}\" "
+                    "<a href=\"{% url 'savegame:savegame-list' %}\" "
                     'class="px-4 py-2 bg-gray-300 text-gray-700 text-sm font-medium rounded-md '
                     "hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 "
                     'focus:ring-gray-500">Cancel</a>'

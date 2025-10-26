@@ -8,28 +8,27 @@ from django.urls import reverse
 from apps.city.tests.factories import (
     BuildingFactory,
     BuildingTypeFactory,
-    SavegameFactory,
     TerrainFactory,
     TileFactory,
     UniqueBuildingTypeFactory,
 )
 from apps.city.views import (
-    BalanceView,
     TileBuildView,
     TileDemolishView,
 )
+from apps.savegame.tests.factories import SavegameFactory
 
 
-# SavegameValueView Tests
+# BalanceView Tests
 @pytest.mark.django_db
-def test_savegame_value_view_response(authenticated_client, user):
-    """Test SavegameValueView responds correctly."""
-    savegame = SavegameFactory(user=user, is_active=True)
+def test_balance_view_response(authenticated_client, user):
+    """Test BalanceView responds correctly and includes balance data in context."""
+    SavegameFactory(user=user, is_active=True, coins=1000)
 
-    response = authenticated_client.get(reverse("city:savegame-value", kwargs={"pk": savegame.pk}))
+    response = authenticated_client.get(reverse("city:balance"))
 
     assert response.status_code == 200
-    assert "savegame/partials/_nav_values.html" in [t.name for t in response.templates]
+    assert "city/balance.html" in [t.name for t in response.templates]
 
 
 # NavbarValuesView Tests
@@ -304,92 +303,3 @@ def test_tile_demolish_view_post_unique_building_via_client(authenticated_client
 
     # Verify error response
     assert response.status_code == 400
-
-
-# BalanceView Tests
-@pytest.mark.django_db
-def test_balance_view_get_context_data(request_factory, user):
-    """Test BalanceView includes balance data in context."""
-    savegame = SavegameFactory(user=user, is_active=True)
-
-    # Create buildings with known values
-    building1 = BuildingFactory(taxes=30, maintenance_costs=10)
-    building2 = BuildingFactory(taxes=20, maintenance_costs=5)
-
-    TileFactory(savegame=savegame, building=building1)
-    TileFactory(savegame=savegame, building=building2)
-
-    request = request_factory.get("/")
-    request.user = user
-    view = BalanceView()
-    view.request = request
-    context = view.get_context_data()
-
-    assert context["savegame"] == savegame
-    assert context["taxes"] == 50  # 30 + 20
-    assert context["maintenance"] == 15  # 10 + 5
-    assert context["balance"] == 35  # 50 - 15
-    assert "tax_by_building_type" in context
-    assert "maintenance_by_building_type" in context
-
-
-@pytest.mark.django_db
-def test_balance_view_response(authenticated_client, user):
-    """Test BalanceView responds correctly."""
-    savegame = SavegameFactory(user=user, is_active=True)
-    building = BuildingFactory(taxes=20, maintenance_costs=10)
-    TileFactory(savegame=savegame, building=building)
-
-    response = authenticated_client.get(reverse("city:balance"))
-
-    assert response.status_code == 200
-    assert "city/balance.html" in [t.name for t in response.templates]
-
-
-@pytest.mark.django_db
-def test_balance_view_context_with_no_buildings(authenticated_client, user):
-    """Test BalanceView handles savegame with no buildings."""
-    savegame = SavegameFactory(user=user, is_active=True)
-    TileFactory(savegame=savegame, building=None)
-
-    response = authenticated_client.get(reverse("city:balance"))
-
-    assert response.status_code == 200
-    assert response.context["taxes"] == 0
-    assert response.context["maintenance"] == 0
-    assert response.context["balance"] == 0
-
-
-@pytest.mark.django_db
-def test_balance_view_context_positive_balance(authenticated_client, user):
-    """Test BalanceView displays positive balance correctly."""
-    savegame = SavegameFactory(user=user, is_active=True)
-    building = BuildingFactory(taxes=100, maintenance_costs=20)
-    TileFactory(savegame=savegame, building=building)
-
-    response = authenticated_client.get(reverse("city:balance"))
-
-    assert response.status_code == 200
-    assert response.context["balance"] == 80
-    assert response.context["balance"] > 0
-
-
-@pytest.mark.django_db
-def test_balance_view_context_negative_balance(authenticated_client, user):
-    """Test BalanceView displays negative balance correctly."""
-    savegame = SavegameFactory(user=user, is_active=True)
-    building = BuildingFactory(taxes=10, maintenance_costs=50)
-    TileFactory(savegame=savegame, building=building)
-
-    response = authenticated_client.get(reverse("city:balance"))
-
-    assert response.status_code == 200
-    assert response.context["balance"] == -40
-    assert response.context["balance"] < 0
-
-
-@pytest.mark.django_db
-def test_balance_view_template_name():
-    """Test BalanceView uses correct template."""
-    view = BalanceView()
-    assert view.template_name == "city/balance.html"

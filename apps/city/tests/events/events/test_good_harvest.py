@@ -5,7 +5,7 @@ from django.contrib import messages
 
 from apps.city.events.effects.savegame.decrease_unrest_absolute import DecreaseUnrestAbsolute
 from apps.city.events.events.good_harvest import Event as GoodHarvestEvent
-from apps.city.tests.factories import SavegameFactory
+from apps.savegame.tests.factories import SavegameFactory
 
 
 @pytest.mark.django_db

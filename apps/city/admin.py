@@ -1,11 +1,6 @@
 from django.contrib import admin
 
-from apps.city.models import Building, BuildingType, Savegame, Terrain, Tile
-
-
-@admin.register(Savegame)
-class SavegameAdmin(admin.ModelAdmin):
-    list_display = ("id", "city_name")
+from apps.city.models import Building, BuildingType, Terrain, Tile
 
 
 @admin.register(Tile)

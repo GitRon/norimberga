@@ -3,8 +3,16 @@
     <div class="max-w-screen-xl flex items-center justify-between p-4">
         <div class="flex items-center gap-6">
             <a href="{% url "city:landing-page" %}" class="flex items-center space-x-3 rtl:space-x-reverse">
-                <img src="{% static "img/logo.jpg" %}" class="h-8" alt="Norimberga Logo"/>
-                <span class="self-center text-2xl font-semibold whitespace-nowrap">Norimberga</span>
+                {% if user.is_authenticated and savegame and savegame.coat_of_arms %}
+                    <img src="{{ savegame.coat_of_arms.url }}" class="h-16 -my-4" alt="{{ savegame.city_name }} Coat of Arms"/>
+                    <div class="flex flex-col">
+                        <span class="text-2xl font-semibold whitespace-nowrap">{{ savegame.city_name }}</span>
+                        <span class="text-xs text-gray-500">Norimberga</span>
+                    </div>
+                {% else %}
+                    <img src="{% static "img/logo.jpg" %}" class="h-8" alt="Norimberga Logo"/>
+                    <span class="self-center text-2xl font-semibold whitespace-nowrap">Norimberga</span>
+                {% endif %}
             </a>
 
             {% if user.is_authenticated and savegame %}
@@ -47,7 +55,7 @@
                     </button>
 
                     <div class="hidden group-hover:block absolute right-0 top-full w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                        <a href="{% url 'city:savegame-list' %}"
+                        <a href="{% url 'savegame:savegame-list' %}"
                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                             Savegames
                         </a>

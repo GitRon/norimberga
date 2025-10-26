@@ -2,7 +2,8 @@ import pytest
 
 from apps.city.events.effects.savegame.increase_population_absolute import IncreasePopulationAbsolute
 from apps.city.events.events.population_increase import Event as PopulationIncreaseEvent
-from apps.city.tests.factories import BuildingFactory, HouseBuildingTypeFactory, SavegameFactory, TileFactory
+from apps.city.tests.factories import BuildingFactory, HouseBuildingTypeFactory, TileFactory
+from apps.savegame.tests.factories import SavegameFactory
 
 
 @pytest.mark.django_db

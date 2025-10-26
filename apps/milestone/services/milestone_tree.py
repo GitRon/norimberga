@@ -1,12 +1,12 @@
 import importlib
 
-from apps.city.models import Savegame
 from apps.milestone.models import Milestone
 from apps.milestone.selectors.milestone import (
     get_all_milestones_with_conditions,
     get_completed_milestone_ids,
     get_root_milestones,
 )
+from apps.savegame.models import Savegame
 
 
 class MilestoneTreeService:

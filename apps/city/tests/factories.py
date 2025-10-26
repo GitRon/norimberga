@@ -1,20 +1,6 @@
 import factory
 
-from apps.account.tests.factories import UserFactory
-from apps.city.models import Building, BuildingType, Savegame, Terrain, Tile
-
-
-class SavegameFactory(factory.django.DjangoModelFactory):
-    class Meta:
-        model = Savegame
-
-    user = factory.SubFactory(UserFactory)
-    city_name = factory.Faker("city")
-    coins = 1000
-    population = 50
-    unrest = 10
-    current_year = 1150
-    is_active = True
+from apps.city.models import Building, BuildingType, Terrain, Tile
 
 
 class TerrainFactory(factory.django.DjangoModelFactory):
@@ -51,7 +37,7 @@ class TileFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Tile
 
-    savegame = factory.SubFactory(SavegameFactory)
+    savegame = factory.SubFactory("apps.savegame.tests.factories.SavegameFactory")
     x = factory.Sequence(lambda n: (n * 17) % 1000)  # Use prime number for better distribution
     y = factory.Sequence(lambda n: (n * 23) % 1000)  # Use different prime for y
     terrain = factory.SubFactory(TerrainFactory)

@@ -5,13 +5,13 @@ from apps.city.services.wall.enclosure import WallEnclosureService
 from apps.city.tests.factories import (
     BuildingFactory,
     BuildingTypeFactory,
-    SavegameFactory,
     TerrainFactory,
     TileFactory,
     UniqueBuildingTypeFactory,
     WallBuildingTypeFactory,
     WaterTerrainFactory,
 )
+from apps.savegame.tests.factories import SavegameFactory
 
 
 def create_tiles_batch(savegame, size, terrain, building=None):

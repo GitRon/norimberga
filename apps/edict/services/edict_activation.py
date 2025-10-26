@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
-from apps.city.models import Savegame
 from apps.edict.models import Edict, EdictLog
 from apps.milestone.selectors.milestone import get_completed_milestone_ids
+from apps.savegame.models import Savegame
 
 
 @dataclass(kw_only=True)

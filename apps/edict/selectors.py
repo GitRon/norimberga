@@ -1,6 +1,6 @@
-from apps.city.models import Savegame
 from apps.edict.models import Edict, EdictLog
 from apps.milestone.selectors.milestone import get_completed_milestone_ids
+from apps.savegame.models import Savegame
 
 
 def get_available_edicts_for_savegame(*, savegame: Savegame) -> list[dict]:

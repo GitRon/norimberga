@@ -14,7 +14,7 @@ def test_remove_building_init():
 
 
 @pytest.mark.django_db
-def test_remove_building_process_replaces_with_ruins():
+def test_remove_building_process_replaces_with_ruins(ruins_building):
     """Test process replaces building with ruins instead of removing it."""
     building = BuildingFactory()
     tile = TileFactory(building=building)
@@ -32,7 +32,7 @@ def test_remove_building_process_replaces_with_ruins():
 
 
 @pytest.mark.django_db
-def test_remove_building_process_already_empty_tile():
+def test_remove_building_process_already_empty_tile(ruins_building):
     """Test process replaces empty tile with ruins."""
     tile = TileFactory(building=None)
     effect = RemoveBuilding(tile=tile)
@@ -49,7 +49,7 @@ def test_remove_building_process_already_empty_tile():
 
 
 @pytest.mark.django_db
-def test_remove_building_process_saves_tile():
+def test_remove_building_process_saves_tile(ruins_building):
     """Test process saves the tile after replacing with ruins."""
     building = BuildingFactory()
     tile = TileFactory(building=building)

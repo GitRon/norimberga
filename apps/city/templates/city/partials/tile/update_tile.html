@@ -2,8 +2,12 @@
 <div id="form-container" class="p-6">
     <h1 class="text-xl font-bold mb-4">Build something: {{ object.terrain }} ({{ object }})</h1>
     <form method="POST" action="{% url "city:tile-build" object.id %}">
-        {% crispy form %}
-        {% if not form.fields.building.queryset %}
+        {% comment %}Only show building select if not a ruin{% endcomment %}
+        {% if not object.building or object.building.building_type.type != 2 %}
+            {% crispy form %}
+        {% endif %}
+        {% comment %}Show warning only when there's no building and no available buildings{% endcomment %}
+        {% if not object.building and not form.fields.building.queryset %}
             <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4" role="alert">
                 <p class="font-bold">No buildings available</p>
                 <p>This tile doesn't support any buildings, or all available buildings have been built.</p>

@@ -220,7 +220,7 @@ def test_fire_event_get_effects_no_building():
 
 
 @pytest.mark.django_db
-def test_fire_event_process():
+def test_fire_event_process(ruins_building):
     """Test full event processing workflow."""
     savegame = SavegameFactory(population=100)
     house_type = HouseBuildingTypeFactory()

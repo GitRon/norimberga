@@ -356,7 +356,7 @@ def test_pillage_event_scaling_with_few_buildings():
 
 
 @pytest.mark.django_db
-def test_pillage_event_process():
+def test_pillage_event_process(ruins_building):
     """Test full event processing workflow."""
     savegame = SavegameFactory(coins=1000, population=100, is_enclosed=False)
     building_type = BuildingTypeFactory(is_city=True)

@@ -54,11 +54,19 @@ class TileBuildView(SavegameRequiredMixin, generic.UpdateView):
         return kwargs
 
     def form_valid(self, form) -> HttpResponse:
+        old_building = form.initial.get("current_building")
         super().form_valid(form=form)
 
         savegame = Savegame.objects.filter(user=self.request.user, is_active=True).first()
-        if form.cleaned_data["building"] and savegame:
-            savegame.coins -= form.cleaned_data["building"].building_costs
+        if savegame:
+            # Charge building costs when building
+            if form.cleaned_data["building"]:
+                savegame.coins -= form.cleaned_data["building"].building_costs
+
+            # Charge demolition costs when demolishing
+            if old_building and not form.cleaned_data["building"]:
+                savegame.coins -= old_building.demolition_costs
+
             savegame.is_enclosed = WallEnclosureService(savegame=savegame).process()
             savegame.save()
 
@@ -78,19 +86,30 @@ class TileBuildView(SavegameRequiredMixin, generic.UpdateView):
 class TileDemolishView(SavegameRequiredMixin, generic.View):
     def post(self, request, pk, *args, **kwargs) -> HttpResponse:
         tile = Tile.objects.get(pk=pk)
+        savegame = Savegame.objects.filter(user=request.user, is_active=True).first()
 
         # Check if building can be demolished
-        if tile.building and tile.building.building_type.is_unique:
-            # TODO(RV): give user proper feedback
-            return HttpResponse("Cannot demolish unique buildings", status=400)
-
-        # Remove the building
         if tile.building:
+            # Allow ruins to be demolished, but not other unique buildings
+            is_ruins = tile.building.building_type.type == tile.building.building_type.Type.RUINS
+            if tile.building.building_type.is_unique and not is_ruins:
+                # TODO(RV): give user proper feedback
+                return HttpResponse("Cannot demolish unique buildings", status=400)
+
+            # Check if player has enough coins for demolition
+            if tile.building.demolition_costs > savegame.coins:
+                return HttpResponse("Not enough coins to demolish this building", status=400)
+
+            # Charge demolition costs
+            if tile.building.demolition_costs > 0:
+                savegame.coins -= tile.building.demolition_costs
+                savegame.save()
+
+            # Remove the building
             tile.building = None
             tile.save()
 
             # Update enclosure status
-            savegame = Savegame.objects.filter(user=request.user, is_active=True).first()
             if savegame:
                 savegame.is_enclosed = WallEnclosureService(savegame=savegame).process()
                 savegame.save()

@@ -104,6 +104,7 @@ def test_tile_build_view_form_valid_with_building(request_factory, user):
     # Create mock form with cleaned data
     mock_form = mock.Mock()
     mock_form.cleaned_data = {"building": building}
+    mock_form.initial = {"current_building": None}  # No initial building
 
     request = request_factory.get("/")
     request.user = user
@@ -136,6 +137,7 @@ def test_tile_build_view_form_valid_without_building(request_factory, user):
     # Create mock form with no building
     mock_form = mock.Mock()
     mock_form.cleaned_data = {"building": None}
+    mock_form.initial = {"current_building": None}  # No initial building
 
     request = request_factory.get("/")
     request.user = user
@@ -153,6 +155,37 @@ def test_tile_build_view_form_valid_without_building(request_factory, user):
         assert savegame.coins == 100
 
         # Verify response headers still set
+        assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_tile_build_view_form_valid_demolish_with_costs(request_factory, user):
+    """Test TileBuildView charges demolition costs when demolishing via form."""
+    savegame = SavegameFactory(user=user, is_active=True, coins=100)
+    tile = TileFactory()
+    old_building = BuildingFactory(demolition_costs=25)
+
+    # Create mock form that demolishes (sets building to None)
+    mock_form = mock.Mock()
+    mock_form.cleaned_data = {"building": None}
+    mock_form.initial = {"current_building": old_building}
+
+    request = request_factory.get("/")
+    request.user = user
+    view = TileBuildView()
+    view.object = tile
+    view.request = request
+
+    with mock.patch("apps.city.views.generic.UpdateView.form_valid") as mock_super_form_valid:
+        mock_super_form_valid.return_value = mock.Mock()
+
+        response = view.form_valid(mock_form)
+
+        # Verify demolition costs were charged
+        savegame.refresh_from_db()
+        assert savegame.coins == 75  # 100 - 25 = 75
+
+        # Verify response headers
         assert response.status_code == 200
 
 
@@ -229,14 +262,16 @@ def test_tile_demolish_view_post_success(user):
 
 
 @pytest.mark.django_db
-def test_tile_demolish_view_post_unique_building():
+def test_tile_demolish_view_post_unique_building(user):
     """Test TileDemolishView fails to demolish unique building."""
+    SavegameFactory(user=user, is_active=True)
     unique_building_type = UniqueBuildingTypeFactory()
     unique_building = BuildingFactory(building_type=unique_building_type)
     tile = TileFactory(building=unique_building)
 
     view = TileDemolishView()
     request = RequestFactory().post("/")
+    request.user = user
 
     response = view.post(request, pk=tile.pk)
 
@@ -250,12 +285,14 @@ def test_tile_demolish_view_post_unique_building():
 
 
 @pytest.mark.django_db
-def test_tile_demolish_view_post_no_building():
+def test_tile_demolish_view_post_no_building(user):
     """Test TileDemolishView handles tile with no building."""
+    SavegameFactory(user=user, is_active=True)
     tile = TileFactory(building=None)
 
     view = TileDemolishView()
     request = RequestFactory().post("/")
+    request.user = user
 
     response = view.post(request, pk=tile.pk)
 
@@ -303,3 +340,58 @@ def test_tile_demolish_view_post_unique_building_via_client(authenticated_client
 
     # Verify error response
     assert response.status_code == 400
+
+
+@pytest.mark.django_db
+def test_tile_demolish_view_charges_demolition_costs(user):
+    """Test TileDemolishView charges demolition costs."""
+    savegame = SavegameFactory(user=user, is_active=True, coins=100)
+
+    building_type = BuildingTypeFactory(is_unique=False)
+    building = BuildingFactory(building_type=building_type, demolition_costs=30)
+    tile = TileFactory(building=building, savegame=savegame)
+
+    view = TileDemolishView()
+    request = RequestFactory().post("/")
+    request.user = user
+
+    response = view.post(request, pk=tile.pk)
+
+    # Verify building was removed
+    tile.refresh_from_db()
+    assert tile.building is None
+
+    # Verify coins were charged
+    savegame.refresh_from_db()
+    assert savegame.coins == 70  # 100 - 30 = 70
+
+    # Verify response
+    assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_tile_demolish_view_insufficient_coins_for_demolition(user):
+    """Test TileDemolishView rejects demolition when insufficient coins."""
+    savegame = SavegameFactory(user=user, is_active=True, coins=10)
+
+    building_type = BuildingTypeFactory(is_unique=False)
+    building = BuildingFactory(building_type=building_type, demolition_costs=30)
+    tile = TileFactory(building=building, savegame=savegame)
+
+    view = TileDemolishView()
+    request = RequestFactory().post("/")
+    request.user = user
+
+    response = view.post(request, pk=tile.pk)
+
+    # Verify building was NOT removed
+    tile.refresh_from_db()
+    assert tile.building == building
+
+    # Verify coins were not charged
+    savegame.refresh_from_db()
+    assert savegame.coins == 10
+
+    # Verify error response
+    assert response.status_code == 400
+    assert b"Not enough coins" in response.content

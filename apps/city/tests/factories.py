@@ -18,6 +18,7 @@ class BuildingTypeFactory(factory.django.DjangoModelFactory):
         skip_postgeneration_save = True
 
     name = factory.Faker("word")
+    type = BuildingType.Type.REGULAR
     is_country = False
     is_city = True
     is_house = False
@@ -53,6 +54,7 @@ class BuildingFactory(factory.django.DjangoModelFactory):
     level = 1
     taxes = 10
     building_costs = 50
+    demolition_costs = 0
     maintenance_costs = 5
     housing_space = 2
 

@@ -1,4 +1,4 @@
-from apps.city.models import Tile
+from apps.city.models import BuildingType, Tile
 
 
 class RemoveBuilding:
@@ -8,5 +8,9 @@ class RemoveBuilding:
         self.tile = tile
 
     def process(self, *, savegame=None):
-        self.tile.building = None
+        # Replace the building with ruins instead of removing it entirely
+        # This ensures that damaged buildings leave ruins that need to be demolished
+        ruins_type = BuildingType.objects.get(type=BuildingType.Type.RUINS)
+        ruins = ruins_type.buildings.first()
+        self.tile.building = ruins
         self.tile.save()

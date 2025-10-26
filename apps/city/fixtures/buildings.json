@@ -349,5 +349,19 @@
       "maintenance_costs": 0,
       "housing_space": 0
     }
+  },
+  {
+    "model": "city.building",
+    "pk": 28,
+    "fields": {
+      "name": "Ruins",
+      "building_type": 10,
+      "level": 1,
+      "taxes": 0,
+      "building_costs": 0,
+      "demolition_costs": 20,
+      "maintenance_costs": 0,
+      "housing_space": 0
+    }
   }
 ]

@@ -14,8 +14,8 @@ def test_remove_building_init():
 
 
 @pytest.mark.django_db
-def test_remove_building_process_removes_building():
-    """Test process removes building from tile."""
+def test_remove_building_process_replaces_with_ruins(ruins_building):
+    """Test process replaces building with ruins instead of removing it."""
     building = BuildingFactory()
     tile = TileFactory(building=building)
     effect = RemoveBuilding(tile=tile)
@@ -26,12 +26,14 @@ def test_remove_building_process_removes_building():
     effect.process()
 
     tile.refresh_from_db()
-    assert tile.building is None
+    # Building should be replaced with ruins, not removed entirely
+    assert tile.building is not None
+    assert tile.building.building_type.type == tile.building.building_type.Type.RUINS
 
 
 @pytest.mark.django_db
-def test_remove_building_process_already_empty_tile():
-    """Test process handles tile that already has no building."""
+def test_remove_building_process_already_empty_tile(ruins_building):
+    """Test process replaces empty tile with ruins."""
     tile = TileFactory(building=None)
     effect = RemoveBuilding(tile=tile)
 
@@ -41,12 +43,14 @@ def test_remove_building_process_already_empty_tile():
     effect.process()
 
     tile.refresh_from_db()
-    assert tile.building is None  # Should remain None
+    # Empty tile should also get ruins
+    assert tile.building is not None
+    assert tile.building.building_type.type == tile.building.building_type.Type.RUINS
 
 
 @pytest.mark.django_db
-def test_remove_building_process_saves_tile():
-    """Test process saves the tile after removing building."""
+def test_remove_building_process_saves_tile(ruins_building):
+    """Test process saves the tile after replacing with ruins."""
     building = BuildingFactory()
     tile = TileFactory(building=building)
     effect = RemoveBuilding(tile=tile)
@@ -65,6 +69,7 @@ def test_remove_building_process_saves_tile():
 
     # Verify save was called
     assert len(save_called) == 1
-    # Verify building was actually removed from database
+    # Verify building was actually replaced with ruins in database
     tile.refresh_from_db()
-    assert tile.building is None
+    assert tile.building is not None
+    assert tile.building.building_type.type == tile.building.building_type.Type.RUINS

@@ -481,3 +481,41 @@ def test_tile_building_form_crispy_helper():
 
     assert hasattr(form, "helper")
     assert form.helper.form_tag is False
+
+
+@pytest.mark.django_db
+def test_tile_building_form_clean_building_demolish_with_costs():
+    """Test form validation passes when demolishing building with costs."""
+    savegame = SavegameFactory(coins=50)
+    terrain = TerrainFactory()
+
+    building_type = BuildingTypeFactory(is_unique=False)
+    building = BuildingFactory(building_type=building_type, demolition_costs=30)
+
+    tile = TileFactory(savegame=savegame, terrain=terrain, building=building)
+
+    form = TileBuildingForm(savegame=savegame, instance=tile)
+    form.cleaned_data = {"building": None}  # Demolishing
+
+    result = form.clean_building()
+    assert result is None
+
+
+@pytest.mark.django_db
+def test_tile_building_form_clean_building_demolish_insufficient_coins():
+    """Test form validation fails when insufficient coins for demolition."""
+    savegame = SavegameFactory(coins=10)
+    terrain = TerrainFactory()
+
+    building_type = BuildingTypeFactory(is_unique=False)
+    building = BuildingFactory(building_type=building_type, demolition_costs=30)
+
+    tile = TileFactory(savegame=savegame, terrain=terrain, building=building)
+
+    form = TileBuildingForm(savegame=savegame, instance=tile)
+    form.cleaned_data = {"building": None}  # Trying to demolish
+
+    with pytest.raises(ValidationError) as exc_info:
+        form.clean_building()
+
+    assert "You don't have enough coins to demolish" in str(exc_info.value)

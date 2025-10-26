@@ -3,7 +3,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 
 from apps.city.fields.building import BuildingModelChoiceField
-from apps.city.models import Building, Tile
+from apps.city.models import Building, BuildingType, Tile
 
 
 class TileBuildingForm(forms.ModelForm):
@@ -43,8 +43,10 @@ class TileBuildingForm(forms.ModelForm):
             unique_buildings = Building.objects.filter(
                 tiles__savegame=self.instance.savegame, building_type__is_unique=True
             )
-            buildings = Building.objects.filter(building_type__allowed_terrains=self.instance.terrain, level=1).exclude(
-                id__in=unique_buildings
+            buildings = (
+                Building.objects.filter(building_type__allowed_terrains=self.instance.terrain, level=1)
+                .exclude(id__in=unique_buildings)
+                .exclude(building_type__type=BuildingType.Type.RUINS)
             )
 
             # If this tile is not adjacent to a city-tile, we can't build city-buildings
@@ -59,10 +61,19 @@ class TileBuildingForm(forms.ModelForm):
         if building and building.building_costs > self.savegame.coins:
             raise ValidationError("You don't have enough coin.")
 
-        # Allow upgrading unique buildings, but prevent demolishing them
+        # Check demolition costs when demolishing
+        if (
+            self.instance.building
+            and building is None
+            and self.instance.building.demolition_costs > self.savegame.coins
+        ):
+            raise ValidationError("You don't have enough coins to demolish this building.")
+
+        # Allow upgrading unique buildings and demolishing ruins, but prevent demolishing other unique buildings
         if (
             self.instance.building
             and self.instance.building.building_type.is_unique
+            and self.instance.building.building_type.type != self.instance.building.building_type.Type.RUINS
             and (building is None or building.building_type != self.instance.building.building_type)
         ):
             raise ValidationError("You can't demolish a unique building.")

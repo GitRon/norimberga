@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('edict', '0001_initial'),
+        ('edict', '0002_alter_edictlog_savegame'),
         ('milestone', '0002_alter_milestonelog_options_milestone_and_more'),
     ]
 

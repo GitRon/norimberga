@@ -24,30 +24,30 @@
                                 <h3 class="font-bold text-lg mb-3 text-gray-800 border-l-4 border-green-500 pl-2">{{ building_type }}</h3>
 
                                 <div class="overflow-x-auto">
-                                    <table class="w-full text-sm">
+                                    <table class="table table-sm table-hover">
                                         <thead>
-                                            <tr class="bg-gray-50 border-b border-gray-200">
-                                                <th class="text-left py-2 px-2 font-semibold text-gray-700 text-xs uppercase">Building</th>
-                                                <th class="text-left py-2 px-2 font-semibold text-gray-700 text-xs uppercase">Lvl</th>
-                                                <th class="text-center py-2 px-2 font-semibold text-gray-700 text-xs uppercase">Qty</th>
-                                                <th class="text-right py-2 px-2 font-semibold text-gray-700 text-xs uppercase">Per Round</th>
-                                                <th class="text-right py-2 px-2 font-semibold text-gray-700 text-xs uppercase">Total</th>
+                                            <tr>
+                                                <th>Building</th>
+                                                <th>Lvl</th>
+                                                <th class="text-center">Qty</th>
+                                                <th class="text-right">Per Round</th>
+                                                <th class="text-right">Total</th>
                                             </tr>
                                         </thead>
-                                        <tbody class="divide-y divide-gray-100">
+                                        <tbody>
                                             {% for building in data.buildings %}
-                                                <tr class="hover:bg-green-50 transition-colors duration-150">
-                                                    <td class="py-2 px-2 text-gray-800">{{ building.name }}</td>
-                                                    <td class="py-2 px-2">
-                                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                <tr>
+                                                    <td>{{ building.name }}</td>
+                                                    <td>
+                                                        <span class="badge badge-info badge-sm">
                                                             {{ building.level }}
                                                         </span>
                                                     </td>
-                                                    <td class="py-2 px-2 text-center">
-                                                        <span class="font-medium text-gray-700">{{ building.count }}×</span>
+                                                    <td class="text-center">
+                                                        <span class="font-medium">{{ building.count }}×</span>
                                                     </td>
-                                                    <td class="py-2 px-2 text-right text-gray-600">{{ building.taxes_per_building }}</td>
-                                                    <td class="py-2 px-2 text-right font-bold text-green-700">+{{ building.total }}</td>
+                                                    <td class="text-right">{{ building.taxes_per_building }}</td>
+                                                    <td class="text-right font-bold text-green-700">+{{ building.total }}</td>
                                                 </tr>
                                             {% endfor %}
                                         </tbody>
@@ -95,30 +95,30 @@
                                 <h3 class="font-bold text-lg mb-3 text-gray-800 border-l-4 border-red-500 pl-2">{{ building_type }}</h3>
 
                                 <div class="overflow-x-auto">
-                                    <table class="w-full text-sm">
+                                    <table class="table table-sm table-hover">
                                         <thead>
-                                            <tr class="bg-gray-50 border-b border-gray-200">
-                                                <th class="text-left py-2 px-2 font-semibold text-gray-700 text-xs uppercase">Building</th>
-                                                <th class="text-left py-2 px-2 font-semibold text-gray-700 text-xs uppercase">Lvl</th>
-                                                <th class="text-center py-2 px-2 font-semibold text-gray-700 text-xs uppercase">Qty</th>
-                                                <th class="text-right py-2 px-2 font-semibold text-gray-700 text-xs uppercase">Per Round</th>
-                                                <th class="text-right py-2 px-2 font-semibold text-gray-700 text-xs uppercase">Total</th>
+                                            <tr>
+                                                <th>Building</th>
+                                                <th>Lvl</th>
+                                                <th class="text-center">Qty</th>
+                                                <th class="text-right">Per Round</th>
+                                                <th class="text-right">Total</th>
                                             </tr>
                                         </thead>
-                                        <tbody class="divide-y divide-gray-100">
+                                        <tbody>
                                             {% for building in data.buildings %}
-                                                <tr class="hover:bg-red-50 transition-colors duration-150">
-                                                    <td class="py-2 px-2 text-gray-800">{{ building.name }}</td>
-                                                    <td class="py-2 px-2">
-                                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                <tr>
+                                                    <td>{{ building.name }}</td>
+                                                    <td>
+                                                        <span class="badge badge-info badge-sm">
                                                             {{ building.level }}
                                                         </span>
                                                     </td>
-                                                    <td class="py-2 px-2 text-center">
-                                                        <span class="font-medium text-gray-700">{{ building.count }}×</span>
+                                                    <td class="text-center">
+                                                        <span class="font-medium">{{ building.count }}×</span>
                                                     </td>
-                                                    <td class="py-2 px-2 text-right text-gray-600">{{ building.maintenance_per_building }}</td>
-                                                    <td class="py-2 px-2 text-right font-bold text-red-700">-{{ building.total }}</td>
+                                                    <td class="text-right">{{ building.maintenance_per_building }}</td>
+                                                    <td class="text-right font-bold text-red-700">-{{ building.total }}</td>
                                                 </tr>
                                             {% endfor %}
                                         </tbody>

@@ -8,8 +8,10 @@
             <p class="text-gray-600 mt-2">Set up your new city and begin your journey</p>
         </div>
 
-        <div class="bg-white shadow-md rounded-lg p-6">
-            {% crispy form %}
+        <div class="card bg-base-100 shadow-md">
+            <div class="card-body">
+                {% crispy form %}
+            </div>
         </div>
     </div>
 {% endblock content %}

@@ -75,15 +75,17 @@ Once created, you can access the admin interface at `http://localhost:8000/admin
 
 ### 5. Build Frontend Assets
 
-Install Node.js dependencies and build TailwindCSS:
+Install Node.js dependencies and build TailwindCSS with DaisyUI:
 
 ```bash
-# Install Node.js dependencies
+# Install Node.js dependencies (includes TailwindCSS and DaisyUI)
 npm install
 
 # Build CSS (one-time build)
 npx tailwindcss -i ./static/css/input.css -o ./static/css/dist/output.css
 ```
+
+**Note**: The project uses [DaisyUI](https://daisyui.com/) as a component library for Tailwind CSS. All UI components (buttons, cards, forms, etc.) use DaisyUI classes.
 
 ## Running the Development Server
 
@@ -97,11 +99,17 @@ The server will be available at `http://localhost:8000/`
 
 ### Watch TailwindCSS Changes (Development)
 
-In a separate terminal, run the TailwindCSS watcher to automatically rebuild CSS when you make changes:
+In a separate terminal, run the TailwindCSS watcher to automatically rebuild CSS when you make changes to templates or styles:
 
 ```bash
 npx tailwindcss -i ./static/css/input.css -o ./static/css/dist/output.css --watch
 ```
+
+The watcher will automatically detect changes to:
+- Template files (`.html`)
+- Input CSS file (`static/css/input.css`)
+- TailwindCSS configuration (`tailwind.config.js`)
+- DaisyUI theme settings
 
 ## Database Information
 

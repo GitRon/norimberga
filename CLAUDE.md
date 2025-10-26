@@ -65,10 +65,16 @@ pytest --cov=apps --cov-report=html
 # Open htmlcov/index.html in browser
 ```
 
-### Frontend (TailwindCSS)
+### Frontend (TailwindCSS + DaisyUI)
 ```bash
+# Build CSS (one-time build)
+npx tailwindcss -i ./static/css/input.css -o ./static/css/dist/output.css
+
 # Build and watch CSS changes during development
 npx tailwindcss -i ./static/css/input.css -o ./static/css/dist/output.css --watch
+
+# Install new npm packages
+npm install
 ```
 
 ### Code Quality
@@ -93,6 +99,8 @@ pre-commit run --all-files
 - Dependency injection (`docs/patterns/dependency_injection.md`)
 - ORM structure (`docs/patterns/orm_structure.md`)
 - Testing strategy (`docs/patterns/testing_strategy.md`)
+- UI components (`docs/patterns/ui_components.md`)
+- HTMX usage (`docs/patterns/htmx_usage.md`)
 
 ### Mono-App Approach
 The project follows a mono-app pattern where most business logic lives in the main `city` app. Key principles:
@@ -155,9 +163,10 @@ Uses PyTest exclusively for backend testing. Key guidelines:
 
 ### Frontend
 - TailwindCSS 3.4 with custom config
+- DaisyUI 4.12+ - Component library for Tailwind CSS
 - HTMX 1.9 for interactivity
 - Toastify.js for notifications
-- Custom Tailwind plugins: @tailwindcss/forms, tailwindcss-bg-patterns
+- Tailwind plugins: @tailwindcss/forms, DaisyUI
 
 ### Testing
 - PyTest 7.4+ with pytest-django for Django integration
@@ -181,6 +190,8 @@ Uses PyTest exclusively for backend testing. Key guidelines:
 ### Templates
 - App-specific templates in `apps/[app]/templates/[app]/`
 - Custom context processor for savegame data access
+- UI components use DaisyUI classes (see `docs/patterns/ui_components.md`)
+- Custom form templates in `apps/core/templates/tailwind/layout/`
 
 ### Tests
 - Each Django app has its own `tests/` package (e.g., `apps/city/tests/`)
@@ -213,3 +224,5 @@ Uses PyTest exclusively for backend testing. Key guidelines:
 - Custom management commands available for map generation and template listing
 - TailwindCSS config dynamically includes template files via Django command
 - Pre-commit hooks run on pre-push stage to allow faster commits during development
+- **UI Components**: All UI components use DaisyUI classes - see `docs/patterns/ui_components.md` for component usage
+- **Dynamic Colors**: Terrain colors for tiles are dynamically generated and safelisted in `tailwind.config.js`

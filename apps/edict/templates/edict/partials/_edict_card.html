@@ -1,128 +1,130 @@
 {% load humanize %}
 
-<div class="bg-white rounded-lg shadow-md p-6 {% if not edict_data.is_available or not edict_data.can_afford %}opacity-75{% endif %}">
-    <div class="flex justify-between items-start mb-4">
-        <div class="flex-1">
-            <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ edict_data.edict.name }}</h3>
-            <p class="text-gray-600 text-sm">{{ edict_data.edict.description }}</p>
-        </div>
-    </div>
-
-    <div class="border-t border-gray-200 pt-4 mb-4">
-        <div class="grid grid-cols-2 gap-4">
-            <!-- Costs Section -->
-            <div>
-                <h4 class="text-sm font-semibold text-gray-700 mb-2">Costs</h4>
-                <div class="space-y-1">
-                    {% if edict_data.edict.cost_coins %}
-                        <div class="flex items-center text-sm">
-                            <svg class="w-4 h-4 mr-2 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
-                                <circle cx="10" cy="10" r="8"/>
-                            </svg>
-                            <span class="{% if not edict_data.can_afford %}text-red-600{% else %}text-gray-700{% endif %}">
-                                {{ edict_data.edict.cost_coins|intcomma }} coins
-                            </span>
-                        </div>
-                    {% endif %}
-                    {% if edict_data.edict.cost_population %}
-                        <div class="flex items-center text-sm">
-                            <svg class="w-4 h-4 mr-2 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/>
-                            </svg>
-                            <span class="{% if not edict_data.can_afford %}text-red-600{% else %}text-gray-700{% endif %}">
-                                {{ edict_data.edict.cost_population|intcomma }} population
-                            </span>
-                        </div>
-                    {% endif %}
-                    {% if not edict_data.edict.cost_coins and not edict_data.edict.cost_population %}
-                        <span class="text-sm text-green-600">Free</span>
-                    {% endif %}
-                </div>
+<div class="card bg-base-100 shadow-md {% if not edict_data.is_available or not edict_data.can_afford %}opacity-75{% endif %}">
+    <div class="card-body">
+        <div class="flex justify-between items-start mb-4">
+            <div class="flex-1">
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ edict_data.edict.name }}</h3>
+                <p class="text-gray-600 text-sm">{{ edict_data.edict.description }}</p>
             </div>
+        </div>
+
+        <div class="border-t border-gray-200 pt-4 mb-4">
+            <div class="grid grid-cols-2 gap-4">
+            <!-- Costs Section -->
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-700 mb-2">Costs</h4>
+                    <div class="space-y-1">
+                        {% if edict_data.edict.cost_coins %}
+                            <div class="flex items-center text-sm">
+                                <svg class="w-4 h-4 mr-2 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <circle cx="10" cy="10" r="8"/>
+                                </svg>
+                                <span class="{% if not edict_data.can_afford %}text-red-600{% else %}text-gray-700{% endif %}">
+                                    {{ edict_data.edict.cost_coins|intcomma }} coins
+                                </span>
+                            </div>
+                        {% endif %}
+                        {% if edict_data.edict.cost_population %}
+                            <div class="flex items-center text-sm">
+                                <svg class="w-4 h-4 mr-2 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/>
+                                </svg>
+                                <span class="{% if not edict_data.can_afford %}text-red-600{% else %}text-gray-700{% endif %}">
+                                    {{ edict_data.edict.cost_population|intcomma }} population
+                                </span>
+                            </div>
+                        {% endif %}
+                        {% if not edict_data.edict.cost_coins and not edict_data.edict.cost_population %}
+                            <span class="text-sm text-green-600">Free</span>
+                        {% endif %}
+                    </div>
+                </div>
 
             <!-- Effects Section -->
-            <div>
-                <h4 class="text-sm font-semibold text-gray-700 mb-2">Effects</h4>
-                <div class="space-y-1">
-                    {% if edict_data.edict.effect_unrest %}
-                        <div class="flex items-center text-sm">
-                            {% if edict_data.edict.effect_unrest < 0 %}
-                                <svg class="w-4 h-4 mr-2 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd"/>
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-700 mb-2">Effects</h4>
+                    <div class="space-y-1">
+                        {% if edict_data.edict.effect_unrest %}
+                            <div class="flex items-center text-sm">
+                                {% if edict_data.edict.effect_unrest < 0 %}
+                                    <svg class="w-4 h-4 mr-2 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <span class="text-green-600">{{ edict_data.edict.effect_unrest }} unrest</span>
+                                {% else %}
+                                    <svg class="w-4 h-4 mr-2 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <span class="text-red-600">+{{ edict_data.edict.effect_unrest }} unrest</span>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                        {% if edict_data.edict.effect_coins %}
+                            <div class="flex items-center text-sm">
+                                <svg class="w-4 h-4 mr-2 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <circle cx="10" cy="10" r="8"/>
                                 </svg>
-                                <span class="text-green-600">{{ edict_data.edict.effect_unrest }} unrest</span>
-                            {% else %}
-                                <svg class="w-4 h-4 mr-2 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clip-rule="evenodd"/>
+                                <span class="{% if edict_data.edict.effect_coins > 0 %}text-green-600{% else %}text-red-600{% endif %}">
+                                    {% if edict_data.edict.effect_coins > 0 %}+{% endif %}{{ edict_data.edict.effect_coins|intcomma }} coins
+                                </span>
+                            </div>
+                        {% endif %}
+                        {% if edict_data.edict.effect_population %}
+                            <div class="flex items-center text-sm">
+                                <svg class="w-4 h-4 mr-2 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/>
                                 </svg>
-                                <span class="text-red-600">+{{ edict_data.edict.effect_unrest }} unrest</span>
-                            {% endif %}
-                        </div>
-                    {% endif %}
-                    {% if edict_data.edict.effect_coins %}
-                        <div class="flex items-center text-sm">
-                            <svg class="w-4 h-4 mr-2 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
-                                <circle cx="10" cy="10" r="8"/>
-                            </svg>
-                            <span class="{% if edict_data.edict.effect_coins > 0 %}text-green-600{% else %}text-red-600{% endif %}">
-                                {% if edict_data.edict.effect_coins > 0 %}+{% endif %}{{ edict_data.edict.effect_coins|intcomma }} coins
-                            </span>
-                        </div>
-                    {% endif %}
-                    {% if edict_data.edict.effect_population %}
-                        <div class="flex items-center text-sm">
-                            <svg class="w-4 h-4 mr-2 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/>
-                            </svg>
-                            <span class="{% if edict_data.edict.effect_population > 0 %}text-green-600{% else %}text-red-600{% endif %}">
-                                {% if edict_data.edict.effect_population > 0 %}+{% endif %}{{ edict_data.edict.effect_population|intcomma }} population
-                            </span>
-                        </div>
-                    {% endif %}
+                                <span class="{% if edict_data.edict.effect_population > 0 %}text-green-600{% else %}text-red-600{% endif %}">
+                                    {% if edict_data.edict.effect_population > 0 %}+{% endif %}{{ edict_data.edict.effect_population|intcomma }} population
+                                </span>
+                            </div>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
     <!-- Milestone Requirement -->
-    {% if edict_data.edict.required_milestone %}
-        <div class="border-t border-gray-200 pt-4 mb-4">
-            <div class="flex items-center text-sm">
-                <svg class="w-4 h-4 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <span class="{% if not edict_data.is_available and 'milestone' in edict_data.unavailable_reason|lower %}text-red-600{% else %}text-gray-700{% endif %}">
-                    <strong>Requires:</strong> {{ edict_data.edict.required_milestone.name }}
-                </span>
+        {% if edict_data.edict.required_milestone %}
+            <div class="border-t border-gray-200 pt-4 mb-4">
+                <div class="flex items-center text-sm">
+                    <svg class="w-4 h-4 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span class="{% if not edict_data.is_available and 'milestone' in edict_data.unavailable_reason|lower %}text-red-600{% else %}text-gray-700{% endif %}">
+                        <strong>Requires:</strong> {{ edict_data.edict.required_milestone.name }}
+                    </span>
+                </div>
             </div>
-        </div>
-    {% endif %}
+        {% endif %}
 
     <!-- Cooldown Info -->
-    {% if edict_data.edict.cooldown_years %}
-        <div class="text-xs text-gray-500 mb-4">
-            Cooldown: {{ edict_data.edict.cooldown_years }} year{{ edict_data.edict.cooldown_years|pluralize }}
-        </div>
-    {% endif %}
+        {% if edict_data.edict.cooldown_years %}
+            <div class="text-xs text-gray-500 mb-4">
+                Cooldown: {{ edict_data.edict.cooldown_years }} year{{ edict_data.edict.cooldown_years|pluralize }}
+            </div>
+        {% endif %}
 
     <!-- Action Button -->
-    <div class="mt-4">
-        {% if not edict_data.is_available %}
-            <button disabled class="w-full bg-gray-300 text-gray-600 px-4 py-2 rounded-md text-sm font-medium cursor-not-allowed">
-                {{ edict_data.unavailable_reason }}
-            </button>
-        {% elif not edict_data.can_afford %}
-            <button disabled class="w-full bg-gray-300 text-gray-600 px-4 py-2 rounded-md text-sm font-medium cursor-not-allowed">
-                Cannot Afford
-            </button>
-        {% else %}
-            <button
-                hx-post="{% url 'edict:edict-activate' edict_data.edict.pk %}"
-                hx-swap="none"
-                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
-            >
-                Activate Edict
-            </button>
-        {% endif %}
+        <div class="mt-4">
+            {% if not edict_data.is_available %}
+                <button disabled class="btn btn-disabled w-full">
+                    {{ edict_data.unavailable_reason }}
+                </button>
+            {% elif not edict_data.can_afford %}
+                <button disabled class="btn btn-disabled w-full">
+                    Cannot Afford
+                </button>
+            {% else %}
+                <button
+                    hx-post="{% url 'edict:edict-activate' edict_data.edict.pk %}"
+                    hx-swap="none"
+                    class="btn btn-primary w-full"
+                >
+                    Activate Edict
+                </button>
+            {% endif %}
+        </div>
     </div>
 </div>

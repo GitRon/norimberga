@@ -15,15 +15,17 @@
                         Create your account
                     </h2>
                 </div>
-                <div class="mt-8 bg-white py-8 px-6 shadow rounded-lg sm:px-10">
-                    {% crispy form %}
-                    <div class="mt-6 text-center">
-                        <p class="text-sm text-gray-600">
-                            Already have an account?
-                            <a href="{% url 'account:login' %}" class="font-medium text-lime-600 hover:text-lime-500">
-                                Sign in here
-                            </a>
-                        </p>
+                <div class="card bg-base-100 shadow-md mt-8">
+                    <div class="card-body">
+                        {% crispy form %}
+                        <div class="mt-6 text-center">
+                            <p class="text-sm text-gray-600">
+                                Already have an account?
+                                <a href="{% url 'account:login' %}" class="font-medium text-lime-600 hover:text-lime-500">
+                                    Sign in here
+                                </a>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>

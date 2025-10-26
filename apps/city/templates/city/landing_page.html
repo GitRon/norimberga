@@ -12,11 +12,11 @@
         {% include 'city/partials/city/_city_map.html' %}
 
         <!-- Modal container for build form -->
-        <div id="build-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-             onclick="if(event.target === this) this.classList.add('hidden')">
-            <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative">
-                <button onclick="document.getElementById('build-modal').classList.add('hidden')"
-                        class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl font-bold leading-none z-10">&times;</button>
+        <div id="build-modal" class="modal"
+             onclick="if(event.target === this) this.classList.remove('modal-open')">
+            <div class="modal-box max-w-2xl">
+                <button onclick="document.getElementById('build-modal').classList.remove('modal-open')"
+                        class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                 <div id="build-container"></div>
             </div>
         </div>

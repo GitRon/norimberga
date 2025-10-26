@@ -91,7 +91,7 @@ class TileDemolishView(SavegameRequiredMixin, generic.View):
         # Check if building can be demolished
         if tile.building:
             # Allow ruins to be demolished, but not other unique buildings
-            is_ruins = tile.building.building_type.name == "Ruins"
+            is_ruins = tile.building.building_type.type == tile.building.building_type.Type.RUINS
             if tile.building.building_type.is_unique and not is_ruins:
                 # TODO(RV): give user proper feedback
                 return HttpResponse("Cannot demolish unique buildings", status=400)

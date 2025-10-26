@@ -14,7 +14,7 @@ def test_remove_building_init():
 
 
 @pytest.mark.django_db
-def test_remove_building_process_replaces_with_ruins(ruins_building):
+def test_remove_building_process_replaces_with_ruins():
     """Test process replaces building with ruins instead of removing it."""
     building = BuildingFactory()
     tile = TileFactory(building=building)
@@ -28,13 +28,11 @@ def test_remove_building_process_replaces_with_ruins(ruins_building):
     tile.refresh_from_db()
     # Building should be replaced with ruins, not removed entirely
     assert tile.building is not None
-    assert tile.building == ruins_building
-    assert tile.building.name == "Ruins"
-    assert tile.building.pk == 28
+    assert tile.building.building_type.type == tile.building.building_type.Type.RUINS
 
 
 @pytest.mark.django_db
-def test_remove_building_process_already_empty_tile(ruins_building):
+def test_remove_building_process_already_empty_tile():
     """Test process replaces empty tile with ruins."""
     tile = TileFactory(building=None)
     effect = RemoveBuilding(tile=tile)
@@ -47,12 +45,11 @@ def test_remove_building_process_already_empty_tile(ruins_building):
     tile.refresh_from_db()
     # Empty tile should also get ruins
     assert tile.building is not None
-    assert tile.building == ruins_building
-    assert tile.building.name == "Ruins"
+    assert tile.building.building_type.type == tile.building.building_type.Type.RUINS
 
 
 @pytest.mark.django_db
-def test_remove_building_process_saves_tile(ruins_building):
+def test_remove_building_process_saves_tile():
     """Test process saves the tile after replacing with ruins."""
     building = BuildingFactory()
     tile = TileFactory(building=building)
@@ -75,4 +72,4 @@ def test_remove_building_process_saves_tile(ruins_building):
     # Verify building was actually replaced with ruins in database
     tile.refresh_from_db()
     assert tile.building is not None
-    assert tile.building == ruins_building
+    assert tile.building.building_type.type == tile.building.building_type.Type.RUINS

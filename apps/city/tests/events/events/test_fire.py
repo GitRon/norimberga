@@ -220,7 +220,7 @@ def test_fire_event_get_effects_no_building():
 
 
 @pytest.mark.django_db
-def test_fire_event_process(ruins_building):
+def test_fire_event_process():
     """Test full event processing workflow."""
     savegame = SavegameFactory(population=100)
     house_type = HouseBuildingTypeFactory()
@@ -240,8 +240,7 @@ def test_fire_event_process(ruins_building):
         # Verify building was replaced with ruins
         tile.refresh_from_db()
         assert tile.building is not None
-        assert tile.building == ruins_building
-        assert tile.building.name == "Ruins"
+        assert tile.building.building_type.type == tile.building.building_type.Type.RUINS
 
         # Verify result text is returned
         assert "Due to general neglect, a fire raged throughout the city" in result_text

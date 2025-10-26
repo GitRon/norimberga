@@ -458,7 +458,7 @@ def test_riot_event_get_verbose_text_with_two_buildings():
 
 
 @pytest.mark.django_db
-def test_riot_event_process_full_workflow(ruins_building):
+def test_riot_event_process_full_workflow():
     """Test full event processing workflow with building demolition."""
     savegame = SavegameFactory.create(population=100, unrest=75)
     building_type = BuildingTypeFactory.create(is_unique=False)
@@ -478,8 +478,7 @@ def test_riot_event_process_full_workflow(ruins_building):
         # Verify building was replaced with ruins
         tile.refresh_from_db()
         assert tile.building is not None
-        assert tile.building == ruins_building
-        assert tile.building.name == "Ruins"
+        assert tile.building.building_type.type == tile.building.building_type.Type.RUINS
 
         # Verify result text is returned
         assert "The people have enough! Outraged mobs started fights in the streets" in result_text

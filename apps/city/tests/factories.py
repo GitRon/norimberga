@@ -18,6 +18,7 @@ class BuildingTypeFactory(factory.django.DjangoModelFactory):
         skip_postgeneration_save = True
 
     name = factory.Faker("word")
+    type = BuildingType.Type.REGULAR
     is_country = False
     is_city = True
     is_house = False

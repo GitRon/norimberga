@@ -356,7 +356,7 @@ def test_pillage_event_scaling_with_few_buildings():
 
 
 @pytest.mark.django_db
-def test_pillage_event_process(ruins_building):
+def test_pillage_event_process():
     """Test full event processing workflow."""
     savegame = SavegameFactory(coins=1000, population=100, is_enclosed=False)
     building_type = BuildingTypeFactory(is_city=True)
@@ -380,8 +380,7 @@ def test_pillage_event_process(ruins_building):
         for tile in tiles:
             tile.refresh_from_db()
             assert tile.building is not None
-            assert tile.building == ruins_building
-            assert tile.building.name == "Ruins"
+            assert tile.building.building_type.type == tile.building.building_type.Type.RUINS
 
         # Verify result text is returned
         assert "Without a protective wall, raiders pillaged the city" in result_text

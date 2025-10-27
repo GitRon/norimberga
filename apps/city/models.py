@@ -63,6 +63,7 @@ class Building(models.Model):
         "Maintenance costs", default=0, validators=(MinValueValidator(0),)
     )
     housing_space = models.PositiveSmallIntegerField("Housing space", default=0, validators=(MinValueValidator(0),))
+    defense_value = models.PositiveSmallIntegerField("Defense value", default=0, validators=(MinValueValidator(0),))
 
     class Meta:
         default_related_name = "buildings"

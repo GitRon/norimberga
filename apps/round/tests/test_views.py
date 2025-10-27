@@ -22,7 +22,7 @@ def test_round_view_post_with_events(request_factory):
     from apps.savegame.tests.factories import SavegameFactory, UserFactory
 
     # Create user and savegame
-    user = UserFactory()
+    user = UserFactory.create()
     savegame = SavegameFactory(user=user, is_active=True)
 
     # Create mock events
@@ -84,7 +84,7 @@ def test_round_view_post_with_no_events(request_factory):
     from apps.savegame.tests.factories import SavegameFactory, UserFactory
 
     # Create user and savegame
-    user = UserFactory()
+    user = UserFactory.create()
     savegame = SavegameFactory(user=user, is_active=True)
 
     # Mock EventSelectionService to return empty list
@@ -125,7 +125,7 @@ def test_round_view_post_response_headers(request_factory):
     from apps.savegame.tests.factories import SavegameFactory, UserFactory
 
     # Create user and savegame
-    user = UserFactory()
+    user = UserFactory.create()
     SavegameFactory(user=user, is_active=True)
 
     # Mock EventSelectionService
@@ -193,7 +193,7 @@ def test_round_view_event_processing_order(request_factory):
     from apps.savegame.tests.factories import SavegameFactory, UserFactory
 
     # Create user and savegame
-    user = UserFactory()
+    user = UserFactory.create()
     SavegameFactory(user=user, is_active=True)
 
     # Create mock events with different processing order
@@ -239,7 +239,7 @@ def test_round_view_single_event(request_factory):
     from apps.savegame.tests.factories import SavegameFactory, UserFactory
 
     # Create user and savegame
-    user = UserFactory()
+    user = UserFactory.create()
     SavegameFactory(user=user, is_active=True)
 
     # Create single mock event
@@ -286,7 +286,7 @@ def test_round_view_no_active_savegame(request_factory):
     from apps.account.tests.factories import UserFactory
 
     # Create user without active savegame
-    user = UserFactory()
+    user = UserFactory.create()
 
     # Create request and view
     request = request_factory.post("/")
@@ -307,7 +307,7 @@ def test_round_view_increments_year(request_factory):
     from apps.savegame.tests.factories import SavegameFactory, UserFactory
 
     # Create user and savegame with initial year
-    user = UserFactory()
+    user = UserFactory.create()
     savegame = SavegameFactory(user=user, is_active=True, current_year=1150)
 
     # Mock EventSelectionService
@@ -339,7 +339,7 @@ def test_round_view_triggers_navbar_update(request_factory):
     from apps.savegame.tests.factories import SavegameFactory, UserFactory
 
     # Create user and savegame with initial year
-    user = UserFactory()
+    user = UserFactory.create()
     savegame = SavegameFactory(user=user, is_active=True, current_year=1150)
 
     # Mock EventSelectionService

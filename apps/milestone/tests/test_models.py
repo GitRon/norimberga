@@ -7,7 +7,7 @@ from apps.savegame.tests.factories import SavegameFactory
 @pytest.mark.django_db
 def test_milestone_log_creation():
     """Test MilestoneLog creation with factory."""
-    milestone_log = MilestoneLogFactory()
+    milestone_log = MilestoneLogFactory.create()
 
     assert milestone_log.savegame is not None
     assert milestone_log.milestone is not None
@@ -28,7 +28,7 @@ def test_milestone_log_str_representation():
 @pytest.mark.django_db
 def test_milestone_log_relationships():
     """Test MilestoneLog foreign key relationship with Savegame."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     milestone_log = MilestoneLogFactory(savegame=savegame)
 
     assert milestone_log.savegame == savegame
@@ -38,7 +38,7 @@ def test_milestone_log_relationships():
 @pytest.mark.django_db
 def test_milestone_log_meta_related_name():
     """Test MilestoneLog uses correct related name."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     milestone_log = MilestoneLogFactory(savegame=savegame)
 
     # Test that we can access milestone logs via the related name
@@ -62,7 +62,7 @@ def test_milestone_log_field_constraints():
 @pytest.mark.django_db
 def test_milestone_creation():
     """Test Milestone creation with factory."""
-    milestone = MilestoneFactory()
+    milestone = MilestoneFactory.create()
 
     assert milestone.name is not None
     assert milestone.description is not None

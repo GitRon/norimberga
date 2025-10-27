@@ -28,7 +28,7 @@ def test_homelessness_event_init():
 @pytest.mark.django_db
 def test_homelessness_event_init_creates_savegame():
     """Test HomelessnessEvent creates savegame if it doesn't exist."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     with mock.patch("apps.city.events.events.homelessness.random.randint") as mock_randint:
         mock_randint.return_value = 7
@@ -42,7 +42,7 @@ def test_homelessness_event_init_creates_savegame():
 def test_homelessness_event_get_probability_homeless_situation():
     """Test get_probability returns base probability when population exceeds housing."""
     savegame = SavegameFactory(population=100, unrest=50)
-    building_type = HouseBuildingTypeFactory()
+    building_type = HouseBuildingTypeFactory.create()
     building = BuildingFactory(building_type=building_type, housing_space=10)
     TileFactory(savegame=savegame, building=building, x=50, y=10)
 
@@ -57,7 +57,7 @@ def test_homelessness_event_get_probability_homeless_situation():
 def test_homelessness_event_get_probability_no_homelessness():
     """Test get_probability returns 0 when population fits in housing."""
     savegame = SavegameFactory(population=50, unrest=30)
-    building_type = HouseBuildingTypeFactory()
+    building_type = HouseBuildingTypeFactory.create()
     building = BuildingFactory(building_type=building_type, housing_space=60)
     TileFactory(savegame=savegame, building=building, x=51, y=10)
 
@@ -72,7 +72,7 @@ def test_homelessness_event_get_probability_no_homelessness():
 def test_homelessness_event_get_probability_max_unrest():
     """Test get_probability returns 0 when unrest is already at maximum."""
     savegame = SavegameFactory(population=100, unrest=100)
-    building_type = HouseBuildingTypeFactory()
+    building_type = HouseBuildingTypeFactory.create()
     building = BuildingFactory(building_type=building_type, housing_space=10)
     TileFactory(savegame=savegame, building=building, x=52, y=10)
 
@@ -127,7 +127,7 @@ def test_homelessness_event_get_verbose_text():
 @pytest.mark.django_db
 def test_homelessness_event_random_range():
     """Test that random.randint is called with correct range."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     with mock.patch("apps.city.events.events.homelessness.random.randint") as mock_randint:
         mock_randint.return_value = 6

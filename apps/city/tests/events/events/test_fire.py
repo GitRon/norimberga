@@ -14,7 +14,7 @@ from apps.savegame.tests.factories import SavegameFactory
 def test_fire_event_init():
     """Test FireEvent initialization and class attributes."""
     savegame = SavegameFactory(population=150)
-    house_type = HouseBuildingTypeFactory()
+    house_type = HouseBuildingTypeFactory.create()
     building = BuildingFactory(building_type=house_type)
     tile = TileFactory(savegame=savegame, building=building)
 
@@ -48,7 +48,7 @@ def test_fire_event_init_no_house():
 @pytest.mark.django_db
 def test_fire_event_init_creates_savegame():
     """Test FireEvent accepts a savegame parameter."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     with mock.patch("apps.city.events.events.fire.random.randint") as mock_randint:
         mock_randint.return_value = 20
@@ -101,7 +101,7 @@ def test_fire_event_prepare_effect_decrease_population():
 def test_fire_event_prepare_effect_remove_building_with_house():
     """Test _prepare_effect_remove_building returns effect when house exists."""
     savegame = SavegameFactory(population=100)
-    house_type = HouseBuildingTypeFactory()
+    house_type = HouseBuildingTypeFactory.create()
     building = BuildingFactory(building_type=house_type)
     tile = TileFactory(savegame=savegame, building=building)
 
@@ -128,7 +128,7 @@ def test_fire_event_prepare_effect_remove_building_no_house():
 def test_fire_event_get_verbose_text_with_building():
     """Test get_verbose_text returns correct description with building."""
     savegame = SavegameFactory(population=120)
-    house_type = HouseBuildingTypeFactory()
+    house_type = HouseBuildingTypeFactory.create()
     building = BuildingFactory(building_type=house_type)
     tile = TileFactory(savegame=savegame, building=building)
 
@@ -180,7 +180,7 @@ def test_fire_event_get_verbose_text_no_building():
 def test_fire_event_get_effects_with_building():
     """Test get_effects returns both effects when house exists."""
     savegame = SavegameFactory(population=100)
-    house_type = HouseBuildingTypeFactory()
+    house_type = HouseBuildingTypeFactory.create()
     building = BuildingFactory(building_type=house_type)
     TileFactory(savegame=savegame, building=building)
 
@@ -223,7 +223,7 @@ def test_fire_event_get_effects_no_building():
 def test_fire_event_process(ruins_building):
     """Test full event processing workflow."""
     savegame = SavegameFactory(population=100)
-    house_type = HouseBuildingTypeFactory()
+    house_type = HouseBuildingTypeFactory.create()
     building = BuildingFactory(building_type=house_type)
     tile = TileFactory(savegame=savegame, building=building)
 

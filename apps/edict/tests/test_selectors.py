@@ -9,7 +9,7 @@ from apps.savegame.tests.factories import SavegameFactory
 def test_get_available_edicts_for_savegame_returns_all_active_edicts():
     from apps.edict.models import Edict
 
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     Edict.objects.all().delete()
     edict_1 = EdictFactory(is_active=True, name="Edict A")
     edict_2 = EdictFactory(is_active=True, name="Edict B")
@@ -87,7 +87,7 @@ def test_get_available_edicts_for_savegame_marks_available_after_cooldown():
 
 @pytest.mark.django_db
 def test_get_available_edicts_for_savegame_when_no_previous_activation():
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     EdictFactory(cooldown_years=3)
 
     result = get_available_edicts_for_savegame(savegame=savegame)
@@ -111,7 +111,7 @@ def test_get_available_edicts_for_savegame_when_no_cooldown():
 def test_get_available_edicts_for_savegame_returns_edicts_ordered_by_name():
     from apps.edict.models import Edict
 
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     Edict.objects.all().delete()
     edict_z = EdictFactory(name="Zulu Edict")
     edict_a = EdictFactory(name="Alpha Edict")
@@ -127,7 +127,7 @@ def test_get_available_edicts_for_savegame_marks_edict_unavailable_when_mileston
     from apps.edict.models import Edict
     from apps.milestone.tests.factories import MilestoneFactory
 
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     milestone = MilestoneFactory(name="Small Town")
     Edict.objects.all().delete()
     EdictFactory(name="Special Edict", required_milestone=milestone)
@@ -144,7 +144,7 @@ def test_get_available_edicts_for_savegame_marks_edict_available_when_milestone_
     from apps.edict.models import Edict
     from apps.milestone.tests.factories import MilestoneFactory, MilestoneLogFactory
 
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     milestone = MilestoneFactory(name="Small Town")
     MilestoneLogFactory(savegame=savegame, milestone=milestone)
     Edict.objects.all().delete()
@@ -160,7 +160,7 @@ def test_get_available_edicts_for_savegame_marks_edict_available_when_milestone_
 def test_get_available_edicts_for_savegame_when_edict_has_no_milestone_requirement():
     from apps.edict.models import Edict
 
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     Edict.objects.all().delete()
     EdictFactory(required_milestone=None)
 

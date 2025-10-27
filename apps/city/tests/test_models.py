@@ -27,7 +27,7 @@ def test_savegame_str_representation():
 @pytest.mark.django_db
 def test_savegame_creation_with_defaults():
     """Test savegame creation with default values."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     assert savegame.coins == 1000
     assert savegame.population == 50
@@ -64,7 +64,7 @@ def test_savegame_unrest_valid_range():
 @pytest.mark.django_db
 def test_savegame_default_related_name():
     """Test savegame uses correct related name."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     assert hasattr(savegame, "savegames") is False  # Should not have reverse relation to itself
 
 
@@ -122,7 +122,7 @@ def test_building_type_str_representation():
 @pytest.mark.django_db
 def test_building_type_default_values():
     """Test building type creation with default values."""
-    building_type = BuildingTypeFactory()
+    building_type = BuildingTypeFactory.create()
     assert building_type.is_country is False
     assert building_type.is_city is True
     assert building_type.is_house is False
@@ -145,7 +145,7 @@ def test_building_type_with_allowed_terrains():
 @pytest.mark.django_db
 def test_wall_building_type():
     """Test wall building type creation."""
-    wall_type = WallBuildingTypeFactory()
+    wall_type = WallBuildingTypeFactory.create()
     assert wall_type.name == "Wall"
     assert wall_type.is_wall is True
     assert wall_type.is_city is True
@@ -154,7 +154,7 @@ def test_wall_building_type():
 @pytest.mark.django_db
 def test_house_building_type():
     """Test house building type creation."""
-    house_type = HouseBuildingTypeFactory()
+    house_type = HouseBuildingTypeFactory.create()
     assert house_type.name == "House"
     assert house_type.is_house is True
     assert house_type.is_city is True
@@ -163,7 +163,7 @@ def test_house_building_type():
 @pytest.mark.django_db
 def test_unique_building_type():
     """Test unique building type creation."""
-    unique_type = UniqueBuildingTypeFactory()
+    unique_type = UniqueBuildingTypeFactory.create()
     assert unique_type.name == "Cathedral"
     assert unique_type.is_unique is True
     assert unique_type.is_city is True
@@ -180,7 +180,7 @@ def test_building_str_representation():
 @pytest.mark.django_db
 def test_building_creation_with_all_fields():
     """Test building creation with all fields."""
-    building_type = BuildingTypeFactory()
+    building_type = BuildingTypeFactory.create()
     building = BuildingFactory(
         name="Manor",
         building_type=building_type,
@@ -239,9 +239,9 @@ def test_tile_str_representation():
 @pytest.mark.django_db
 def test_tile_creation():
     """Test tile creation with all fields."""
-    savegame = SavegameFactory()
-    terrain = TerrainFactory()
-    building = BuildingFactory()
+    savegame = SavegameFactory.create()
+    terrain = TerrainFactory.create()
+    building = BuildingFactory.create()
 
     tile = TileFactory(savegame=savegame, terrain=terrain, x=2, y=3, building=building)
 
@@ -255,8 +255,8 @@ def test_tile_creation():
 @pytest.mark.django_db
 def test_tile_unique_together_constraint():
     """Test tile unique_together constraint for savegame, x, y."""
-    savegame = SavegameFactory()
-    terrain = TerrainFactory()
+    savegame = SavegameFactory.create()
+    terrain = TerrainFactory.create()
 
     # Create first tile
     TileFactory(savegame=savegame, terrain=terrain, x=1, y=1)
@@ -269,7 +269,7 @@ def test_tile_unique_together_constraint():
 @pytest.mark.django_db
 def test_tile_content_property_with_building():
     """Test content property returns building when present."""
-    building = BuildingFactory()
+    building = BuildingFactory.create()
     tile = TileFactory(building=building)
 
     assert tile.content == building
@@ -278,7 +278,7 @@ def test_tile_content_property_with_building():
 @pytest.mark.django_db
 def test_tile_content_property_without_building():
     """Test content property returns terrain when no building."""
-    terrain = TerrainFactory()
+    terrain = TerrainFactory.create()
     tile = TileFactory(terrain=terrain, building=None)
 
     assert tile.content == terrain
@@ -287,7 +287,7 @@ def test_tile_content_property_without_building():
 @pytest.mark.django_db
 def test_tile_color_class_with_wall_building():
     """Test color_class returns wall template for wall buildings."""
-    wall_type = WallBuildingTypeFactory()
+    wall_type = WallBuildingTypeFactory.create()
     building = BuildingFactory(building_type=wall_type)
     tile = TileFactory(building=building)
 
@@ -357,7 +357,7 @@ def test_tile_color_class_without_building():
 @pytest.mark.django_db
 def test_tile_is_adjacent_to_city_building_delegates_to_manager():
     """Test is_adjacent_to_city_building delegates to manager method."""
-    tile = TileFactory()
+    tile = TileFactory.create()
 
     # Mock the manager method
     with mock.patch("apps.city.models.Tile.objects.has_adjacent_city_building") as mock_manager_method:
@@ -372,7 +372,7 @@ def test_tile_is_adjacent_to_city_building_delegates_to_manager():
 @pytest.mark.django_db
 def test_tile_is_edge_tile_corners():
     """Test is_edge_tile returns True for corner tiles."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     # Test all four corners (20x20 map has coordinates 0-19)
     tile_top_left = TileFactory(savegame=savegame, x=0, y=0)
@@ -389,7 +389,7 @@ def test_tile_is_edge_tile_corners():
 @pytest.mark.django_db
 def test_tile_is_edge_tile_edges():
     """Test is_edge_tile returns True for tiles on edges."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     # Test tiles on each edge (20x20 map has coordinates 0-19)
     tile_top = TileFactory(savegame=savegame, x=10, y=0)
@@ -406,7 +406,7 @@ def test_tile_is_edge_tile_edges():
 @pytest.mark.django_db
 def test_tile_is_edge_tile_center():
     """Test is_edge_tile returns False for non-edge tiles."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     # Test center tiles
     tile_center = TileFactory(savegame=savegame, x=2, y=2)

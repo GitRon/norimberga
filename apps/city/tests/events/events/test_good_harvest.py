@@ -29,7 +29,7 @@ def test_good_harvest_event_init():
 @pytest.mark.django_db
 def test_good_harvest_event_init_creates_savegame():
     """Test GoodHarvestEvent creates savegame if it doesn't exist."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     with mock.patch("apps.city.events.events.good_harvest.random.randint") as mock_randint:
         mock_randint.return_value = 3

@@ -17,8 +17,8 @@ from apps.savegame.tests.factories import SavegameFactory
 @pytest.mark.django_db
 def test_tile_building_form_initialization():
     """Test TileBuildingForm initializes correctly."""
-    savegame = SavegameFactory()
-    terrain = TerrainFactory()
+    savegame = SavegameFactory.create()
+    terrain = TerrainFactory.create()
     tile = TileFactory(savegame=savegame, terrain=terrain)
 
     form = TileBuildingForm(savegame=savegame, instance=tile)
@@ -32,8 +32,8 @@ def test_tile_building_form_initialization():
 @pytest.mark.django_db
 def test_tile_building_form_building_queryset_basic():
     """Test form includes allowed buildings for terrain."""
-    savegame = SavegameFactory()
-    terrain = TerrainFactory()
+    savegame = SavegameFactory.create()
+    terrain = TerrainFactory.create()
 
     # Create building type allowed on this terrain (explicitly non-unique)
     building_type = BuildingTypeFactory(is_unique=False)
@@ -41,7 +41,7 @@ def test_tile_building_form_building_queryset_basic():
     allowed_building = BuildingFactory(building_type=building_type, level=1)
 
     # Create building type not allowed on this terrain
-    other_terrain = TerrainFactory()
+    other_terrain = TerrainFactory.create()
     other_building_type = BuildingTypeFactory(is_unique=False)
     other_building_type.allowed_terrains.add(other_terrain)
     not_allowed_building = BuildingFactory(building_type=other_building_type, level=1)
@@ -62,11 +62,11 @@ def test_tile_building_form_building_queryset_basic():
 @pytest.mark.django_db
 def test_tile_building_form_excludes_unique_buildings():
     """Test form excludes unique buildings already built in savegame."""
-    savegame = SavegameFactory()
-    terrain = TerrainFactory()
+    savegame = SavegameFactory.create()
+    terrain = TerrainFactory.create()
 
     # Create unique building type
-    unique_building_type = UniqueBuildingTypeFactory()
+    unique_building_type = UniqueBuildingTypeFactory.create()
     unique_building_type.allowed_terrains.add(terrain)
     unique_building = BuildingFactory(building_type=unique_building_type, level=1)
 
@@ -88,8 +88,8 @@ def test_tile_building_form_excludes_unique_buildings():
 @pytest.mark.django_db
 def test_tile_building_form_excludes_city_buildings_without_adjacent_city():
     """Test form excludes city-only buildings when not adjacent to city building."""
-    savegame = SavegameFactory()
-    terrain = TerrainFactory()
+    savegame = SavegameFactory.create()
+    terrain = TerrainFactory.create()
 
     # Create city-only building type (explicitly non-unique)
     city_building_type = BuildingTypeFactory(is_city=True, is_country=False, is_unique=False)
@@ -113,8 +113,8 @@ def test_tile_building_form_excludes_city_buildings_without_adjacent_city():
 @pytest.mark.django_db
 def test_tile_building_form_includes_city_buildings_with_adjacent_city():
     """Test form includes city buildings when adjacent to city building."""
-    savegame = SavegameFactory()
-    terrain = TerrainFactory()
+    savegame = SavegameFactory.create()
+    terrain = TerrainFactory.create()
 
     # Create city-only building type (explicitly non-unique)
     city_building_type = BuildingTypeFactory(is_city=True, is_country=False, is_unique=False)
@@ -138,8 +138,8 @@ def test_tile_building_form_includes_city_buildings_with_adjacent_city():
 @pytest.mark.django_db
 def test_tile_building_form_includes_country_buildings_always():
     """Test form includes country buildings regardless of city adjacency."""
-    savegame = SavegameFactory()
-    terrain = TerrainFactory()
+    savegame = SavegameFactory.create()
+    terrain = TerrainFactory.create()
 
     # Create country-only building type (explicitly non-unique)
     country_building_type = BuildingTypeFactory(is_city=False, is_country=True, is_unique=False)
@@ -162,8 +162,8 @@ def test_tile_building_form_includes_country_buildings_always():
 @pytest.mark.django_db
 def test_tile_building_form_includes_both_buildings():
     """Test form includes both city+country buildings regardless of adjacency."""
-    savegame = SavegameFactory()
-    terrain = TerrainFactory()
+    savegame = SavegameFactory.create()
+    terrain = TerrainFactory.create()
 
     # Create both city and country building type (explicitly non-unique)
     both_building_type = BuildingTypeFactory(is_city=True, is_country=True, is_unique=False)
@@ -186,11 +186,11 @@ def test_tile_building_form_includes_both_buildings():
 @pytest.mark.django_db
 def test_tile_building_form_upgrade_existing_building():
     """Test form allows upgrading existing building."""
-    savegame = SavegameFactory()
-    terrain = TerrainFactory()
+    savegame = SavegameFactory.create()
+    terrain = TerrainFactory.create()
 
     # Create building type with level 1 and 2 buildings
-    building_type = BuildingTypeFactory()
+    building_type = BuildingTypeFactory.create()
     building_type.allowed_terrains.add(terrain)
     level1_building = BuildingFactory(building_type=building_type, level=1)
     level2_building = BuildingFactory(building_type=building_type, level=2)
@@ -212,11 +212,11 @@ def test_tile_building_form_upgrade_existing_building():
 def test_tile_building_form_clean_building_insufficient_coins():
     """Test form validation fails when insufficient coins."""
     savegame = SavegameFactory(coins=10)
-    terrain = TerrainFactory()
+    terrain = TerrainFactory.create()
     tile = TileFactory(savegame=savegame, terrain=terrain)
 
     # Create expensive building
-    building_type = BuildingTypeFactory()
+    building_type = BuildingTypeFactory.create()
     building_type.allowed_terrains.add(terrain)
     expensive_building = BuildingFactory(building_type=building_type, building_costs=100, level=1)
 
@@ -233,11 +233,11 @@ def test_tile_building_form_clean_building_insufficient_coins():
 def test_tile_building_form_clean_building_sufficient_coins():
     """Test form validation passes when sufficient coins."""
     savegame = SavegameFactory(coins=100)
-    terrain = TerrainFactory()
+    terrain = TerrainFactory.create()
     tile = TileFactory(savegame=savegame, terrain=terrain)
 
     # Create affordable building
-    building_type = BuildingTypeFactory()
+    building_type = BuildingTypeFactory.create()
     building_type.allowed_terrains.add(terrain)
     affordable_building = BuildingFactory(building_type=building_type, building_costs=50, level=1)
 
@@ -251,11 +251,11 @@ def test_tile_building_form_clean_building_sufficient_coins():
 @pytest.mark.django_db
 def test_tile_building_form_clean_building_demolish_unique():
     """Test form validation fails when trying to demolish unique building."""
-    savegame = SavegameFactory()
-    terrain = TerrainFactory()
+    savegame = SavegameFactory.create()
+    terrain = TerrainFactory.create()
 
     # Create unique building
-    unique_building_type = UniqueBuildingTypeFactory()
+    unique_building_type = UniqueBuildingTypeFactory.create()
     unique_building = BuildingFactory(building_type=unique_building_type)
 
     tile = TileFactory(savegame=savegame, terrain=terrain, building=unique_building)
@@ -273,10 +273,10 @@ def test_tile_building_form_clean_building_demolish_unique():
 def test_tile_building_form_clean_building_upgrade_unique():
     """Test form validation passes when upgrading unique building."""
     savegame = SavegameFactory(coins=100)
-    terrain = TerrainFactory()
+    terrain = TerrainFactory.create()
 
     # Create unique building type with level 1 and 2
-    unique_building_type = UniqueBuildingTypeFactory()
+    unique_building_type = UniqueBuildingTypeFactory.create()
     level1_unique = BuildingFactory(building_type=unique_building_type, level=1, building_costs=50)
     level2_unique = BuildingFactory(building_type=unique_building_type, level=2, building_costs=50)
 
@@ -293,10 +293,10 @@ def test_tile_building_form_clean_building_upgrade_unique():
 def test_tile_building_form_clean_building_replace_unique_different_type():
     """Test form validation fails when trying to replace unique building with different type."""
     savegame = SavegameFactory(coins=100)
-    terrain = TerrainFactory()
+    terrain = TerrainFactory.create()
 
     # Create unique building
-    unique_building_type = UniqueBuildingTypeFactory()
+    unique_building_type = UniqueBuildingTypeFactory.create()
     unique_building = BuildingFactory(building_type=unique_building_type, level=1)
 
     # Create different building type
@@ -317,8 +317,8 @@ def test_tile_building_form_clean_building_replace_unique_different_type():
 @pytest.mark.django_db
 def test_tile_building_form_clean_building_demolish_non_unique():
     """Test form validation passes when demolishing non-unique building."""
-    savegame = SavegameFactory()
-    terrain = TerrainFactory()
+    savegame = SavegameFactory.create()
+    terrain = TerrainFactory.create()
 
     # Create regular building
     building_type = BuildingTypeFactory(is_unique=False)
@@ -336,8 +336,8 @@ def test_tile_building_form_clean_building_demolish_non_unique():
 @pytest.mark.django_db
 def test_tile_building_form_clean_building_no_building():
     """Test form validation passes when no building selected."""
-    savegame = SavegameFactory()
-    terrain = TerrainFactory()
+    savegame = SavegameFactory.create()
+    terrain = TerrainFactory.create()
     tile = TileFactory(savegame=savegame, terrain=terrain, building=None)
 
     form = TileBuildingForm(savegame=savegame, instance=tile)
@@ -351,12 +351,12 @@ def test_tile_building_form_clean_building_no_building():
 def test_tile_building_form_clean_building_edge_tile_top():
     """Test form validation fails when trying to build on top edge tile."""
     savegame = SavegameFactory(coins=100)
-    terrain = TerrainFactory()
+    terrain = TerrainFactory.create()
 
     # Create tile on top edge (y=0)
     tile = TileFactory(savegame=savegame, terrain=terrain, x=2, y=0, building=None)
 
-    building_type = BuildingTypeFactory()
+    building_type = BuildingTypeFactory.create()
     building_type.allowed_terrains.add(terrain)
     building = BuildingFactory(building_type=building_type, building_costs=50, level=1)
 
@@ -373,12 +373,12 @@ def test_tile_building_form_clean_building_edge_tile_top():
 def test_tile_building_form_clean_building_edge_tile_left():
     """Test form validation fails when trying to build on left edge tile."""
     savegame = SavegameFactory(coins=100)
-    terrain = TerrainFactory()
+    terrain = TerrainFactory.create()
 
     # Create tile on left edge (x=0)
     tile = TileFactory(savegame=savegame, terrain=terrain, x=0, y=2, building=None)
 
-    building_type = BuildingTypeFactory()
+    building_type = BuildingTypeFactory.create()
     building_type.allowed_terrains.add(terrain)
     building = BuildingFactory(building_type=building_type, building_costs=50, level=1)
 
@@ -395,12 +395,12 @@ def test_tile_building_form_clean_building_edge_tile_left():
 def test_tile_building_form_clean_building_edge_tile_bottom():
     """Test form validation fails when trying to build on bottom edge tile."""
     savegame = SavegameFactory(coins=100)
-    terrain = TerrainFactory()
+    terrain = TerrainFactory.create()
 
     # Create tile on bottom edge (y=MAP_SIZE-1 = 19 for 20x20 map)
     tile = TileFactory(savegame=savegame, terrain=terrain, x=10, y=19, building=None)
 
-    building_type = BuildingTypeFactory()
+    building_type = BuildingTypeFactory.create()
     building_type.allowed_terrains.add(terrain)
     building = BuildingFactory(building_type=building_type, building_costs=50, level=1)
 
@@ -417,12 +417,12 @@ def test_tile_building_form_clean_building_edge_tile_bottom():
 def test_tile_building_form_clean_building_edge_tile_right():
     """Test form validation fails when trying to build on right edge tile."""
     savegame = SavegameFactory(coins=100)
-    terrain = TerrainFactory()
+    terrain = TerrainFactory.create()
 
     # Create tile on right edge (x=MAP_SIZE-1 = 19 for 20x20 map)
     tile = TileFactory(savegame=savegame, terrain=terrain, x=19, y=10, building=None)
 
-    building_type = BuildingTypeFactory()
+    building_type = BuildingTypeFactory.create()
     building_type.allowed_terrains.add(terrain)
     building = BuildingFactory(building_type=building_type, building_costs=50, level=1)
 
@@ -439,12 +439,12 @@ def test_tile_building_form_clean_building_edge_tile_right():
 def test_tile_building_form_clean_building_non_edge_tile():
     """Test form validation passes when building on non-edge tile."""
     savegame = SavegameFactory(coins=100)
-    terrain = TerrainFactory()
+    terrain = TerrainFactory.create()
 
     # Create tile not on edge (x=2, y=2)
     tile = TileFactory(savegame=savegame, terrain=terrain, x=2, y=2, building=None)
 
-    building_type = BuildingTypeFactory()
+    building_type = BuildingTypeFactory.create()
     building_type.allowed_terrains.add(terrain)
     building = BuildingFactory(building_type=building_type, building_costs=50, level=1)
 
@@ -458,8 +458,8 @@ def test_tile_building_form_clean_building_non_edge_tile():
 @pytest.mark.django_db
 def test_tile_building_form_clean_building_edge_tile_no_building():
     """Test form validation passes when not building on edge tile (demolishing or no action)."""
-    savegame = SavegameFactory()
-    terrain = TerrainFactory()
+    savegame = SavegameFactory.create()
+    terrain = TerrainFactory.create()
 
     # Create tile on edge
     tile = TileFactory(savegame=savegame, terrain=terrain, x=0, y=0, building=None)
@@ -474,7 +474,7 @@ def test_tile_building_form_clean_building_edge_tile_no_building():
 @pytest.mark.django_db
 def test_tile_building_form_crispy_helper():
     """Test form has crispy helper configured."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     tile = TileFactory(savegame=savegame)
 
     form = TileBuildingForm(savegame=savegame, instance=tile)
@@ -487,7 +487,7 @@ def test_tile_building_form_crispy_helper():
 def test_tile_building_form_clean_building_demolish_with_costs():
     """Test form validation passes when demolishing building with costs."""
     savegame = SavegameFactory(coins=50)
-    terrain = TerrainFactory()
+    terrain = TerrainFactory.create()
 
     building_type = BuildingTypeFactory(is_unique=False)
     building = BuildingFactory(building_type=building_type, demolition_costs=30)
@@ -505,7 +505,7 @@ def test_tile_building_form_clean_building_demolish_with_costs():
 def test_tile_building_form_clean_building_demolish_insufficient_coins():
     """Test form validation fails when insufficient coins for demolition."""
     savegame = SavegameFactory(coins=10)
-    terrain = TerrainFactory()
+    terrain = TerrainFactory.create()
 
     building_type = BuildingTypeFactory(is_unique=False)
     building = BuildingFactory(building_type=building_type, demolition_costs=30)

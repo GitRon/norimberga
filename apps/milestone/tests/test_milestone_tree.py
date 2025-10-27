@@ -8,7 +8,7 @@ from apps.savegame.tests.factories import SavegameFactory
 @pytest.mark.django_db
 def test_milestone_tree_service_process_builds_tree():
     """Test MilestoneTreeService builds tree structure."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     root = MilestoneFactory(name="Root", parent=None)
     child = MilestoneFactory(name="Child", parent=root)
     MilestoneConditionFactory(milestone=root)
@@ -26,7 +26,7 @@ def test_milestone_tree_service_process_builds_tree():
 @pytest.mark.django_db
 def test_milestone_tree_service_process_sets_completion_status():
     """Test MilestoneTreeService correctly sets completion status."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     completed = MilestoneFactory(name="Completed", parent=None)
     available = MilestoneFactory(name="Available", parent=None)
     MilestoneLogFactory(savegame=savegame, milestone=completed)
@@ -46,7 +46,7 @@ def test_milestone_tree_service_process_sets_completion_status():
 @pytest.mark.django_db
 def test_milestone_tree_service_process_sets_locked_status():
     """Test MilestoneTreeService correctly sets locked status for children."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     parent = MilestoneFactory(name="Parent", parent=None)
     MilestoneFactory(name="Locked Child", parent=parent)
 
@@ -63,7 +63,7 @@ def test_milestone_tree_service_process_sets_locked_status():
 @pytest.mark.django_db
 def test_milestone_tree_service_process_includes_verbose_conditions():
     """Test MilestoneTreeService includes verbose condition info."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     milestone = MilestoneFactory(name="Test", parent=None)
     MilestoneConditionFactory(
         milestone=milestone, condition_class="apps.milestone.conditions.population.MinPopulationCondition", value="50"
@@ -83,7 +83,7 @@ def test_milestone_tree_service_process_includes_verbose_conditions():
 @pytest.mark.django_db
 def test_milestone_tree_service_process_handles_multiple_conditions():
     """Test MilestoneTreeService handles milestones with multiple conditions."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     milestone = MilestoneFactory(name="Test", parent=None)
     MilestoneConditionFactory(
         milestone=milestone, condition_class="apps.milestone.conditions.population.MinPopulationCondition", value="100"
@@ -105,7 +105,7 @@ def test_milestone_tree_service_process_handles_multiple_conditions():
 @pytest.mark.django_db
 def test_milestone_tree_service_process_handles_invalid_condition_class():
     """Test MilestoneTreeService handles invalid condition class gracefully."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     milestone = MilestoneFactory(name="Test", parent=None)
     MilestoneConditionFactory(milestone=milestone, condition_class="invalid.module.InvalidClass", value="50")
 
@@ -121,7 +121,7 @@ def test_milestone_tree_service_process_handles_invalid_condition_class():
 @pytest.mark.django_db
 def test_milestone_tree_service_process_builds_deep_tree():
     """Test MilestoneTreeService handles deep tree structures."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     root = MilestoneFactory(name="Root", parent=None)
     child1 = MilestoneFactory(name="Child 1", parent=root)
     child2 = MilestoneFactory(name="Child 2", parent=child1)

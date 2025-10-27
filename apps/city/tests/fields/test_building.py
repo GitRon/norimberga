@@ -7,7 +7,7 @@ from apps.city.tests.factories import BuildingFactory, BuildingTypeFactory
 @pytest.mark.django_db
 def test_building_model_choice_field_label_from_instance():
     """Test BuildingModelChoiceField formats label correctly."""
-    building_type = BuildingTypeFactory()
+    building_type = BuildingTypeFactory.create()
     building = BuildingFactory(name="Manor House", building_type=building_type, building_costs=150)
 
     field = BuildingModelChoiceField(queryset=None)
@@ -19,7 +19,7 @@ def test_building_model_choice_field_label_from_instance():
 @pytest.mark.django_db
 def test_building_model_choice_field_label_zero_cost():
     """Test BuildingModelChoiceField formats label with zero cost."""
-    building_type = BuildingTypeFactory()
+    building_type = BuildingTypeFactory.create()
     building = BuildingFactory(name="Free Building", building_type=building_type, building_costs=0)
 
     field = BuildingModelChoiceField(queryset=None)

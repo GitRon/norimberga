@@ -80,7 +80,7 @@ def test_city_messages_view_response(authenticated_client):
 def test_tile_build_view_get_form_kwargs(request_factory, user):
     """Test TileBuildView adds savegame to form kwargs."""
     savegame = SavegameFactory(user=user, is_active=True)
-    tile = TileFactory()
+    tile = TileFactory.create()
 
     request = request_factory.get("/")
     request.user = user
@@ -98,7 +98,7 @@ def test_tile_build_view_get_form_kwargs(request_factory, user):
 def test_tile_build_view_form_valid_with_building(request_factory, user):
     """Test TileBuildView deducts coins when building is selected."""
     savegame = SavegameFactory(user=user, coins=100, is_active=True)
-    tile = TileFactory()
+    tile = TileFactory.create()
     building = BuildingFactory(building_costs=50)
 
     # Create mock form with cleaned data
@@ -132,7 +132,7 @@ def test_tile_build_view_form_valid_with_building(request_factory, user):
 def test_tile_build_view_form_valid_without_building(request_factory, user):
     """Test TileBuildView doesn't deduct coins when no building selected."""
     savegame = SavegameFactory(user=user, is_active=True, coins=100)
-    tile = TileFactory()
+    tile = TileFactory.create()
 
     # Create mock form with no building
     mock_form = mock.Mock()
@@ -162,7 +162,7 @@ def test_tile_build_view_form_valid_without_building(request_factory, user):
 def test_tile_build_view_form_valid_demolish_with_costs(request_factory, user):
     """Test TileBuildView charges demolition costs when demolishing via form."""
     savegame = SavegameFactory(user=user, is_active=True, coins=100)
-    tile = TileFactory()
+    tile = TileFactory.create()
     old_building = BuildingFactory(demolition_costs=25)
 
     # Create mock form that demolishes (sets building to None)
@@ -199,8 +199,8 @@ def test_tile_build_view_get_success_url():
 @pytest.mark.django_db
 def test_tile_build_view_post_request(client):
     """Test TileBuildView handles POST request."""
-    terrain = TerrainFactory()
-    building_type = BuildingTypeFactory()
+    terrain = TerrainFactory.create()
+    building_type = BuildingTypeFactory.create()
     building_type.allowed_terrains.add(terrain)
     building = BuildingFactory(building_type=building_type, building_costs=50, level=1)
 
@@ -217,8 +217,8 @@ def test_tile_build_view_post_request(client):
 @pytest.mark.django_db
 def test_tile_build_view_post_request_authenticated(authenticated_client, user):
     """Test TileBuildView handles authenticated POST request."""
-    terrain = TerrainFactory()
-    building_type = BuildingTypeFactory()
+    terrain = TerrainFactory.create()
+    building_type = BuildingTypeFactory.create()
     building_type.allowed_terrains.add(terrain)
     building = BuildingFactory(building_type=building_type, building_costs=50, level=1)
 
@@ -265,7 +265,7 @@ def test_tile_demolish_view_post_success(user):
 def test_tile_demolish_view_post_unique_building(user):
     """Test TileDemolishView fails to demolish unique building."""
     SavegameFactory(user=user, is_active=True)
-    unique_building_type = UniqueBuildingTypeFactory()
+    unique_building_type = UniqueBuildingTypeFactory.create()
     unique_building = BuildingFactory(building_type=unique_building_type)
     tile = TileFactory(building=unique_building)
 
@@ -328,7 +328,7 @@ def test_tile_demolish_view_post_unique_building_via_client(authenticated_client
     """Test TileDemolishView rejects unique building demolition via client."""
     SavegameFactory(user=user, is_active=True)
 
-    unique_building_type = UniqueBuildingTypeFactory()
+    unique_building_type = UniqueBuildingTypeFactory.create()
     unique_building = BuildingFactory(building_type=unique_building_type)
     tile = TileFactory(building=unique_building)
 

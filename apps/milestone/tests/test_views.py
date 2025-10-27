@@ -12,7 +12,7 @@ from apps.savegame.tests.factories import SavegameFactory
 def test_milestone_list_view_get_context_data_with_savegame(request_factory, user):
     """Test MilestoneListView includes milestone tree in context when savegame exists."""
     savegame = SavegameFactory(user=user, is_active=True)
-    milestone = MilestoneFactory()
+    milestone = MilestoneFactory.create()
 
     request = request_factory.get("/")
     request.user = user

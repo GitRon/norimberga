@@ -75,7 +75,7 @@ def test_pillage_event_init_no_buildings():
 def test_pillage_event_init_excludes_non_city_buildings():
     """Test PillageEvent only destroys city buildings (is_city=True)."""
     savegame = SavegameFactory(coins=800, is_enclosed=False)
-    wall_type = WallBuildingTypeFactory()
+    wall_type = WallBuildingTypeFactory.create()
     wall_building = BuildingFactory(building_type=wall_type)
     TileFactory(savegame=savegame, building=wall_building)
 
@@ -96,7 +96,7 @@ def test_pillage_event_init_excludes_non_city_buildings():
 @pytest.mark.django_db
 def test_pillage_event_init_creates_savegame():
     """Test PillageEvent accepts a savegame parameter."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     with mock.patch("apps.city.events.events.pillage.random.randint") as mock_randint:
         mock_randint.return_value = 25

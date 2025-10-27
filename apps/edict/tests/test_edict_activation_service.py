@@ -117,7 +117,7 @@ def test_process_prevents_negative_population():
 @pytest.mark.django_db
 def test_process_creates_edict_log():
     savegame = SavegameFactory(current_year=1200)
-    edict = EdictFactory()
+    edict = EdictFactory.create()
     service = EdictActivationService(savegame=savegame, edict=edict)
 
     service.process()
@@ -129,7 +129,7 @@ def test_process_creates_edict_log():
 
 @pytest.mark.django_db
 def test_process_fails_when_edict_is_inactive():
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     edict = EdictFactory(is_active=False)
     service = EdictActivationService(savegame=savegame, edict=edict)
 

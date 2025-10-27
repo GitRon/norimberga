@@ -59,7 +59,7 @@ def test_milestone_check_event_returns_none_when_no_milestones():
 @pytest.mark.django_db
 def test_milestone_check_event_probability():
     """Test event has 100% probability."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     event = MilestoneCheckEvent(savegame=savegame)
 
     assert event.PROBABILITY == 100
@@ -68,7 +68,7 @@ def test_milestone_check_event_probability():
 @pytest.mark.django_db
 def test_milestone_check_event_get_verbose_text_returns_none_when_no_completed():
     """Test get_verbose_text returns None when no milestones completed."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     event = MilestoneCheckEvent(savegame=savegame)
 
     assert event.get_verbose_text() is None

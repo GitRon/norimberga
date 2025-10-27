@@ -14,8 +14,8 @@ from apps.savegame.tests.factories import SavegameFactory
 @pytest.mark.django_db
 def test_tile_queryset_filter_savegame():
     """Test filter_savegame returns tiles for specific savegame."""
-    savegame1 = SavegameFactory()
-    savegame2 = SavegameFactory()
+    savegame1 = SavegameFactory.create()
+    savegame2 = SavegameFactory.create()
 
     tile1 = TileFactory(savegame=savegame1)
     tile2 = TileFactory(savegame=savegame1)
@@ -35,7 +35,7 @@ def test_tile_queryset_filter_savegame():
 @pytest.mark.django_db
 def test_tile_queryset_filter_adjacent_tiles():
     """Test filter_adjacent_tiles returns adjacent tiles."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     # Create a 3x3 grid of tiles
     center_tile = TileFactory(savegame=savegame, x=1, y=1)
@@ -117,7 +117,7 @@ def test_tile_queryset_filter_city_building():
 @pytest.mark.django_db
 def test_tile_queryset_chaining():
     """Test queryset methods can be chained together."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     # Create city building type
     city_building_type = BuildingTypeFactory(is_city=True)
@@ -180,7 +180,7 @@ def test_tile_manager_integration():
     """Test TileManager works with actual model queries."""
     from apps.city.models import Tile
 
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     city_building_type = BuildingTypeFactory(is_city=True)
     city_building = BuildingFactory(building_type=city_building_type)
 
@@ -197,7 +197,7 @@ def test_tile_manager_integration():
 @pytest.mark.django_db
 def test_tile_queryset_filter_adjacent_tiles_edge_case():
     """Test filter_adjacent_tiles with edge coordinates."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     # Create tile at edge
     edge_tile = TileFactory(savegame=savegame, x=0, y=0)
@@ -254,7 +254,7 @@ def test_tile_queryset_filter_city_building_edge_cases():
 @pytest.mark.django_db
 def test_tile_manager_has_adjacent_city_building_true():
     """Test has_adjacent_city_building returns True when adjacent city building exists."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     city_building_type = BuildingTypeFactory(is_city=True)
     city_building = BuildingFactory(building_type=city_building_type)
 
@@ -291,7 +291,7 @@ def test_tile_manager_has_adjacent_city_building_true():
 @pytest.mark.django_db
 def test_tile_manager_has_adjacent_city_building_false():
     """Test has_adjacent_city_building returns False when no adjacent city building exists."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     # Create tile without adjacent city buildings
     tile = TileFactory(savegame=savegame, x=1, y=1)

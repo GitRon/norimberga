@@ -13,7 +13,7 @@ from apps.savegame.tests.factories import SavegameFactory
 @pytest.mark.django_db
 def test_economic_balance_event_init_positive_balance():
     """Test EconomicBalanceEvent initialization with positive balance."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     balance_data = {
         "balance": 150,
         "taxes": 200,
@@ -37,7 +37,7 @@ def test_economic_balance_event_init_positive_balance():
 @pytest.mark.django_db
 def test_economic_balance_event_init_negative_balance():
     """Test EconomicBalanceEvent initialization with negative balance."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     balance_data = {
         "balance": -75,
         "taxes": 25,
@@ -57,7 +57,7 @@ def test_economic_balance_event_init_negative_balance():
 @pytest.mark.django_db
 def test_economic_balance_event_get_probability_with_positive_balance():
     """Test get_probability returns base probability when balance is positive."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     balance_data = {"balance": 100, "taxes": 150, "maintenance": 50}
 
     with mock.patch("apps.city.events.events.economic_balance.get_balance_data") as mock_balance:
@@ -72,7 +72,7 @@ def test_economic_balance_event_get_probability_with_positive_balance():
 @pytest.mark.django_db
 def test_economic_balance_event_get_probability_with_negative_balance():
     """Test get_probability returns base probability when balance is negative."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     balance_data = {"balance": -50, "taxes": 50, "maintenance": 100}
 
     with mock.patch("apps.city.events.events.economic_balance.get_balance_data") as mock_balance:
@@ -87,7 +87,7 @@ def test_economic_balance_event_get_probability_with_negative_balance():
 @pytest.mark.django_db
 def test_economic_balance_event_get_probability_zero_balance():
     """Test get_probability returns 0 when balance is zero."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     balance_data = {"balance": 0, "taxes": 100, "maintenance": 100}
 
     with mock.patch("apps.city.events.events.economic_balance.get_balance_data") as mock_balance:
@@ -102,7 +102,7 @@ def test_economic_balance_event_get_probability_zero_balance():
 @pytest.mark.django_db
 def test_economic_balance_event_prepare_effect_positive_balance():
     """Test _prepare_effect_adjust_coins returns IncreaseCoins for positive balance."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     balance_data = {"balance": 120, "taxes": 150, "maintenance": 30}
 
     with mock.patch("apps.city.events.events.economic_balance.get_balance_data") as mock_balance:
@@ -118,7 +118,7 @@ def test_economic_balance_event_prepare_effect_positive_balance():
 @pytest.mark.django_db
 def test_economic_balance_event_prepare_effect_negative_balance():
     """Test _prepare_effect_adjust_coins returns DecreaseCoins for negative balance."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     balance_data = {"balance": -80, "taxes": 20, "maintenance": 100}
 
     with mock.patch("apps.city.events.events.economic_balance.get_balance_data") as mock_balance:
@@ -134,7 +134,7 @@ def test_economic_balance_event_prepare_effect_negative_balance():
 @pytest.mark.django_db
 def test_economic_balance_event_prepare_effect_zero_balance():
     """Test _prepare_effect_adjust_coins returns None for zero balance."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     balance_data = {"balance": 0, "taxes": 50, "maintenance": 50}
 
     with mock.patch("apps.city.events.events.economic_balance.get_balance_data") as mock_balance:
@@ -149,7 +149,7 @@ def test_economic_balance_event_prepare_effect_zero_balance():
 @pytest.mark.django_db
 def test_economic_balance_event_get_verbose_text_positive():
     """Test get_verbose_text returns correct description for positive balance."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     balance_data = {"balance": 100, "taxes": 150, "maintenance": 50}
 
     with mock.patch("apps.city.events.events.economic_balance.get_balance_data") as mock_balance:
@@ -168,7 +168,7 @@ def test_economic_balance_event_get_verbose_text_positive():
 @pytest.mark.django_db
 def test_economic_balance_event_get_verbose_text_negative():
     """Test get_verbose_text returns correct description for negative balance."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     balance_data = {"balance": -60, "taxes": 40, "maintenance": 100}
 
     with mock.patch("apps.city.events.events.economic_balance.get_balance_data") as mock_balance:
@@ -229,7 +229,7 @@ def test_economic_balance_event_process_negative_balance():
 @pytest.mark.django_db
 def test_economic_balance_event_get_effects_positive():
     """Test get_effects returns list with IncreaseCoins effect for positive balance."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     balance_data = {"balance": 50, "taxes": 100, "maintenance": 50}
 
     with mock.patch("apps.city.events.events.economic_balance.get_balance_data") as mock_balance:
@@ -246,7 +246,7 @@ def test_economic_balance_event_get_effects_positive():
 @pytest.mark.django_db
 def test_economic_balance_event_get_effects_negative():
     """Test get_effects returns list with DecreaseCoins effect for negative balance."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     balance_data = {"balance": -30, "taxes": 20, "maintenance": 50}
 
     with mock.patch("apps.city.events.events.economic_balance.get_balance_data") as mock_balance:
@@ -264,8 +264,8 @@ def test_economic_balance_event_get_effects_negative():
 def test_economic_balance_event_integration_with_real_balance():
     """Test event integration with real balance calculation from buildings."""
     # Create savegame with terrain and buildings
-    savegame = SavegameFactory()
-    terrain = TerrainFactory()
+    savegame = SavegameFactory.create()
+    terrain = TerrainFactory.create()
 
     # Create buildings with different tax and maintenance values
     building1 = BuildingFactory(taxes=50, maintenance_costs=10)

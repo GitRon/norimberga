@@ -29,7 +29,7 @@ def test_alms_event_init():
 @pytest.mark.django_db
 def test_alms_event_init_creates_savegame():
     """Test AlmsEvent creates savegame if it doesn't exist."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     with mock.patch("apps.city.events.events.alms.random.randint") as mock_randint:
         mock_randint.return_value = 3

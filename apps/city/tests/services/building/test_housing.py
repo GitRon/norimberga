@@ -9,7 +9,7 @@ from apps.savegame.tests.factories import SavegameFactory
 def test_building_housing_service_init():
     """Test BuildingHousingService initialization."""
     # Create a savegame to pass to the service
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     service = BuildingHousingService(savegame=savegame)
 
@@ -20,7 +20,7 @@ def test_building_housing_service_init():
 def test_building_housing_service_init_creates_savegame():
     """Test BuildingHousingService accepts a savegame parameter."""
     # Create a savegame to pass to the service
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     service = BuildingHousingService(savegame=savegame)
 
@@ -31,10 +31,10 @@ def test_building_housing_service_init_creates_savegame():
 @pytest.mark.django_db
 def test_building_housing_service_calculate_max_space_with_buildings():
     """Test calculate_max_space returns sum of housing space from buildings."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     # Create buildings with different housing spaces
-    building_type = BuildingTypeFactory()
+    building_type = BuildingTypeFactory.create()
     building1 = BuildingFactory(building_type=building_type, housing_space=5)
     building2 = BuildingFactory(building_type=building_type, housing_space=3)
     building3 = BuildingFactory(building_type=building_type, housing_space=2)
@@ -53,7 +53,7 @@ def test_building_housing_service_calculate_max_space_with_buildings():
 @pytest.mark.django_db
 def test_building_housing_service_calculate_max_space_no_buildings():
     """Test calculate_max_space returns 0 when no buildings have housing space."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     # Create tile without building
     TileFactory(savegame=savegame, building=None)

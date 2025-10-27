@@ -7,7 +7,7 @@ from apps.savegame.tests.factories import SavegameFactory
 @pytest.mark.django_db
 def test_min_coins_condition_init():
     """Test MinCoinsCondition initialization."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     condition = MinCoinsCondition(savegame=savegame, value=100)
 
     assert condition.savegame == savegame

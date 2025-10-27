@@ -14,8 +14,8 @@ from apps.savegame.tests.factories import SavegameFactory
 @pytest.mark.django_db
 def test_get_all_milestones_with_conditions():
     """Test get_all_milestones_with_conditions returns all milestones."""
-    milestone1 = MilestoneFactory()
-    milestone2 = MilestoneFactory()
+    milestone1 = MilestoneFactory.create()
+    milestone2 = MilestoneFactory.create()
     MilestoneConditionFactory(milestone=milestone1)
 
     milestones = get_all_milestones_with_conditions()
@@ -29,9 +29,9 @@ def test_get_all_milestones_with_conditions():
 @pytest.mark.django_db
 def test_get_completed_milestone_ids():
     """Test get_completed_milestone_ids returns set of completed milestone IDs."""
-    savegame = SavegameFactory()
-    milestone1 = MilestoneFactory()
-    milestone2 = MilestoneFactory()
+    savegame = SavegameFactory.create()
+    milestone1 = MilestoneFactory.create()
+    milestone2 = MilestoneFactory.create()
     MilestoneLogFactory(savegame=savegame, milestone=milestone1)
 
     completed_ids = get_completed_milestone_ids(savegame=savegame)
@@ -44,7 +44,7 @@ def test_get_completed_milestone_ids():
 @pytest.mark.django_db
 def test_get_available_milestones_root_only():
     """Test get_available_milestones returns root milestones when nothing completed."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     root1 = MilestoneFactory(name="Root 1", parent=None)
     root2 = MilestoneFactory(name="Root 2", parent=None)
     MilestoneFactory(name="Child", parent=root1)
@@ -60,7 +60,7 @@ def test_get_available_milestones_root_only():
 @pytest.mark.django_db
 def test_get_available_milestones_excludes_completed():
     """Test get_available_milestones excludes completed milestones."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     root1 = MilestoneFactory(name="Root 1", parent=None)
     root2 = MilestoneFactory(name="Root 2", parent=None)
     MilestoneLogFactory(savegame=savegame, milestone=root1)
@@ -75,7 +75,7 @@ def test_get_available_milestones_excludes_completed():
 @pytest.mark.django_db
 def test_get_available_milestones_includes_unlocked_children():
     """Test get_available_milestones includes children of completed milestones."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     parent = MilestoneFactory(name="Parent", parent=None)
     child = MilestoneFactory(name="Child", parent=parent)
     MilestoneLogFactory(savegame=savegame, milestone=parent)

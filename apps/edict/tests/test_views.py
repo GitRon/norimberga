@@ -13,7 +13,7 @@ def test_edict_list_view_get_context_data_with_savegame(request_factory, user):
 
     SavegameFactory(user=user, is_active=True)
     Edict.objects.all().delete()
-    EdictFactory()
+    EdictFactory.create()
 
     request = request_factory.get("/")
     request.user = user
@@ -65,7 +65,7 @@ def test_edict_activate_view_activates_edict_successfully(authenticated_client, 
 @pytest.mark.django_db
 def test_edict_activate_view_creates_edict_log(authenticated_client, user):
     savegame = SavegameFactory(user=user, is_active=True, current_year=1200)
-    edict = EdictFactory()
+    edict = EdictFactory.create()
 
     authenticated_client.post(reverse("edict:edict-activate", kwargs={"pk": edict.pk}))
 
@@ -77,7 +77,7 @@ def test_edict_activate_view_creates_edict_log(authenticated_client, user):
 @pytest.mark.django_db
 def test_edict_activate_view_returns_htmx_redirect(authenticated_client, user):
     SavegameFactory(user=user, is_active=True)
-    edict = EdictFactory()
+    edict = EdictFactory.create()
 
     response = authenticated_client.post(reverse("edict:edict-activate", kwargs={"pk": edict.pk}))
 
@@ -108,7 +108,7 @@ def test_edict_activate_view_returns_404_for_nonexistent_edict(authenticated_cli
 @pytest.mark.django_db
 def test_edict_activate_view_only_accepts_post(authenticated_client, user):
     SavegameFactory(user=user, is_active=True)
-    edict = EdictFactory()
+    edict = EdictFactory.create()
 
     response = authenticated_client.get(reverse("edict:edict-activate", kwargs={"pk": edict.pk}))
 

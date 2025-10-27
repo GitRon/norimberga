@@ -26,7 +26,7 @@ def test_plague_event_init():
 @pytest.mark.django_db
 def test_plague_event_init_creates_savegame():
     """Test PlagueEvent accepts a savegame parameter."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     with mock.patch("apps.city.events.events.plague.random.randint") as mock_randint:
         mock_randint.return_value = 20
@@ -81,7 +81,7 @@ def test_plague_event_get_effects():
 @pytest.mark.django_db
 def test_plague_event_get_verbose_text_minimum_percentage():
     """Test get_verbose_text returns correct description for minimum percentage."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     with mock.patch("apps.city.events.events.plague.random.randint") as mock_randint:
         mock_randint.return_value = 10
@@ -99,7 +99,7 @@ def test_plague_event_get_verbose_text_minimum_percentage():
 @pytest.mark.django_db
 def test_plague_event_get_verbose_text_maximum_percentage():
     """Test get_verbose_text returns correct description for maximum percentage."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     with mock.patch("apps.city.events.events.plague.random.randint") as mock_randint:
         mock_randint.return_value = 25
@@ -117,7 +117,7 @@ def test_plague_event_get_verbose_text_maximum_percentage():
 @pytest.mark.django_db
 def test_plague_event_get_verbose_text_mid_percentage():
     """Test get_verbose_text returns correct description for mid-range percentage."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     with mock.patch("apps.city.events.events.plague.random.randint") as mock_randint:
         mock_randint.return_value = 17
@@ -135,7 +135,7 @@ def test_plague_event_get_verbose_text_mid_percentage():
 @pytest.mark.django_db
 def test_plague_event_random_range():
     """Test that random.randint is called with correct range."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     with mock.patch("apps.city.events.events.plague.random.randint") as mock_randint:
         mock_randint.return_value = 15
@@ -148,7 +148,7 @@ def test_plague_event_random_range():
 @pytest.mark.django_db
 def test_plague_event_percentage_calculation():
     """Test that percentage is correctly calculated from random value."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     with mock.patch("apps.city.events.events.plague.random.randint") as mock_randint:
         mock_randint.return_value = 22

@@ -7,7 +7,7 @@ from apps.savegame.tests.factories import SavegameFactory
 @pytest.mark.django_db
 def test_min_year_condition_init():
     """Test MinYearCondition initialization."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     condition = MinYearCondition(savegame=savegame, value=1200)
 
     assert condition.savegame == savegame

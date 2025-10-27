@@ -24,7 +24,7 @@ def test_population_increase_event_init():
 @pytest.mark.django_db
 def test_population_increase_event_init_creates_savegame():
     """Test PopulationIncreaseEvent creates savegame if it doesn't exist."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     event = PopulationIncreaseEvent(savegame=savegame)
 
@@ -58,7 +58,7 @@ def test_population_increase_event_get_probability_space_available():
     """Test get_probability returns base probability when housing space is available."""
     savegame = SavegameFactory(population=50)
     savegame.save()
-    building_type = HouseBuildingTypeFactory()
+    building_type = HouseBuildingTypeFactory.create()
     building = BuildingFactory(building_type=building_type, housing_space=100)
     TileFactory(savegame=savegame, building=building, x=60, y=10)
 
@@ -73,7 +73,7 @@ def test_population_increase_event_get_probability_no_space():
     """Test get_probability returns 0 when population exceeds housing capacity."""
     savegame = SavegameFactory(population=120)
     savegame.save()
-    building_type = HouseBuildingTypeFactory()
+    building_type = HouseBuildingTypeFactory.create()
     building = BuildingFactory(building_type=building_type, housing_space=100)
     TileFactory(savegame=savegame, building=building, x=61, y=10)
 
@@ -87,7 +87,7 @@ def test_population_increase_event_get_probability_no_space():
 def test_population_increase_event_get_probability_exact_capacity():
     """Test get_probability returns 0 when population equals housing capacity."""
     savegame = SavegameFactory(population=100)
-    building_type = HouseBuildingTypeFactory()
+    building_type = HouseBuildingTypeFactory.create()
     building = BuildingFactory(building_type=building_type, housing_space=100)
     TileFactory(savegame=savegame, building=building, x=62, y=10)
 

@@ -7,7 +7,7 @@ from apps.city.tests.factories import BuildingFactory, TileFactory
 @pytest.mark.django_db
 def test_remove_building_init():
     """Test RemoveBuilding initialization with tile parameter."""
-    tile = TileFactory()
+    tile = TileFactory.create()
     effect = RemoveBuilding(tile=tile)
 
     assert effect.tile == tile
@@ -16,7 +16,7 @@ def test_remove_building_init():
 @pytest.mark.django_db
 def test_remove_building_process_replaces_with_ruins(ruins_building):
     """Test process replaces building with ruins instead of removing it."""
-    building = BuildingFactory()
+    building = BuildingFactory.create()
     tile = TileFactory(building=building)
     effect = RemoveBuilding(tile=tile)
 
@@ -51,7 +51,7 @@ def test_remove_building_process_already_empty_tile(ruins_building):
 @pytest.mark.django_db
 def test_remove_building_process_saves_tile(ruins_building):
     """Test process saves the tile after replacing with ruins."""
-    building = BuildingFactory()
+    building = BuildingFactory.create()
     tile = TileFactory(building=building)
     effect = RemoveBuilding(tile=tile)
 

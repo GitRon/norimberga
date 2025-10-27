@@ -66,7 +66,7 @@ def test_savegame_list_view_orders_savegames_by_id_descending(authenticated_clie
 @pytest.mark.django_db
 def test_savegame_load_view_requires_authentication(client):
     """Test SavegameLoadView requires user authentication."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     response = client.post(reverse("savegame:savegame-load", kwargs={"pk": savegame.pk}))
 
     assert response.status_code == 302
@@ -132,7 +132,7 @@ def test_savegame_load_view_only_loads_own_savegame(authenticated_client, user):
 @pytest.mark.django_db
 def test_savegame_delete_view_requires_authentication(client):
     """Test SavegameDeleteView requires user authentication."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
     response = client.delete(reverse("savegame:savegame-delete", kwargs={"pk": savegame.pk}))
 
     assert response.status_code == 302

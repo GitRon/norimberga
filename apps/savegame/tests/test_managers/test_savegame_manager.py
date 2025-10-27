@@ -17,7 +17,7 @@ def test_savegame_manager_from_queryset():
 @pytest.mark.django_db
 def test_savegame_manager_aggregate_taxes_with_buildings():
     """Test aggregate_taxes returns sum of taxes from all buildings."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     # Create tiles with buildings that have taxes
     building1 = BuildingFactory(taxes=10)
@@ -36,7 +36,7 @@ def test_savegame_manager_aggregate_taxes_with_buildings():
 @pytest.mark.django_db
 def test_savegame_manager_aggregate_taxes_no_buildings():
     """Test aggregate_taxes returns 0 when no buildings exist."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     # Create tiles without buildings
     TileFactory(savegame=savegame, building=None)
@@ -51,7 +51,7 @@ def test_savegame_manager_aggregate_taxes_no_buildings():
 @pytest.mark.django_db
 def test_savegame_manager_aggregate_taxes_empty_savegame():
     """Test aggregate_taxes returns 0 for savegame with no tiles."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     result = SavegameManager().aggregate_taxes(savegame=savegame)
 
@@ -62,7 +62,7 @@ def test_savegame_manager_aggregate_taxes_empty_savegame():
 @pytest.mark.django_db
 def test_savegame_manager_aggregate_taxes_zero_taxes():
     """Test aggregate_taxes handles buildings with zero taxes."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     # Create buildings with zero taxes
     building1 = BuildingFactory(taxes=0)
@@ -79,7 +79,7 @@ def test_savegame_manager_aggregate_taxes_zero_taxes():
 @pytest.mark.django_db
 def test_savegame_manager_aggregate_taxes_mixed():
     """Test aggregate_taxes with mix of buildings and empty tiles."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     # Create tiles with and without buildings
     building1 = BuildingFactory(taxes=20)
@@ -98,7 +98,7 @@ def test_savegame_manager_aggregate_taxes_mixed():
 @pytest.mark.django_db
 def test_savegame_manager_aggregate_maintenance_costs_with_buildings():
     """Test aggregate_maintenance_costs returns sum of maintenance costs."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     # Create tiles with buildings that have maintenance costs
     building1 = BuildingFactory(maintenance_costs=5)
@@ -117,7 +117,7 @@ def test_savegame_manager_aggregate_maintenance_costs_with_buildings():
 @pytest.mark.django_db
 def test_savegame_manager_aggregate_maintenance_costs_no_buildings():
     """Test aggregate_maintenance_costs returns 0 when no buildings exist."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     # Create tiles without buildings
     TileFactory(savegame=savegame, building=None)
@@ -132,7 +132,7 @@ def test_savegame_manager_aggregate_maintenance_costs_no_buildings():
 @pytest.mark.django_db
 def test_savegame_manager_aggregate_maintenance_costs_empty_savegame():
     """Test aggregate_maintenance_costs returns 0 for savegame with no tiles."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     result = SavegameManager().aggregate_maintenance_costs(savegame=savegame)
 
@@ -143,7 +143,7 @@ def test_savegame_manager_aggregate_maintenance_costs_empty_savegame():
 @pytest.mark.django_db
 def test_savegame_manager_aggregate_maintenance_costs_zero_costs():
     """Test aggregate_maintenance_costs handles buildings with zero costs."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     # Create buildings with zero maintenance costs
     building1 = BuildingFactory(maintenance_costs=0)
@@ -160,7 +160,7 @@ def test_savegame_manager_aggregate_maintenance_costs_zero_costs():
 @pytest.mark.django_db
 def test_savegame_manager_aggregate_maintenance_costs_mixed():
     """Test aggregate_maintenance_costs with mix of buildings and empty tiles."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     # Create tiles with and without buildings
     building1 = BuildingFactory(maintenance_costs=7)
@@ -179,8 +179,8 @@ def test_savegame_manager_aggregate_maintenance_costs_mixed():
 @pytest.mark.django_db
 def test_savegame_manager_aggregate_multiple_savegames():
     """Test aggregate methods only count buildings from specified savegame."""
-    savegame1 = SavegameFactory()
-    savegame2 = SavegameFactory()
+    savegame1 = SavegameFactory.create()
+    savegame2 = SavegameFactory.create()
 
     # Create buildings for savegame1
     building1 = BuildingFactory(taxes=10, maintenance_costs=5)
@@ -213,7 +213,7 @@ def test_savegame_manager_integration():
     """Test SavegameManager works with actual model queries."""
     from apps.savegame.models import Savegame
 
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     building = BuildingFactory(taxes=15, maintenance_costs=7)
     TileFactory(savegame=savegame, building=building)

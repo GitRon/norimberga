@@ -66,6 +66,7 @@ class WallEnclosureService:
 
     def _get_city_building_tiles(self) -> list[Tile]:
         """Get all tiles with city buildings (excluding walls)."""
+        self._load_tiles_cache()
         return [
             tile
             for tile in self._tiles_cache.values()

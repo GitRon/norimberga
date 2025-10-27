@@ -17,7 +17,7 @@ from apps.savegame.tests.factories import SavegameFactory
 @pytest.mark.django_db
 def test_defense_calculation_service_walls_not_enclosed():
     """Test that service returns 0 when walls are not enclosed."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     # Create mock services
     mock_enclosure_service = mock.Mock()
@@ -26,26 +26,30 @@ def test_defense_calculation_service_walls_not_enclosed():
     mock_shape_bonus_service = mock.Mock()
     mock_shape_bonus_service.process.return_value = 50
 
+    mock_spike_malus_service = mock.Mock()
+    mock_spike_malus_service.process.return_value = -10
+
     service = DefenseCalculationService(
         savegame=savegame,
         enclosure_service=mock_enclosure_service,
         shape_bonus_service=mock_shape_bonus_service,
+        spike_malus_service=mock_spike_malus_service,
     )
     result = service.process()
 
     # When not enclosed, defense should be 0
     assert result == 0
-    # Enclosure service should be called
+    # All services should be called to calculate breakdown
     mock_enclosure_service.process.assert_called_once()
-    # Shape bonus should not be called when not enclosed
-    mock_shape_bonus_service.process.assert_not_called()
+    mock_shape_bonus_service.process.assert_called_once()
+    mock_spike_malus_service.process.assert_called_once()
 
 
 @pytest.mark.django_db
 def test_defense_calculation_service_walls_enclosed_no_buildings():
     """Test that service returns only shape bonus when enclosed but no buildings have defense."""
-    savegame = SavegameFactory()
-    terrain = TerrainFactory()
+    savegame = SavegameFactory.create()
+    terrain = TerrainFactory.create()
 
     # Create tiles without buildings
     tiles = [TileFactory.build(savegame=savegame, terrain=terrain, building=None, x=i % 5, y=i // 5) for i in range(25)]
@@ -74,8 +78,8 @@ def test_defense_calculation_service_walls_enclosed_no_buildings():
 @pytest.mark.django_db
 def test_defense_calculation_service_walls_enclosed_with_defense_buildings():
     """Test that service calculates total defense when walls are enclosed."""
-    savegame = SavegameFactory()
-    terrain = TerrainFactory()
+    savegame = SavegameFactory.create()
+    terrain = TerrainFactory.create()
 
     # Create building types
     wall_type = WallBuildingTypeFactory(allowed_terrains=[terrain])
@@ -101,14 +105,18 @@ def test_defense_calculation_service_walls_enclosed_with_defense_buildings():
     mock_shape_bonus_service = mock.Mock()
     mock_shape_bonus_service.process.return_value = 30
 
+    mock_spike_malus_service = mock.Mock()
+    mock_spike_malus_service.process.return_value = 0
+
     service = DefenseCalculationService(
         savegame=savegame,
         enclosure_service=mock_enclosure_service,
         shape_bonus_service=mock_shape_bonus_service,
+        spike_malus_service=mock_spike_malus_service,
     )
     result = service.process()
 
-    # Expected: (10 + 15 + 20) base defense + 30 shape bonus = 75
+    # Expected: (10 + 15 + 20) base defense + 30 shape bonus + 0 spike malus = 75
     assert result == 75
     mock_enclosure_service.process.assert_called_once()
     mock_shape_bonus_service.process.assert_called_once()
@@ -117,8 +125,8 @@ def test_defense_calculation_service_walls_enclosed_with_defense_buildings():
 @pytest.mark.django_db
 def test_defense_calculation_service_base_defense_only_from_buildings():
     """Test that base defense only counts buildings with defense_value > 0."""
-    savegame = SavegameFactory()
-    terrain = TerrainFactory()
+    savegame = SavegameFactory.create()
+    terrain = TerrainFactory.create()
 
     # Create building types
     wall_type = WallBuildingTypeFactory(allowed_terrains=[terrain])
@@ -142,22 +150,26 @@ def test_defense_calculation_service_base_defense_only_from_buildings():
     mock_shape_bonus_service = mock.Mock()
     mock_shape_bonus_service.process.return_value = 0
 
+    mock_spike_malus_service = mock.Mock()
+    mock_spike_malus_service.process.return_value = 0
+
     service = DefenseCalculationService(
         savegame=savegame,
         enclosure_service=mock_enclosure_service,
         shape_bonus_service=mock_shape_bonus_service,
+        spike_malus_service=mock_spike_malus_service,
     )
     result = service.process()
 
-    # Expected: 25 base defense + 0 shape bonus = 25
+    # Expected: 25 base defense + 0 shape bonus + 0 spike malus = 25
     assert result == 25
 
 
 @pytest.mark.django_db
 def test_defense_calculation_service_multiple_same_buildings():
     """Test that multiple instances of same building all contribute to defense."""
-    savegame = SavegameFactory()
-    terrain = TerrainFactory()
+    savegame = SavegameFactory.create()
+    terrain = TerrainFactory.create()
 
     # Create building type
     wall_type = WallBuildingTypeFactory(allowed_terrains=[terrain])
@@ -174,22 +186,26 @@ def test_defense_calculation_service_multiple_same_buildings():
     mock_shape_bonus_service = mock.Mock()
     mock_shape_bonus_service.process.return_value = 10
 
+    mock_spike_malus_service = mock.Mock()
+    mock_spike_malus_service.process.return_value = 0
+
     service = DefenseCalculationService(
         savegame=savegame,
         enclosure_service=mock_enclosure_service,
         shape_bonus_service=mock_shape_bonus_service,
+        spike_malus_service=mock_spike_malus_service,
     )
     result = service.process()
 
-    # Expected: (10 * 5) base defense + 10 shape bonus = 60
+    # Expected: (10 * 5) base defense + 10 shape bonus + 0 spike malus = 60
     assert result == 60
 
 
 @pytest.mark.django_db
 def test_defense_calculation_service_integration_enclosed_square():
     """Test full integration with real services for enclosed square."""
-    savegame = SavegameFactory()
-    terrain = TerrainFactory()
+    savegame = SavegameFactory.create()
+    terrain = TerrainFactory.create()
 
     # Create building types
     wall_type = WallBuildingTypeFactory(allowed_terrains=[terrain])
@@ -238,8 +254,8 @@ def test_defense_calculation_service_integration_enclosed_square():
 @pytest.mark.django_db
 def test_defense_calculation_service_integration_not_enclosed():
     """Test full integration with real services when not enclosed."""
-    savegame = SavegameFactory()
-    terrain = TerrainFactory()
+    savegame = SavegameFactory.create()
+    terrain = TerrainFactory.create()
 
     # Create building types
     wall_type = WallBuildingTypeFactory(allowed_terrains=[terrain])
@@ -285,7 +301,7 @@ def test_defense_calculation_service_integration_not_enclosed():
 @pytest.mark.django_db
 def test_defense_calculation_service_default_services_instantiated():
     """Test that service instantiates default services when not provided."""
-    savegame = SavegameFactory()
+    savegame = SavegameFactory.create()
 
     # Create service without injecting dependencies
     service = DefenseCalculationService(savegame=savegame)
@@ -293,5 +309,71 @@ def test_defense_calculation_service_default_services_instantiated():
     # Verify that services are instantiated
     assert service.enclosure_service is not None
     assert service.shape_bonus_service is not None
+    assert service.spike_malus_service is not None
     assert hasattr(service.enclosure_service, "process")
     assert hasattr(service.shape_bonus_service, "process")
+    assert hasattr(service.spike_malus_service, "process")
+
+
+@pytest.mark.django_db
+def test_defense_calculation_service_get_breakdown():
+    """Test that get_breakdown returns detailed defense information."""
+    savegame = SavegameFactory.create()
+
+    # Create mock services
+    mock_enclosure_service = mock.Mock()
+    mock_enclosure_service.process.return_value = True
+
+    mock_shape_bonus_service = mock.Mock()
+    mock_shape_bonus_service.process.return_value = 50
+
+    mock_spike_malus_service = mock.Mock()
+    mock_spike_malus_service.process.return_value = -20
+
+    service = DefenseCalculationService(
+        savegame=savegame,
+        enclosure_service=mock_enclosure_service,
+        shape_bonus_service=mock_shape_bonus_service,
+        spike_malus_service=mock_spike_malus_service,
+    )
+    breakdown = service.get_breakdown()
+
+    # Verify breakdown structure
+    assert breakdown.is_enclosed is True
+    assert breakdown.base_defense == 0
+    assert breakdown.shape_bonus == 50
+    assert breakdown.spike_malus == -20
+    assert breakdown.potential_total == 30  # 0 + 50 + (-20)
+    assert breakdown.actual_total == 30  # Same as potential since enclosed
+
+
+@pytest.mark.django_db
+def test_defense_calculation_service_get_breakdown_not_enclosed():
+    """Test that get_breakdown shows potential defense even when not enclosed."""
+    savegame = SavegameFactory.create()
+
+    # Create mock services
+    mock_enclosure_service = mock.Mock()
+    mock_enclosure_service.process.return_value = False  # Not enclosed
+
+    mock_shape_bonus_service = mock.Mock()
+    mock_shape_bonus_service.process.return_value = 40
+
+    mock_spike_malus_service = mock.Mock()
+    mock_spike_malus_service.process.return_value = -10
+
+    service = DefenseCalculationService(
+        savegame=savegame,
+        enclosure_service=mock_enclosure_service,
+        shape_bonus_service=mock_shape_bonus_service,
+        spike_malus_service=mock_spike_malus_service,
+    )
+    breakdown = service.get_breakdown()
+
+    # Verify breakdown structure
+    assert breakdown.is_enclosed is False
+    assert breakdown.base_defense == 0
+    assert breakdown.shape_bonus == 40
+    assert breakdown.spike_malus == -10
+    assert breakdown.potential_total == 30  # 0 + 40 + (-10)
+    assert breakdown.actual_total == 0  # 0 since not enclosed

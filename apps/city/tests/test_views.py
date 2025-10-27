@@ -65,13 +65,13 @@ def test_defenses_view_with_savegame(authenticated_client, user):
 
 @pytest.mark.django_db
 def test_defenses_view_without_savegame(authenticated_client, user):
-    """Test DefensesView handles case when no active savegame exists."""
+    """Test DefensesView redirects when no active savegame exists."""
     # Don't create a savegame for this user
     response = authenticated_client.get(reverse("city:defenses"))
 
-    # View should still render, but without breakdown in context
-    assert response.status_code == 200
-    assert "city/defenses.html" in [t.name for t in response.templates]
+    # View should redirect to savegame list (SavegameRequiredMixin behavior)
+    assert response.status_code == 302
+    assert response.url == "/savegame/savegames/"
 
 
 # NavbarValuesView Tests

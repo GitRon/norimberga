@@ -9,7 +9,15 @@ def get_current_savegame(request) -> dict:
     is_enclosed = False
     max_housing_space = 0
     if hasattr(request, "user") and request.user.is_authenticated:
-        savegame = Savegame.objects.filter(user=request.user, is_active=True).first()
+        savegame = (
+            Savegame.objects.filter(user=request.user, is_active=True)
+            .prefetch_related(
+                "tiles__terrain",
+                "tiles__building",
+                "tiles__building__building_type",
+            )
+            .first()
+        )
         if savegame:
             is_enclosed = savegame.is_enclosed
             max_housing_space = BuildingHousingService(savegame=savegame).calculate_max_space()

@@ -20,20 +20,18 @@
                 <button class="btn btn-success"
                         hx-post="{% url "city:tile-build" object.id %}"
                         hx-target="#form-container"
-                        hx-swap="outerHTML"
-                        onclick="setTimeout(() => { document.getElementById('build-modal').classList.remove('modal-open'); htmx.trigger('body', 'refreshMap'); }, 100)">
+                        hx-swap="outerHTML">
                     Commence changes!
                 </button>
             {% endif %}
             {% if object.building %}
                 {% comment %}Allow demolishing non-unique buildings or ruins (ruins have type=RUINS){% endcomment %}
                 {% if not object.building.building_type.is_unique or object.building.building_type.type == 2 %}
-                    <button class="btn btn-error"
+                    <button class="btn btn-error text-white"
                             hx-post="{% url "city:tile-demolish" object.id %}"
                             hx-target="#form-container"
                             hx-swap="outerHTML"
-                            hx-confirm="Are you sure you want to demolish {{ object.building.name }}?{% if object.building.demolition_costs > 0 %} This will cost {{ object.building.demolition_costs }} coins.{% endif %}"
-                            onclick="setTimeout(() => { document.getElementById('build-modal').classList.remove('modal-open'); htmx.trigger('body', 'refreshMap'); }, 100)">
+                            hx-confirm="Are you sure you want to demolish {{ object.building.name }}?{% if object.building.demolition_costs > 0 %} This will cost {{ object.building.demolition_costs }} coins.{% endif %}">
                         Demolish Building{% if object.building.demolition_costs > 0 %} ({{ object.building.demolition_costs }} coins){% endif %}
                     </button>
                 {% endif %}

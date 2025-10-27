@@ -37,16 +37,21 @@ class TileBuildingForm(forms.ModelForm):
         if self.instance.building:
             buildings = Building.objects.filter(
                 building_type=self.instance.building.building_type, level=self.instance.building.level + 1
-            )
+            ).select_related("building_type")
         else:
-            # Get all non-unique buildings allowed by this tile terrain, having level one
-            unique_buildings = Building.objects.filter(
-                tiles__savegame=self.instance.savegame, building_type__is_unique=True
+            # Get IDs of unique buildings already built (more efficient than subquery in exclude)
+            unique_building_ids = list(
+                Tile.objects.filter(savegame=self.instance.savegame, building__building_type__is_unique=True)
+                .values_list("building_id", flat=True)
+                .distinct()
             )
+
+            # Get all non-unique buildings allowed by this tile terrain, having level one
             buildings = (
                 Building.objects.filter(building_type__allowed_terrains=self.instance.terrain, level=1)
-                .exclude(id__in=unique_buildings)
+                .exclude(id__in=unique_building_ids)
                 .exclude(building_type__type=BuildingType.Type.RUINS)
+                .select_related("building_type")
             )
 
             # If this tile is not adjacent to a city-tile, we can't build city-buildings

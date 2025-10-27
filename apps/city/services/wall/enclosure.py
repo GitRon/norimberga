@@ -21,11 +21,16 @@ class WallEnclosureService:
     def __init__(self, *, savegame: Savegame):
         self.savegame = savegame
         self.map_service = MapCoordinatesService()
+        # Cache all tiles in memory to avoid N queries during flood fill
+        self._tiles_cache = None
 
     def process(self) -> bool:
         """
         Check if the city is enclosed by walls.
         """
+        # Prefetch all tiles once to avoid N queries during flood fill
+        self._load_tiles_cache()
+
         # Get all city building tiles
         city_tiles = self._get_city_building_tiles()
 
@@ -50,13 +55,22 @@ class WallEnclosureService:
         # All city buildings must be in the reachable set
         return city_tile_ids.issubset(reachable_tile_ids)
 
+    def _load_tiles_cache(self) -> None:
+        """Load all tiles into memory cache to avoid N queries during flood fill."""
+        if self._tiles_cache is None:
+            tiles = Tile.objects.filter(savegame=self.savegame).select_related(
+                "building", "building__building_type", "terrain"
+            )
+            # Create a dictionary lookup by (x, y) coordinates
+            self._tiles_cache = {(tile.x, tile.y): tile for tile in tiles}
+
     def _get_city_building_tiles(self) -> list[Tile]:
         """Get all tiles with city buildings (excluding walls)."""
-        return list(
-            Tile.objects.filter(savegame=self.savegame, building__building_type__is_city=True)
-            .exclude(building__building_type__is_wall=True)
-            .select_related("building", "building__building_type")
-        )
+        return [
+            tile
+            for tile in self._tiles_cache.values()
+            if tile.building and tile.building.building_type.is_city and not tile.building.building_type.is_wall
+        ]
 
     def _get_starting_tile(self, *, city_tiles: list[Tile]) -> Tile:
         """Get a starting tile for the flood fill (prefer unique buildings)."""
@@ -68,6 +82,7 @@ class WallEnclosureService:
     def _flood_fill(self, *, start_tile: Tile) -> list[Tile]:
         """
         Perform flood fill from start_tile, marking all reachable non-wall tiles.
+        Uses cached tiles to avoid N database queries.
         """
         visited = set()
         to_visit = [start_tile]
@@ -92,18 +107,10 @@ class WallEnclosureService:
                 if coord_key in visited:
                     continue
 
-                # Get the tile at this coordinate
-                try:
-                    adjacent_tile = Tile.objects.select_related("building", "building__building_type").get(
-                        savegame=self.savegame, x=coord.x, y=coord.y
-                    )
-
-                    # Only add non-wall tiles to the queue
-                    if not self._is_wall(tile=adjacent_tile):
-                        to_visit.append(adjacent_tile)
-
-                except Tile.DoesNotExist:
-                    continue
+                # Get the tile from cache (no database query)
+                adjacent_tile = self._tiles_cache.get(coord_key)
+                if adjacent_tile and not self._is_wall(tile=adjacent_tile):
+                    to_visit.append(adjacent_tile)
 
         return reachable
 

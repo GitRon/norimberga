@@ -13,10 +13,7 @@ def test_shape_bonus_service_no_walls():
     terrain = TerrainFactory()
 
     # Create map without walls
-    tiles = [
-        TileFactory.build(savegame=savegame, terrain=terrain, building=None, x=i % 5, y=i // 5)
-        for i in range(25)
-    ]
+    tiles = [TileFactory.build(savegame=savegame, terrain=terrain, building=None, x=i % 5, y=i // 5) for i in range(25)]
     Tile.objects.bulk_create(tiles)
 
     service = WallShapeBonusService(savegame=savegame)
@@ -152,12 +149,7 @@ def test_shape_bonus_service_enclosed_square():
     # W . . . W
     # W W W W W
 
-    wall_positions = [
-        (x, y)
-        for y in range(5)
-        for x in range(5)
-        if x == 0 or x == 4 or y == 0 or y == 4
-    ]
+    wall_positions = [(x, y) for y in range(5) for x in range(5) if x == 0 or x == 4 or y == 0 or y == 4]
     wall_buildings = {pos: BuildingFactory(building_type=wall_type) for pos in wall_positions}
 
     tiles = [

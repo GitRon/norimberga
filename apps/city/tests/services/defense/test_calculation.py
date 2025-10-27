@@ -48,10 +48,7 @@ def test_defense_calculation_service_walls_enclosed_no_buildings():
     terrain = TerrainFactory()
 
     # Create tiles without buildings
-    tiles = [
-        TileFactory.build(savegame=savegame, terrain=terrain, building=None, x=i % 5, y=i // 5)
-        for i in range(25)
-    ]
+    tiles = [TileFactory.build(savegame=savegame, terrain=terrain, building=None, x=i % 5, y=i // 5) for i in range(25)]
     Tile.objects.bulk_create(tiles)
 
     # Create mock services
@@ -167,10 +164,7 @@ def test_defense_calculation_service_multiple_same_buildings():
     wall_building = BuildingFactory(building_type=wall_type, defense_value=10)
 
     # Create multiple tiles with same building
-    tiles = [
-        TileFactory.build(savegame=savegame, terrain=terrain, building=wall_building, x=i, y=0)
-        for i in range(5)
-    ]
+    tiles = [TileFactory.build(savegame=savegame, terrain=terrain, building=wall_building, x=i, y=0) for i in range(5)]
     Tile.objects.bulk_create(tiles)
 
     # Create mock services
@@ -208,12 +202,7 @@ def test_defense_calculation_service_integration_enclosed_square():
     # W C C C W
     # W W W W W
 
-    wall_positions = [
-        (x, y)
-        for y in range(5)
-        for x in range(5)
-        if x == 0 or x == 4 or y == 0 or y == 4
-    ]
+    wall_positions = [(x, y) for y in range(5) for x in range(5) if x == 0 or x == 4 or y == 0 or y == 4]
 
     # Create buildings with defense values
     wall_buildings = {pos: BuildingFactory(building_type=wall_type, defense_value=10) for pos in wall_positions}
@@ -264,10 +253,7 @@ def test_defense_calculation_service_integration_not_enclosed():
     # W W W W W
 
     wall_positions = [
-        (x, y)
-        for y in range(5)
-        for x in range(5)
-        if (x == 0 or x == 4 or y == 0 or y == 4) and not (x == 4 and y == 0)
+        (x, y) for y in range(5) for x in range(5) if (x == 0 or x == 4 or y == 0 or y == 4) and not (x == 4 and y == 0)
     ]
 
     wall_buildings = {pos: BuildingFactory(building_type=wall_type, defense_value=10) for pos in wall_positions}

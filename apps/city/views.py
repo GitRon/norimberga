@@ -49,7 +49,7 @@ class TileBuildView(SavegameRequiredMixin, generic.UpdateView):
     form_class = TileBuildingForm
     template_name = "city/partials/tile/update_tile.html"
 
-    def get_queryset(self) -> QuerySet[Tile]:
+    def get_queryset(self) -> "QuerySet[Tile]":
         # Optimize tile fetching by prefetching related objects
         return Tile.objects.select_related("terrain", "building", "building__building_type", "savegame")
 

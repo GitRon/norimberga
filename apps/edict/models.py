@@ -32,6 +32,13 @@ class Edict(models.Model):
         help_text="Milestone that must be completed before this edict becomes available",
     )
 
+    # Optional prestige requirement (nullable means no prestige required)
+    required_prestige = models.PositiveSmallIntegerField(
+        null=True,
+        blank=True,
+        help_text="Minimum prestige required before this edict becomes available",
+    )
+
     # Admin toggle
     is_active = models.BooleanField(default=True)
 

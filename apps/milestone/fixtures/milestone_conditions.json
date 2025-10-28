@@ -115,5 +115,32 @@
       "condition_class": "apps.milestone.conditions.year.MinYearCondition",
       "value": "1200"
     }
+  },
+  {
+    "model": "milestone.milestonecondition",
+    "pk": 14,
+    "fields": {
+      "milestone": 6,
+      "condition_class": "apps.milestone.conditions.prestige.MinPrestigeCondition",
+      "value": "20"
+    }
+  },
+  {
+    "model": "milestone.milestonecondition",
+    "pk": 15,
+    "fields": {
+      "milestone": 7,
+      "condition_class": "apps.milestone.conditions.prestige.MinPrestigeCondition",
+      "value": "35"
+    }
+  },
+  {
+    "model": "milestone.milestonecondition",
+    "pk": 16,
+    "fields": {
+      "milestone": 8,
+      "condition_class": "apps.milestone.conditions.prestige.MinPrestigeCondition",
+      "value": "50"
+    }
   }
 ]

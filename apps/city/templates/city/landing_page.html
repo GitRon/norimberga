@@ -21,4 +21,11 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Close modal and refresh map on successful build/demolish
+        document.body.addEventListener('refreshMap', function() {
+            document.getElementById('build-modal').classList.remove('modal-open');
+        });
+    </script>
 {% endblock content %}

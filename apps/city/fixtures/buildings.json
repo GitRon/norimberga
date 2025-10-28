@@ -22,7 +22,8 @@
       "taxes": 6,
       "building_costs": 100,
       "maintenance_costs": 0,
-      "housing_space": 20
+      "housing_space": 20,
+      "prestige": 2
     }
   },
   {
@@ -35,7 +36,8 @@
       "taxes": 12,
       "building_costs": 200,
       "maintenance_costs": 0,
-      "housing_space": 40
+      "housing_space": 40,
+      "prestige": 5
     }
   },
   {
@@ -61,7 +63,8 @@
       "taxes": 14,
       "building_costs": 150,
       "maintenance_costs": 0,
-      "housing_space": 0
+      "housing_space": 0,
+      "prestige": 3
     }
   },
   {
@@ -74,7 +77,8 @@
       "taxes": 28,
       "building_costs": 300,
       "maintenance_costs": 0,
-      "housing_space": 0
+      "housing_space": 0,
+      "prestige": 6
     }
   },
   {
@@ -100,7 +104,8 @@
       "taxes": 0,
       "building_costs": 60,
       "maintenance_costs": 2,
-      "housing_space": 0
+      "housing_space": 0,
+      "prestige": 1
     }
   },
   {
@@ -113,7 +118,8 @@
       "taxes": 0,
       "building_costs": 120,
       "maintenance_costs": 4,
-      "housing_space": 0
+      "housing_space": 0,
+      "prestige": 3
     }
   },
   {
@@ -139,7 +145,8 @@
       "taxes": 20,
       "building_costs": 300,
       "maintenance_costs": 0,
-      "housing_space": 0
+      "housing_space": 0,
+      "prestige": 4
     }
   },
   {
@@ -152,7 +159,8 @@
       "taxes": 40,
       "building_costs": 600,
       "maintenance_costs": 0,
-      "housing_space": 0
+      "housing_space": 0,
+      "prestige": 8
     }
   },
   {
@@ -178,7 +186,8 @@
       "taxes": 14,
       "building_costs": 200,
       "maintenance_costs": 0,
-      "housing_space": 0
+      "housing_space": 0,
+      "prestige": 2
     }
   },
   {
@@ -191,7 +200,8 @@
       "taxes": 28,
       "building_costs": 400,
       "maintenance_costs": 0,
-      "housing_space": 0
+      "housing_space": 0,
+      "prestige": 4
     }
   },
   {
@@ -217,20 +227,22 @@
       "taxes": 8,
       "building_costs": 160,
       "maintenance_costs": 0,
-      "housing_space": 0
+      "housing_space": 0,
+      "prestige": 1
     }
   },
   {
     "model": "city.building",
     "pk": 18,
     "fields": {
-      "name": "Mason’s Extraction",
+      "name": "Mason's Extraction",
       "building_type": 6,
       "level": 3,
       "taxes": 16,
       "building_costs": 320,
       "maintenance_costs": 0,
-      "housing_space": 0
+      "housing_space": 0,
+      "prestige": 2
     }
   },
   {
@@ -250,13 +262,14 @@
     "model": "city.building",
     "pk": 20,
     "fields": {
-      "name": "Logger’s Camp",
+      "name": "Logger's Camp",
       "building_type": 7,
       "level": 2,
       "taxes": 6,
       "building_costs": 120,
       "maintenance_costs": 0,
-      "housing_space": 0
+      "housing_space": 0,
+      "prestige": 1
     }
   },
   {
@@ -269,7 +282,8 @@
       "taxes": 12,
       "building_costs": 240,
       "maintenance_costs": 0,
-      "housing_space": 0
+      "housing_space": 0,
+      "prestige": 2
     }
   },
   {
@@ -295,7 +309,8 @@
       "taxes": 4,
       "building_costs": 80,
       "maintenance_costs": 0,
-      "housing_space": 0
+      "housing_space": 0,
+      "prestige": 1
     }
   },
   {
@@ -308,7 +323,8 @@
       "taxes": 8,
       "building_costs": 160,
       "maintenance_costs": 0,
-      "housing_space": 0
+      "housing_space": 0,
+      "prestige": 2
     }
   },
   {
@@ -334,7 +350,8 @@
       "taxes": 6,
       "building_costs": 100,
       "maintenance_costs": 0,
-      "housing_space": 0
+      "housing_space": 0,
+      "prestige": 1
     }
   },
   {
@@ -347,7 +364,8 @@
       "taxes": 12,
       "building_costs": 200,
       "maintenance_costs": 0,
-      "housing_space": 0
+      "housing_space": 0,
+      "prestige": 2
     }
   },
   {

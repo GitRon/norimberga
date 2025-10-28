@@ -64,6 +64,7 @@ class Building(models.Model):
     )
     housing_space = models.PositiveSmallIntegerField("Housing space", default=0, validators=(MinValueValidator(0),))
     defense_value = models.PositiveSmallIntegerField("Defense value", default=0, validators=(MinValueValidator(0),))
+    prestige = models.PositiveSmallIntegerField("Prestige", default=0, validators=(MinValueValidator(0),))
 
     class Meta:
         default_related_name = "buildings"

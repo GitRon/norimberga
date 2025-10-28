@@ -12,6 +12,7 @@
       "effect_population": null,
       "cooldown_years": 2,
       "required_milestone": null,
+      "required_prestige": null,
       "is_active": true
     }
   },
@@ -28,6 +29,7 @@
       "effect_population": null,
       "cooldown_years": 3,
       "required_milestone": null,
+      "required_prestige": null,
       "is_active": true
     }
   },
@@ -44,6 +46,7 @@
       "effect_population": null,
       "cooldown_years": 5,
       "required_milestone": null,
+      "required_prestige": null,
       "is_active": true
     }
   },
@@ -60,6 +63,7 @@
       "effect_population": null,
       "cooldown_years": 4,
       "required_milestone": null,
+      "required_prestige": null,
       "is_active": true
     }
   },
@@ -76,6 +80,7 @@
       "effect_population": null,
       "cooldown_years": 2,
       "required_milestone": null,
+      "required_prestige": null,
       "is_active": true
     }
   },
@@ -92,6 +97,7 @@
       "effect_population": 20,
       "cooldown_years": 10,
       "required_milestone": 4,
+      "required_prestige": 10,
       "is_active": true
     }
   },
@@ -108,6 +114,7 @@
       "effect_population": 50,
       "cooldown_years": 15,
       "required_milestone": 6,
+      "required_prestige": 20,
       "is_active": true
     }
   },
@@ -124,6 +131,7 @@
       "effect_population": null,
       "cooldown_years": 8,
       "required_milestone": 10,
+      "required_prestige": 30,
       "is_active": true
     }
   },
@@ -140,6 +148,7 @@
       "effect_population": null,
       "cooldown_years": 20,
       "required_milestone": 8,
+      "required_prestige": 40,
       "is_active": true
     }
   },
@@ -156,6 +165,7 @@
       "effect_population": null,
       "cooldown_years": 2,
       "required_milestone": null,
+      "required_prestige": null,
       "is_active": true
     }
   },
@@ -172,6 +182,7 @@
       "effect_population": null,
       "cooldown_years": 6,
       "required_milestone": 7,
+      "required_prestige": 25,
       "is_active": true
     }
   }

@@ -36,6 +36,11 @@ class EdictActivationService:
         if not milestone_validation.success:
             return milestone_validation
 
+        # Check prestige requirement
+        prestige_validation = self._validate_prestige_requirement()
+        if not prestige_validation.success:
+            return prestige_validation
+
         # Check cooldown
         if not self._is_edict_available():
             return EdictActivationResult(
@@ -79,6 +84,24 @@ class EdictActivationService:
 
         return EdictActivationResult(success=True, message="")
 
+    def _validate_prestige_requirement(self) -> EdictActivationResult:
+        """Validate that required prestige level has been reached."""
+        if self.edict.required_prestige is None:
+            return EdictActivationResult(success=True, message="")
+
+        from apps.city.services.prestige import PrestigeCalculationService
+
+        prestige_service = PrestigeCalculationService(savegame=self.savegame)
+        current_prestige = prestige_service.process()
+
+        if current_prestige < self.edict.required_prestige:
+            return EdictActivationResult(
+                success=False,
+                message=f"This edict requires {self.edict.required_prestige} prestige. You have {current_prestige}.",
+            )
+
+        return EdictActivationResult(success=True, message="")
+
     def _is_edict_available(self) -> bool:
         """Check if edict is available based on cooldown."""
         if self.edict.cooldown_years is None:
@@ -108,6 +131,9 @@ class EdictActivationService:
                 success=False,
                 message=f"Not enough population. Need {self.edict.cost_population}, have {self.savegame.population}.",
             )
+
+        # Note: cost_prestige is not validated here because prestige is calculated from buildings
+        # and cannot be "spent". Use required_prestige for prestige requirements instead.
 
         return EdictActivationResult(success=True, message="")
 

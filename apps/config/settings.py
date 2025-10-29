@@ -58,6 +58,7 @@ LOCAL_APPS = [
     "apps.milestone",
     "apps.round",
     "apps.savegame",
+    "apps.thread",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS + THIRD_PARTY_APPS

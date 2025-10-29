@@ -1,0 +1,190 @@
+<!-- Defense Overview -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 mt-4">
+    <!-- Current Defense Value -->
+    <div class="card bg-base-100 shadow-lg border-2 {% if breakdown.is_enclosed %}border-blue-600{% else %}border-gray-400{% endif %}">
+        <div class="card-body">
+            <h2 class="card-title text-2xl mb-4">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                </svg>
+                Current Defense Value
+            </h2>
+            <div class="flex flex-col gap-4">
+                <div class="flex justify-between items-baseline">
+                    <span class="text-lg text-gray-700">Status:</span>
+                    {% if breakdown.is_enclosed %}
+                        <span class="badge badge-success badge-lg">Enclosed</span>
+                    {% else %}
+                        <span class="badge badge-error badge-lg">Not Enclosed</span>
+                    {% endif %}
+                </div>
+                <div class="flex justify-between items-baseline">
+                    <span class="text-lg text-gray-700">Defense Points:</span>
+                    <span class="text-4xl font-bold {% if breakdown.actual_total > 0 %}text-blue-600{% else %}text-gray-500{% endif %}">
+                        {{ breakdown.actual_total }}
+                    </span>
+                </div>
+                {% if not breakdown.is_enclosed %}
+                    <div class="alert alert-warning">
+                        <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                        </svg>
+                        <div>
+                            <p class="font-bold">City walls must be enclosed!</p>
+                            <p class="text-sm">Complete your wall perimeter to activate defenses.</p>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Potential Defense Value -->
+    <div class="card bg-base-100 shadow-lg border-2 border-green-600">
+        <div class="card-body">
+            <h2 class="card-title text-2xl mb-4">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                </svg>
+                Potential Defense Value
+            </h2>
+            <div class="flex flex-col gap-4">
+                <div class="flex justify-between items-baseline">
+                    <span class="text-lg text-gray-700">If Walls Enclosed:</span>
+                    <span class="text-4xl font-bold text-green-600">{{ breakdown.potential_total }}</span>
+                </div>
+                {% if not breakdown.is_enclosed and breakdown.potential_total > 0 %}
+                    <div class="alert alert-info">
+                        <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                        </svg>
+                        <div>
+                            <p class="font-bold">You're close!</p>
+                            <p class="text-sm">Close the gaps in your walls to unlock {{ breakdown.potential_total }} defense points.</p>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Defense Breakdown -->
+<div class="card bg-base-100 shadow-lg">
+    <div class="card-body">
+        <h2 class="card-title text-2xl mb-6">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+            Defense Breakdown
+        </h2>
+
+        <div class="overflow-x-auto">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Description</th>
+                        <th class="text-right">Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="font-semibold">
+                            <span class="flex items-center gap-2">
+                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                </svg>
+                                Base Defense
+                            </span>
+                        </td>
+                        <td class="text-gray-600">Sum of defense values from all buildings</td>
+                        <td class="text-right font-bold text-blue-600">+{{ breakdown.base_defense }}</td>
+                    </tr>
+                    <tr>
+                        <td class="font-semibold">
+                            <span class="flex items-center gap-2">
+                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Shape Bonus
+                            </span>
+                        </td>
+                        <td class="text-gray-600">Bonus for well-connected walls (walls with exactly 2 neighbors)</td>
+                        <td class="text-right font-bold text-green-600">+{{ breakdown.shape_bonus }}</td>
+                    </tr>
+                    <tr>
+                        <td class="font-semibold">
+                            <span class="flex items-center gap-2">
+                                <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                </svg>
+                                Spike Malus
+                            </span>
+                        </td>
+                        <td class="text-gray-600">Penalty for poorly connected walls (walls with 0-1 neighbors)</td>
+                        <td class="text-right font-bold text-red-600">{{ breakdown.spike_malus }}</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr class="border-t-2 border-gray-300">
+                        <td colspan="2" class="text-right font-bold text-lg text-gray-800 uppercase">Total:</td>
+                        <td class="text-right font-bold text-2xl {% if breakdown.potential_total > 0 %}text-green-600{% else %}text-gray-600{% endif %}">
+                            {{ breakdown.potential_total }}
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        {% if breakdown.spike_malus < 0 %}
+            <div class="mt-6 alert alert-error">
+                <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                </svg>
+                <div>
+                    <p class="font-bold">Warning: Wall Spikes Detected!</p>
+                    <p class="text-sm">You have wall sections with 0-1 neighbors. These weak points significantly reduce your defenses. Connect your walls better to remove this penalty.</p>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if breakdown.shape_bonus > 0 %}
+            <div class="mt-6 alert alert-success">
+                <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                <div>
+                    <p class="font-bold">Excellent Wall Design!</p>
+                    <p class="text-sm">Your well-connected walls are providing a shape bonus. Keep building smooth wall connections for maximum defense.</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Help Section -->
+<div class="mt-6 card bg-base-100 shadow-lg border-l-4 border-blue-500">
+    <div class="card-body">
+        <h3 class="card-title text-xl">
+            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            How Defense Works
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+            <div class="flex flex-col gap-2">
+                <h4 class="font-bold text-gray-800">Base Defense</h4>
+                <p class="text-sm text-gray-600">Every building with a defense value contributes to your base defense. Build walls and defensive structures to increase this value.</p>
+            </div>
+            <div class="flex flex-col gap-2">
+                <h4 class="font-bold text-gray-800">Shape Bonus</h4>
+                <p class="text-sm text-gray-600">Walls with exactly 2 neighbors (forming smooth lines or corners) receive a +5 bonus each. Build continuous, well-formed walls for maximum efficiency.</p>
+            </div>
+            <div class="flex flex-col gap-2">
+                <h4 class="font-bold text-gray-800">Spike Malus</h4>
+                <p class="text-sm text-gray-600">Wall sections with 0-1 neighbors (spikes or isolated walls) receive a -10 penalty each. Avoid disconnected wall pieces and close all gaps.</p>
+            </div>
+        </div>
+    </div>
+</div>

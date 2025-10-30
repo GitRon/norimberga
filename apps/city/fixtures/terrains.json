@@ -4,7 +4,7 @@
     "pk": 1,
     "fields": {
       "name": "Grassland",
-      "color_class": "bg-green-500",
+      "image_filename": "meadows.png",
       "probability": 40,
       "is_water": false
     }
@@ -14,7 +14,7 @@
     "pk": 2,
     "fields": {
       "name": "Forest",
-      "color_class": "bg-green-800",
+      "image_filename": "forest.jpg",
       "probability": 25,
       "is_water": false
     }
@@ -24,7 +24,7 @@
     "pk": 3,
     "fields": {
       "name": "Hills",
-      "color_class": "bg-yellow-700",
+      "image_filename": "hills.jpg",
       "probability": 15,
       "is_water": false
     }
@@ -34,7 +34,7 @@
     "pk": 4,
     "fields": {
       "name": "Lake",
-      "color_class": "bg-blue-500",
+      "image_filename": "lake.jpg",
       "probability": 5,
       "is_water": true
     }
@@ -44,7 +44,7 @@
     "pk": 5,
     "fields": {
       "name": "Rocky Ground",
-      "color_class": "bg-gray-600",
+      "image_filename": "rocky_ground.jpg",
       "probability": 8,
       "is_water": false
     }
@@ -54,7 +54,7 @@
     "pk": 6,
     "fields": {
       "name": "Plains",
-      "color_class": "bg-yellow-200",
+      "image_filename": "plains.jpg",
       "probability": 20,
       "is_water": false
     }
@@ -64,7 +64,7 @@
     "pk": 7,
     "fields": {
       "name": "River",
-      "color_class": "bg-blue-600",
+      "image_filename": "river.jpg",
       "probability": 100,
       "is_water": true
     }

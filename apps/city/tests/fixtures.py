@@ -12,7 +12,8 @@ def ruins_building(db):
     """
     # Create all terrains first (ruins can be placed on any terrain)
     terrains = [
-        Terrain.objects.create(name=f"Terrain {i}", color_class=f"bg-test-{i}", probability=10) for i in range(1, 8)
+        Terrain.objects.create(name=f"Terrain {i}", image_filename=f"terrain-{i}.png", probability=10)
+        for i in range(1, 8)
     ]
 
     # Create Ruins BuildingType

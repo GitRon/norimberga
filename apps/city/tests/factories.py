@@ -8,7 +8,7 @@ class TerrainFactory(factory.django.DjangoModelFactory):
         model = Terrain
 
     name = factory.Faker("word")
-    color_class = factory.Sequence(lambda n: f"bg-color-{n}")
+    image_filename = factory.Sequence(lambda n: f"terrain-{n}.png")
     probability = factory.Faker("random_int", min=1, max=100)
 
 

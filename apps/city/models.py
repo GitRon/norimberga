@@ -12,8 +12,10 @@ class Terrain(models.Model):
     """
 
     name = models.CharField(max_length=50)
-    color_class = models.CharField(
-        max_length=20, help_text="Tailwind color for usage in frontend. Example: 'bg-yellow-500'"
+    image_filename = models.CharField(
+        max_length=100,
+        default="default.png",
+        help_text="Filename of the terrain image in static/img/tiles/. Example: 'grass.png'",
     )
     probability = models.PositiveSmallIntegerField(
         "Probability weight", validators=(MaxValueValidator(100), MinValueValidator(1))
@@ -95,6 +97,7 @@ class Tile(models.Model):
 
     def color_class(self) -> str:
         # Tailwind can't detect dynamic classes, therefore, they are safelist-ed
+        # Only used for buildings now - terrain uses background images instead
         if self.building:
             if self.building.building_type.is_wall:
                 return render_to_string("city/classes/_tile_city_wall.txt")
@@ -104,7 +107,13 @@ class Tile(models.Model):
                 return render_to_string("city/classes/_tile_country.txt")
             else:
                 return render_to_string("city/classes/_tile_city.txt")
-        return self.terrain.color_class
+        return ""
+
+    def terrain_image_url(self) -> str:
+        """Return the URL path to the terrain image."""
+        from django.templatetags.static import static
+
+        return static(f"img/tiles/{self.terrain.image_filename}")
 
     def is_adjacent_to_city_building(self) -> bool:
         return Tile.objects.has_adjacent_city_building(tile=self)

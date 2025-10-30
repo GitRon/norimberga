@@ -105,9 +105,9 @@ def test_terrain_valid_probability_range():
 @pytest.mark.django_db
 def test_terrain_creation():
     """Test terrain creation with all fields."""
-    terrain = TerrainFactory(name="Forest", color_class="bg-green-400", probability=75)
+    terrain = TerrainFactory(name="Forest", image_filename="forest.png", probability=75)
     assert terrain.name == "Forest"
-    assert terrain.color_class == "bg-green-400"
+    assert terrain.image_filename == "forest.png"
     assert terrain.probability == 75
 
 
@@ -346,12 +346,22 @@ def test_tile_color_class_with_city_building():
 
 @pytest.mark.django_db
 def test_tile_color_class_without_building():
-    """Test color_class returns terrain color when no building."""
-    terrain = TerrainFactory(color_class="bg-green-400")
+    """Test color_class returns empty string when no building (terrain uses images now)."""
+    terrain = TerrainFactory(image_filename="grass.png")
     tile = TileFactory(terrain=terrain, building=None)
 
     result = tile.color_class()
-    assert result == "bg-green-400"
+    assert result == ""
+
+
+@pytest.mark.django_db
+def test_tile_terrain_image_url():
+    """Test terrain_image_url returns correct static path."""
+    terrain = TerrainFactory(image_filename="grass.png")
+    tile = TileFactory(terrain=terrain, building=None)
+
+    result = tile.terrain_image_url()
+    assert result == "/static/img/tiles/grass.png"
 
 
 @pytest.mark.django_db

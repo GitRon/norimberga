@@ -3,8 +3,8 @@
     <div class="bg-white rounded-lg shadow-lg p-6">
         <div class="grid grid-cols-20 gap-0 text-center bg-gray-300 rounded">
             {% for tile in savegame.tiles.all %}
-                {# Tailwind can't detect dynamic classes, therefore, they are safelist-ed #}
-                <div class="aspect-square border border-gray-400 cursor-pointer {{ tile.color_class }} relative transition-all duration-200 hover:brightness-110 hover:z-10 hover:shadow-xl hover:border-gray-700 hover:border-2"
+                <div class="aspect-square border border-gray-400 cursor-pointer {{ tile.color_class }} relative transition-all duration-200 hover:brightness-110 hover:z-10 hover:shadow-xl hover:border-gray-700 hover:border-2 bg-center bg-no-repeat"
+                     {% if not tile.building %}style="background-image: url('{{ tile.terrain_image_url }}'); background-size: 100% 100%;"{% endif %}
                      hx-get="{% url "city:tile-build" tile.id %}"
                      hx-target="#build-container"
                      hx-swap="innerHTML"

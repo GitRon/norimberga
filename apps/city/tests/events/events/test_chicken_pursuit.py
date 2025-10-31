@@ -1,0 +1,83 @@
+import pytest
+from django.contrib import messages
+
+from apps.city.events.events.chicken_pursuit import Event as ChickenPursuitEvent
+from apps.savegame.tests.factories import SavegameFactory
+
+
+@pytest.mark.django_db
+def test_chicken_pursuit_event_init():
+    """Test ChickenPursuitEvent initialization and class attributes."""
+    savegame = SavegameFactory(population=100)
+
+    event = ChickenPursuitEvent(savegame=savegame)
+
+    assert event.PROBABILITY == 15
+    assert event.LEVEL == messages.INFO
+    assert event.TITLE == "Chicken Pursuit"
+    assert event.savegame.id == savegame.id
+
+
+@pytest.mark.django_db
+def test_chicken_pursuit_event_get_probability_with_population():
+    """Test get_probability returns base probability when population > 0."""
+    savegame = SavegameFactory(population=50)
+
+    event = ChickenPursuitEvent(savegame=savegame)
+    probability = event.get_probability()
+
+    assert probability == 15
+
+
+@pytest.mark.django_db
+def test_chicken_pursuit_event_get_probability_zero_population():
+    """Test get_probability returns 0 when population is zero."""
+    savegame = SavegameFactory(population=0)
+
+    event = ChickenPursuitEvent(savegame=savegame)
+    probability = event.get_probability()
+
+    assert probability == 0
+
+
+@pytest.mark.django_db
+def test_chicken_pursuit_event_get_verbose_text():
+    """Test get_verbose_text returns correct description."""
+    savegame = SavegameFactory(population=100)
+
+    event = ChickenPursuitEvent(savegame=savegame)
+    verbose_text = event.get_verbose_text()
+
+    expected_text = (
+        "A chicken escapes a coop and half the street joins the chase, "
+        "shouting tactical advice as if it's a military campaign."
+    )
+    assert verbose_text == expected_text
+
+
+@pytest.mark.django_db
+def test_chicken_pursuit_event_get_effects():
+    """Test get_effects returns empty list."""
+    savegame = SavegameFactory(population=100)
+
+    event = ChickenPursuitEvent(savegame=savegame)
+    effects = event.get_effects()
+
+    assert len(effects) == 0
+
+
+@pytest.mark.django_db
+def test_chicken_pursuit_event_process():
+    """Test full event processing workflow."""
+    savegame = SavegameFactory(population=100)
+
+    event = ChickenPursuitEvent(savegame=savegame)
+    result_text = event.process()
+
+    # Verify no changes to savegame
+    savegame.refresh_from_db()
+    assert savegame.population == 100
+
+    # Verify result text is returned
+    assert "A chicken escapes a coop" in result_text
+    assert "military campaign" in result_text

@@ -39,7 +39,11 @@ class EventSelectionService:
 
                 # Import file
                 module = importlib.import_module(
-                    file_path.as_posix().replace(root_dir.as_posix(), "").replace("/", ".").strip(".").strip(".py")
+                    file_path.as_posix()
+                    .replace(root_dir.as_posix(), "")
+                    .replace("/", ".")
+                    .strip(".")
+                    .removesuffix(".py")
                 )
 
                 # Get event class

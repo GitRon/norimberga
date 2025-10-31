@@ -2,13 +2,39 @@
 
 This guide will help you set up the Norimberga development environment from scratch.
 
+## Quick Start
+
+Already familiar with Django and TailwindCSS? Here's the essentials:
+
+```bash
+# Clone and setup
+git clone https://github.com/GitRon/norimberga.git
+cd norimberga
+uv sync --group dev
+
+# Database and fixtures
+python manage.py migrate
+python manage.py loaddata terrains building_types buildings milestones milestone_conditions
+python manage.py createsuperuser
+
+# Frontend
+npm install
+npx tailwindcss -i ./static/css/input.css -o ./static/css/dist/output.css
+
+# Run (in two terminals)
+python manage.py runserver
+npx tailwindcss -i ./static/css/input.css -o ./static/css/dist/output.css --watch
+```
+
+For detailed instructions, continue reading below.
+
 ## Prerequisites
 
 - Python 3.13 or higher
 - Node.js and npm (for TailwindCSS)
 - Git
 
-## Initial Setup
+## Initial Setup (One-Time)
 
 ### 1. Clone the Repository
 
@@ -49,11 +75,11 @@ The project includes fixture data that should be loaded to set up the game prope
 
 ```bash
 # Load all fixtures in order
-python manage.py loaddata apps/city/fixtures/terrains.json
-python manage.py loaddata apps/city/fixtures/building_types.json
-python manage.py loaddata apps/city/fixtures/buildings.json
-python manage.py loaddata apps/milestone/fixtures/milestones.json
-python manage.py loaddata apps/milestone/fixtures/milestone_conditions.json
+python manage.py loaddata terrains
+python manage.py loaddata building_types
+python manage.py loaddata buildings
+python manage.py loaddata milestones
+python manage.py loaddata milestone_conditions
 ```
 
 All fixtures are required for the game to function correctly with its initial data.
@@ -87,9 +113,11 @@ npx tailwindcss -i ./static/css/input.css -o ./static/css/dist/output.css
 
 **Note**: The project uses [DaisyUI](https://daisyui.com/) as a component library for Tailwind CSS. All UI components (buttons, cards, forms, etc.) use DaisyUI classes.
 
-## Running the Development Server
+## Daily Development Workflow
 
-### Start the Backend Server
+Once initial setup is complete, you'll need two terminals running simultaneously for development:
+
+### Terminal 1: Django Development Server
 
 ```bash
 python manage.py runserver
@@ -97,9 +125,9 @@ python manage.py runserver
 
 The server will be available at `http://localhost:8000/`
 
-### Watch TailwindCSS Changes (Development)
+### Terminal 2: TailwindCSS Watcher
 
-In a separate terminal, run the TailwindCSS watcher to automatically rebuild CSS when you make changes to templates or styles:
+Run the TailwindCSS watcher to automatically rebuild CSS when you make changes to templates or styles:
 
 ```bash
 npx tailwindcss -i ./static/css/input.css -o ./static/css/dist/output.css --watch
@@ -111,9 +139,9 @@ The watcher will automatically detect changes to:
 - TailwindCSS configuration (`tailwind.config.js`)
 - DaisyUI theme settings
 
-## Database Information
+## Database Management
 
-### SQLite Usage
+### About SQLite
 
 - **Database file location**: `db.sqlite3` (in project root)
 - **No separate server needed**: SQLite is file-based and built into Python
@@ -135,11 +163,11 @@ python manage.py migrate
 # Delete db.sqlite3 and run migrate again
 rm db.sqlite3
 python manage.py migrate
-python manage.py loaddata apps/city/fixtures/terrains.json
-python manage.py loaddata apps/city/fixtures/building_types.json
-python manage.py loaddata apps/city/fixtures/buildings.json
-python manage.py loaddata apps/milestone/fixtures/milestones.json
-python manage.py loaddata apps/milestone/fixtures/milestone_conditions.json
+python manage.py loaddata terrains
+python manage.py loaddata building_types
+python manage.py loaddata buildings
+python manage.py loaddata milestones
+python manage.py loaddata milestone_conditions
 python manage.py createsuperuser
 ```
 

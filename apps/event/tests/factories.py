@@ -69,3 +69,32 @@ class ZeroProbabilityEvent(BaseEvent):
 
     def get_verbose_text(self):
         return "Zero probability event occurred"
+
+
+class MockEffect:
+    """Mock effect class for testing event effects."""
+
+    def __init__(self):
+        self.was_processed = False
+
+    def process(self, *, savegame):
+        """Mark this effect as processed."""
+        self.was_processed = True
+
+
+class EventWithEffect(BaseEvent):
+    """Event with an effect for testing."""
+
+    PROBABILITY = 50
+    TITLE = "Event With Effect"
+
+    def __init__(self, *, savegame):
+        super().__init__(savegame=savegame)
+        self.effect = MockEffect()
+
+    def _prepare_effect_test(self):
+        """Prepare a test effect."""
+        return self.effect
+
+    def get_verbose_text(self):
+        return "Event with effect occurred"

@@ -43,8 +43,6 @@ class NotificationAcknowledgeView(SavegameRequiredMixin, generic.View):
 
     def post(self, request, pk, *args, **kwargs) -> HttpResponse:
         savegame = Savegame.objects.filter(user=self.request.user, is_active=True).first()
-        if not savegame:
-            return HttpResponse("No active savegame found", status=400)
 
         # Get and acknowledge the notification
         notification = get_object_or_404(EventNotification, pk=pk, savegame=savegame)

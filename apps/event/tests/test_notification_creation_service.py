@@ -90,6 +90,24 @@ def test_notification_creation_service_returns_created_notifications():
 
 
 @pytest.mark.django_db
+def test_notification_creation_service_processes_event_effects():
+    """Test that service processes event effects by calling effect.process()."""
+    savegame = SavegameFactory.create()
+
+    # Import after defining to avoid circular import issues
+    from apps.event.tests.factories import EventWithEffect
+
+    event = EventWithEffect(savegame=savegame)
+
+    service = NotificationCreationService(savegame=savegame, events=[event])
+    notifications = service.process()
+
+    # Verify the effect was processed
+    assert event.effect.was_processed is True
+    assert len(notifications) == 1
+
+
+@pytest.mark.django_db
 def test_notification_creation_service_skips_events_with_no_message():
     """Test that service skips events that return None or empty string from process()."""
     savegame = SavegameFactory.create()

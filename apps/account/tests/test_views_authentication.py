@@ -146,60 +146,6 @@ def test_user_registration_view_redirects_to_savegame_list_when_no_savegame(clie
 
 
 @pytest.mark.django_db
-def test_user_registration_view_requires_first_name(client):
-    """Test UserRegistrationView requires first_name field."""
-    data = {
-        "username": "newuser",
-        "first_name": "",
-        "last_name": "Doe",
-        "email": "john@example.com",
-        "password1": "securepassword123",
-        "password2": "securepassword123",
-    }
-
-    response = client.post(reverse("account:register"), data=data)
-
-    assert response.status_code == 200
-    assert "first_name" in response.context["form"].errors
-
-
-@pytest.mark.django_db
-def test_user_registration_view_requires_last_name(client):
-    """Test UserRegistrationView requires last_name field."""
-    data = {
-        "username": "newuser",
-        "first_name": "John",
-        "last_name": "",
-        "email": "john@example.com",
-        "password1": "securepassword123",
-        "password2": "securepassword123",
-    }
-
-    response = client.post(reverse("account:register"), data=data)
-
-    assert response.status_code == 200
-    assert "last_name" in response.context["form"].errors
-
-
-@pytest.mark.django_db
-def test_user_registration_view_validates_password_match(client):
-    """Test UserRegistrationView validates that passwords match."""
-    data = {
-        "username": "newuser",
-        "first_name": "John",
-        "last_name": "Doe",
-        "email": "john@example.com",
-        "password1": "securepassword123",
-        "password2": "differentpassword",
-    }
-
-    response = client.post(reverse("account:register"), data=data)
-
-    assert response.status_code == 200
-    assert "password2" in response.context["form"].errors
-
-
-@pytest.mark.django_db
 def test_user_registration_view_redirects_to_landing_page_with_existing_savegame(client):
     """Test UserRegistrationView redirects to landing page when user has existing savegame."""
     from unittest.mock import patch

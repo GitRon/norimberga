@@ -12,7 +12,7 @@ def test_barrel_argument_event_init():
 
     event = BarrelArgumentEvent(savegame=savegame)
 
-    assert event.PROBABILITY == 15
+    assert event.PROBABILITY == 1
     assert event.LEVEL == messages.INFO
     assert event.TITLE == "The Barrel Argument"
     assert event.savegame.id == savegame.id
@@ -26,7 +26,7 @@ def test_barrel_argument_event_get_probability_with_population():
     event = BarrelArgumentEvent(savegame=savegame)
     probability = event.get_probability()
 
-    assert probability == 15
+    assert probability == 1
 
 
 @pytest.mark.django_db

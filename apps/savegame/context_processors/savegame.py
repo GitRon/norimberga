@@ -12,6 +12,7 @@ def get_current_savegame(request) -> dict:
     max_housing_space = 0
     defense_value = 0
     prestige = 0
+    unacknowledged_notifications_count = 0
     if hasattr(request, "user") and request.user.is_authenticated:
         savegame = (
             Savegame.objects.filter(user=request.user, is_active=True)
@@ -27,10 +28,12 @@ def get_current_savegame(request) -> dict:
             max_housing_space = BuildingHousingService(savegame=savegame).calculate_max_space()
             defense_value = DefenseCalculationService(savegame=savegame).process()
             prestige = PrestigeCalculationService(savegame=savegame).process()
+            unacknowledged_notifications_count = savegame.event_notifications.filter(acknowledged=False).count()
     return {
         "savegame": savegame,
         "is_enclosed": is_enclosed,
         "max_housing_space": max_housing_space,
         "defense_value": defense_value,
         "prestige": prestige,
+        "unacknowledged_notifications_count": unacknowledged_notifications_count,
     }

@@ -1,4 +1,21 @@
+import factory
+
 from apps.event.events.events.base_event import BaseEvent
+from apps.event.models import EventNotification
+
+
+class EventNotificationFactory(factory.django.DjangoModelFactory):
+    """Factory for creating EventNotification instances for testing."""
+
+    class Meta:
+        model = EventNotification
+
+    savegame = factory.SubFactory("apps.savegame.tests.factories.SavegameFactory")
+    year = 1150
+    title = "Test Event"
+    message = "This is a test event message."
+    level = EventNotification.Level.INFO
+    acknowledged = False
 
 
 class MockEvent(BaseEvent):

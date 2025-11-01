@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if notification %}
+        <div class="min-h-[80vh] flex items-center justify-center px-4 py-8">
+            <div class="max-w-3xl w-full">
+                <!-- Parchment Scroll Container -->
+                <div class="relative">
+                    <!-- Decorative top scroll -->
+                    <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 w-48 h-4 bg-amber-900 rounded-full shadow-lg"></div>
+
+                    <!-- Main parchment card -->
+                    <div class="card bg-gradient-to-br from-amber-50 to-yellow-50 shadow-2xl border-4 border-amber-900 relative">
+                        <!-- Decorative corners -->
+                        <div class="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2 border-amber-700"></div>
+                        <div class="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2 border-amber-700"></div>
+                        <div class="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2 border-amber-700"></div>
+                        <div class="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2 border-amber-700"></div>
+
+                        <div class="card-body p-8 md:p-12">
+                            <!-- Progress indicator -->
+                            <div class="text-center mb-6">
+                                <div class="badge badge-lg {% if notification.level == 'success' %}badge-success{% elif notification.level == 'error' %}badge-error{% elif notification.level == 'warning' %}badge-warning{% else %}badge-info{% endif %}">
+                                    Notification 1 of {{ total_notifications }}
+                                </div>
+                            </div>
+
+                            <!-- Title with decorative header -->
+                            <div class="text-center mb-8">
+                                <div class="inline-block">
+                                    <div class="border-b-4 border-amber-900 pb-2">
+                                        <h1 class="text-3xl md:text-4xl font-bold text-amber-900 tracking-wide">
+                                            {{ notification.title }}
+                                        </h1>
+                                    </div>
+                                    <div class="text-sm text-amber-700 mt-2 font-semibold">
+                                        Year {{ notification.year }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Decorative divider -->
+                            <div class="flex items-center gap-3 mb-8">
+                                <div class="flex-1 h-px bg-gradient-to-r from-transparent via-amber-700 to-transparent"></div>
+                                <svg class="w-6 h-6 text-amber-700" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                                </svg>
+                                <div class="flex-1 h-px bg-gradient-to-r from-transparent via-amber-700 to-transparent"></div>
+                            </div>
+
+                            <!-- Message content with medieval styling -->
+                            <div class="bg-white bg-opacity-50 rounded-lg p-6 md:p-8 mb-8 border-2 border-amber-200 shadow-inner">
+                                <div class="prose prose-lg max-w-none">
+                                    <p class="text-gray-800 leading-relaxed text-lg font-serif whitespace-pre-line">{{ notification.message }}</p>
+                                </div>
+                            </div>
+
+                            <!-- Decorative divider -->
+                            <div class="flex items-center gap-3 mb-8">
+                                <div class="flex-1 h-px bg-gradient-to-r from-transparent via-amber-700 to-transparent"></div>
+                                <svg class="w-6 h-6 text-amber-700" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
+                                </svg>
+                                <div class="flex-1 h-px bg-gradient-to-r from-transparent via-amber-700 to-transparent"></div>
+                            </div>
+
+                            <!-- Acknowledge button -->
+                            <div class="card-actions justify-center">
+                                <button
+                                    class="btn btn-lg btn-primary gap-2 px-12 shadow-lg hover:shadow-xl transition-shadow"
+                                    hx-post="{% url 'event:notification-acknowledge' notification.pk %}"
+                                    hx-swap="none">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <span>Acknowledge</span>
+                                </button>
+                            </div>
+
+                            <!-- Seal/stamp effect at bottom -->
+                            <div class="mt-8 text-center">
+                                <div class="inline-block bg-red-900 text-amber-50 px-6 py-2 rounded-full transform -rotate-3 shadow-lg border-2 border-red-950">
+                                    <span class="font-bold text-sm tracking-widest">ROYAL PROCLAMATION</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Decorative bottom scroll -->
+                    <div class="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-48 h-4 bg-amber-900 rounded-full shadow-lg"></div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <!-- No notifications - redirect to city -->
+        <script>
+            window.location.href = "{% url 'city:landing-page' %}";
+        </script>
+    {% endif %}
+{% endblock content %}

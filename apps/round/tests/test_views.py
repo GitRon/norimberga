@@ -365,3 +365,92 @@ def test_round_view_triggers_navbar_update(request_factory):
             assert response.status_code == 200
             hx_trigger = json.loads(response["HX-Trigger"])
             assert "updateNavbarValues" in hx_trigger
+
+
+# Notification Blocking Tests
+@pytest.mark.django_db
+def test_round_view_prevents_round_progression_with_unacknowledged_notifications(authenticated_client, user):
+    """Test that round cannot be finished when there are unacknowledged notifications."""
+    from apps.event.tests.factories import EventNotificationFactory
+    from apps.savegame.tests.factories import SavegameFactory
+
+    savegame = SavegameFactory.create(user=user, is_active=True, current_year=1200)
+    EventNotificationFactory.create(savegame=savegame, acknowledged=False)
+
+    response = authenticated_client.post(reverse("round:finish"))
+
+    assert response.status_code == 400
+    assert "acknowledge all notifications" in response.content.decode().lower()
+
+    # Year should not have incremented
+    savegame.refresh_from_db()
+    assert savegame.current_year == 1200
+
+
+@pytest.mark.django_db
+def test_round_view_allows_round_progression_with_acknowledged_notifications(authenticated_client, user):
+    """Test that round can be finished when all notifications are acknowledged."""
+    from apps.event.tests.factories import EventNotificationFactory
+    from apps.savegame.tests.factories import SavegameFactory
+
+    savegame = SavegameFactory.create(user=user, is_active=True, current_year=1200)
+    EventNotificationFactory.create(savegame=savegame, acknowledged=True)
+
+    # Mock EventSelectionService
+    with mock.patch("apps.round.views.EventSelectionService") as mock_service:
+        mock_service_instance = mock_service.return_value
+        mock_service_instance.process.return_value = []
+
+        response = authenticated_client.post(reverse("round:finish"))
+
+        assert response.status_code == 200
+
+        # Year should have incremented
+        savegame.refresh_from_db()
+        assert savegame.current_year == 1201
+
+
+@pytest.mark.django_db
+def test_round_view_allows_round_progression_with_no_notifications(authenticated_client, user):
+    """Test that round can be finished when there are no notifications at all."""
+    from apps.savegame.tests.factories import SavegameFactory
+
+    savegame = SavegameFactory.create(user=user, is_active=True, current_year=1200)
+
+    # Mock EventSelectionService
+    with mock.patch("apps.round.views.EventSelectionService") as mock_service:
+        mock_service_instance = mock_service.return_value
+        mock_service_instance.process.return_value = []
+
+        response = authenticated_client.post(reverse("round:finish"))
+
+        assert response.status_code == 200
+
+        # Year should have incremented
+        savegame.refresh_from_db()
+        assert savegame.current_year == 1201
+
+
+@pytest.mark.django_db
+def test_round_view_checks_only_current_savegame_notifications(authenticated_client, user):
+    """Test that only current savegame's notifications are checked."""
+    from apps.event.tests.factories import EventNotificationFactory
+    from apps.savegame.tests.factories import SavegameFactory
+
+    savegame1 = SavegameFactory.create(user=user, is_active=True, current_year=1200)
+    savegame2 = SavegameFactory.create(user=user, is_active=False, current_year=1150)
+
+    # Create unacknowledged notification for inactive savegame
+    EventNotificationFactory.create(savegame=savegame2, acknowledged=False)
+
+    # Mock EventSelectionService
+    with mock.patch("apps.round.views.EventSelectionService") as mock_service:
+        mock_service_instance = mock_service.return_value
+        mock_service_instance.process.return_value = []
+
+        # Should succeed since active savegame has no unacknowledged notifications
+        response = authenticated_client.post(reverse("round:finish"))
+
+        assert response.status_code == 200
+        savegame1.refresh_from_db()
+        assert savegame1.current_year == 1201

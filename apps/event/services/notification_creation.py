@@ -23,6 +23,7 @@ class NotificationCreationService:
         self.savegame = savegame
         self.events = events
 
+    # TODO(RV): remove dependency to djangos message level system
     def _get_level_choice(self, *, django_level: int) -> str:
         """Convert Django message level to EventNotification.Level choice."""
         return self.LEVEL_MAPPING.get(django_level, EventNotification.Level.INFO)

@@ -1,5 +1,4 @@
 import pytest
-from django.contrib import messages as django_messages
 
 from apps.event.models import EventNotification
 from apps.event.services.notification_creation import NotificationCreationService
@@ -27,7 +26,6 @@ def test_notification_creation_service_sets_correct_fields():
     savegame = SavegameFactory.create(current_year=1250)
     event = MockEvent(savegame=savegame)
     event.TITLE = "Test Event Title"
-    event.LEVEL = django_messages.SUCCESS
 
     service = NotificationCreationService(savegame=savegame, events=[event])
     notifications = service.process()
@@ -37,33 +35,7 @@ def test_notification_creation_service_sets_correct_fields():
     assert notification.year == 1250
     assert notification.title == "Test Event Title"
     assert notification.message == "Mock event occurred"
-    assert notification.level == EventNotification.Level.SUCCESS
     assert notification.acknowledged is False
-
-
-@pytest.mark.django_db
-def test_notification_creation_service_level_mapping():
-    """Test that Django message levels are correctly mapped to EventNotification levels."""
-    savegame = SavegameFactory.create()
-
-    level_mappings = [
-        (django_messages.INFO, EventNotification.Level.INFO),
-        (django_messages.SUCCESS, EventNotification.Level.SUCCESS),
-        (django_messages.WARNING, EventNotification.Level.WARNING),
-        (django_messages.ERROR, EventNotification.Level.ERROR),
-    ]
-
-    for django_level, expected_notification_level in level_mappings:
-        event = MockEvent(savegame=savegame)
-        event.LEVEL = django_level
-
-        service = NotificationCreationService(savegame=savegame, events=[event])
-        notifications = service.process()
-
-        assert notifications[0].level == expected_notification_level
-
-        # Clean up for next iteration
-        EventNotification.objects.all().delete()
 
 
 @pytest.mark.django_db
@@ -115,19 +87,6 @@ def test_notification_creation_service_returns_created_notifications():
     assert len(notifications) == 3
     assert all(isinstance(n, EventNotification) for n in notifications)
     assert all(n.pk is not None for n in notifications)  # All should be saved to DB
-
-
-@pytest.mark.django_db
-def test_notification_creation_service_unknown_level_defaults_to_info():
-    """Test that unknown Django message levels default to INFO."""
-    savegame = SavegameFactory.create()
-    event = MockEvent(savegame=savegame)
-    event.LEVEL = 9999  # Unknown level
-
-    service = NotificationCreationService(savegame=savegame, events=[event])
-    notifications = service.process()
-
-    assert notifications[0].level == EventNotification.Level.INFO
 
 
 @pytest.mark.django_db

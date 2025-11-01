@@ -14,7 +14,6 @@ def test_event_notification_creation():
         year=1200,
         title="Fire!",
         message="A fire destroyed several buildings.",
-        level=EventNotification.Level.ERROR,
         acknowledged=False,
     )
 
@@ -22,9 +21,7 @@ def test_event_notification_creation():
     assert notification.year == 1200
     assert notification.title == "Fire!"
     assert notification.message == "A fire destroyed several buildings."
-    assert notification.level == EventNotification.Level.ERROR
     assert notification.acknowledged is False
-    assert notification.created_at is not None
 
 
 @pytest.mark.django_db
@@ -41,27 +38,18 @@ def test_event_notification_default_values():
     savegame = SavegameFactory.create()
     notification = EventNotification.objects.create(savegame=savegame, year=1150, title="Test", message="Test message")
 
-    assert notification.level == EventNotification.Level.INFO
     assert notification.acknowledged is False
 
 
 @pytest.mark.django_db
 def test_event_notification_ordering():
-    """Test that notifications are ordered by created_at."""
+    """Test that notifications are ordered by year."""
     savegame = SavegameFactory.create()
 
-    # Create notifications in reverse order
-    notification3 = EventNotificationFactory.create(savegame=savegame, title="Third")
-    notification1 = EventNotificationFactory.create(savegame=savegame, title="First")
-    notification2 = EventNotificationFactory.create(savegame=savegame, title="Second")
-
-    # Update created_at to ensure specific order
-    notification1.created_at = "2024-01-01 10:00:00"
-    notification1.save()
-    notification2.created_at = "2024-01-01 11:00:00"
-    notification2.save()
-    notification3.created_at = "2024-01-01 12:00:00"
-    notification3.save()
+    # Create notifications with different years
+    notification2 = EventNotificationFactory.create(savegame=savegame, title="Second", year=1200)
+    notification3 = EventNotificationFactory.create(savegame=savegame, title="Third", year=1250)
+    notification1 = EventNotificationFactory.create(savegame=savegame, title="First", year=1150)
 
     notifications = savegame.event_notifications.all()
 
@@ -99,13 +87,3 @@ def test_event_notification_cascade_delete_on_savegame_deletion():
     savegame.delete()
 
     assert EventNotification.objects.count() == 0
-
-
-@pytest.mark.django_db
-def test_event_notification_level_choices():
-    """Test that all level choices can be saved correctly."""
-    savegame = SavegameFactory.create()
-
-    for level_value, _level_display in EventNotification.Level.choices:
-        notification = EventNotificationFactory.create(savegame=savegame, level=level_value)
-        assert notification.level == level_value

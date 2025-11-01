@@ -14,7 +14,6 @@ class EventNotificationFactory(factory.django.DjangoModelFactory):
     year = 1150
     title = "Test Event"
     message = "This is a test event message."
-    level = EventNotification.Level.INFO
     acknowledged = False
 
 

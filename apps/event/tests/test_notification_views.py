@@ -1,7 +1,6 @@
 import pytest
 from django.urls import reverse
 
-from apps.event.models import EventNotification
 from apps.event.tests.factories import EventNotificationFactory
 from apps.savegame.tests.factories import SavegameFactory
 
@@ -85,7 +84,6 @@ def test_notification_board_view_renders_notification_details(authenticated_clie
         year=1250,
         title="Fire!",
         message="A terrible fire ravaged the city.",
-        level=EventNotification.Level.ERROR,
     )
 
     response = authenticated_client.get(reverse("event:notification-board"))

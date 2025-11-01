@@ -1,5 +1,3 @@
-from django.contrib import messages as django_messages
-
 from apps.event.events.events.base_event import BaseEvent
 from apps.event.models import EventNotification
 from apps.savegame.models import Savegame
@@ -11,22 +9,9 @@ class NotificationCreationService:
     Processes each event (runs effects) and stores the results.
     """
 
-    # Map Django message levels to EventNotification.Level choices
-    LEVEL_MAPPING = {
-        django_messages.INFO: EventNotification.Level.INFO,
-        django_messages.SUCCESS: EventNotification.Level.SUCCESS,
-        django_messages.WARNING: EventNotification.Level.WARNING,
-        django_messages.ERROR: EventNotification.Level.ERROR,
-    }
-
     def __init__(self, *, savegame: Savegame, events: list[BaseEvent]):
         self.savegame = savegame
         self.events = events
-
-    # TODO(RV): remove dependency to djangos message level system
-    def _get_level_choice(self, *, django_level: int) -> str:
-        """Convert Django message level to EventNotification.Level choice."""
-        return self.LEVEL_MAPPING.get(django_level, EventNotification.Level.INFO)
 
     def process(self) -> list[EventNotification]:
         """Process all events and create notification records."""
@@ -46,7 +31,6 @@ class NotificationCreationService:
                 year=self.savegame.current_year,
                 title=event.TITLE,
                 message=message,
-                level=self._get_level_choice(django_level=event.LEVEL),
                 acknowledged=False,
             )
             notifications.append(notification)

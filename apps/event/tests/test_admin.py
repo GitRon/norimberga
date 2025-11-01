@@ -14,12 +14,11 @@ def test_event_notification_admin_configuration():
     admin_instance = admin.site._registry[EventNotification]
 
     assert isinstance(admin_instance, EventNotificationAdmin)
-    assert admin_instance.list_display == ("id", "title", "year", "savegame", "level", "acknowledged", "created_at")
-    assert admin_instance.list_filter == ("level", "acknowledged", "year", "savegame")
+    assert admin_instance.list_display == ("id", "title", "year", "savegame", "acknowledged")
+    assert admin_instance.list_filter == ("acknowledged", "year", "savegame")
     assert admin_instance.search_fields == ("title", "message", "savegame__city_name")
     assert admin_instance.list_select_related == ("savegame",)
-    assert admin_instance.readonly_fields == ("created_at",)
-    assert admin_instance.ordering == ("-created_at",)
+    assert admin_instance.ordering == ("-year",)
 
 
 def test_event_notification_admin_fieldsets():
@@ -30,7 +29,7 @@ def test_event_notification_admin_fieldsets():
 
     # Event Information section
     assert admin_instance.fieldsets[0][0] == "Event Information"
-    assert admin_instance.fieldsets[0][1]["fields"] == ("title", "message", "level", "year")
+    assert admin_instance.fieldsets[0][1]["fields"] == ("title", "message", "year")
 
     # Game Context section
     assert admin_instance.fieldsets[1][0] == "Game Context"
@@ -38,4 +37,4 @@ def test_event_notification_admin_fieldsets():
 
     # Status section
     assert admin_instance.fieldsets[2][0] == "Status"
-    assert admin_instance.fieldsets[2][1]["fields"] == ("acknowledged", "created_at")
+    assert admin_instance.fieldsets[2][1]["fields"] == ("acknowledged",)

@@ -2,7 +2,6 @@ import json
 from unittest import mock
 
 import pytest
-from django.contrib import messages
 from django.urls import reverse
 
 from apps.round.views import RoundView
@@ -18,22 +17,20 @@ def test_round_view_http_method_names():
 
 @pytest.mark.django_db
 def test_round_view_post_with_events(request_factory):
-    """Test RoundView processes events and adds messages."""
+    """Test RoundView creates notifications for events and increments year."""
     from apps.savegame.tests.factories import SavegameFactory, UserFactory
 
     # Create user and savegame
     user = UserFactory.create()
-    savegame = SavegameFactory(user=user, is_active=True)
+    savegame = SavegameFactory(user=user, is_active=True, current_year=1150)
 
     # Create mock events
     mock_event1 = mock.Mock()
     mock_event1.process.return_value = "Event 1 happened"
-    mock_event1.LEVEL = messages.INFO
     mock_event1.TITLE = "Event 1"
 
     mock_event2 = mock.Mock()
     mock_event2.process.return_value = "Event 2 happened"
-    mock_event2.LEVEL = messages.WARNING
     mock_event2.TITLE = "Event 2"
 
     events = [mock_event1, mock_event2]
@@ -43,39 +40,31 @@ def test_round_view_post_with_events(request_factory):
         mock_service_instance = mock_service.return_value
         mock_service_instance.process.return_value = events
 
-        # Create request and view
-        request = request_factory.post("/")
-        request.user = user  # Add user to request
-        view = RoundView()
-        view.request = request
+        # Mock NotificationCreationService
+        with mock.patch("apps.round.views.NotificationCreationService") as mock_notification_service:
+            # Create mock notifications
+            mock_notification_service.return_value.process.return_value = [mock.Mock(), mock.Mock()]
 
-        # Mock messages framework
-        with mock.patch("apps.round.views.messages") as mock_messages:
+            # Create request and view
+            request = request_factory.post("/")
+            request.user = user
+            view = RoundView()
+            view.request = request
+
             response = view.post(request)
 
-            # Verify service was called with savegame keyword argument
+            # Verify year was incremented
+            savegame.refresh_from_db()
+            assert savegame.current_year == 1151
+
+            # Verify services were called
             mock_service.assert_called_once_with(savegame=savegame)
             mock_service_instance.process.assert_called_once()
+            mock_notification_service.assert_called_once_with(savegame=savegame, events=events)
+            mock_notification_service.return_value.process.assert_called_once()
 
-            # Verify events were processed
-            mock_event1.process.assert_called_once()
-            mock_event2.process.assert_called_once()
-
-            # Verify messages were added
-            assert mock_messages.add_message.call_count == 2
-            mock_messages.add_message.assert_any_call(
-                request, mock_event1.LEVEL, "Event 1 happened", extra_tags="Event 1"
-            )
-            mock_messages.add_message.assert_any_call(
-                request, mock_event2.LEVEL, "Event 2 happened", extra_tags="Event 2"
-            )
-
-            # Verify response
+            # Verify response is successful
             assert response.status_code == 200
-            hx_trigger = json.loads(response["HX-Trigger"])
-            assert "reloadMessages" in hx_trigger
-            assert "refreshMap" in hx_trigger
-            assert "updateNavbarValues" in hx_trigger
 
 
 @pytest.mark.django_db
@@ -94,29 +83,22 @@ def test_round_view_post_with_no_events(request_factory):
 
         # Create request and view
         request = request_factory.post("/")
-        request.user = user  # Add user to request
+        request.user = user
         view = RoundView()
         view.request = request
 
-        # Mock messages framework
-        with mock.patch("apps.round.views.messages") as mock_messages:
-            response = view.post(request)
+        response = view.post(request)
 
-            # Verify service was called with savegame keyword argument
-            mock_service.assert_called_once_with(savegame=savegame)
-            mock_service_instance.process.assert_called_once()
+        # Verify service was called
+        mock_service.assert_called_once_with(savegame=savegame)
+        mock_service_instance.process.assert_called_once()
 
-            # Verify quiet year message was added
-            mock_messages.add_message.assert_called_once_with(
-                request, mock_messages.INFO, "It was a quiet year. Nothing happened out of the ordinary."
-            )
-
-            # Verify response
-            assert response.status_code == 200
-            hx_trigger = json.loads(response["HX-Trigger"])
-            assert "reloadMessages" in hx_trigger
-            assert "refreshMap" in hx_trigger
-            assert "updateNavbarValues" in hx_trigger
+        # Verify response triggers UI updates (no redirect)
+        assert response.status_code == 200
+        assert "HX-Trigger" in response
+        hx_trigger = json.loads(response["HX-Trigger"])
+        assert "refreshMap" in hx_trigger
+        assert "updateNavbarValues" in hx_trigger
 
 
 @pytest.mark.django_db
@@ -135,24 +117,21 @@ def test_round_view_post_response_headers(request_factory):
 
         # Create request and view
         request = request_factory.post("/")
-        request.user = user  # Add user to request
+        request.user = user
         view = RoundView()
         view.request = request
 
-        # Mock messages framework
-        with mock.patch("apps.round.views.messages"):
-            response = view.post(request)
+        response = view.post(request)
 
-            # Verify response headers
-            assert response.status_code == 200
-            assert "HX-Trigger" in response
+        # Verify response headers
+        assert response.status_code == 200
+        assert "HX-Trigger" in response
 
-            hx_trigger = json.loads(response["HX-Trigger"])
-            assert hx_trigger == {
-                "reloadMessages": "-",
-                "refreshMap": "-",
-                "updateNavbarValues": "-",
-            }
+        hx_trigger = json.loads(response["HX-Trigger"])
+        assert hx_trigger == {
+            "refreshMap": "-",
+            "updateNavbarValues": "-",
+        }
 
 
 @pytest.mark.django_db
@@ -175,7 +154,6 @@ def test_round_view_post_via_client(authenticated_client, user):
         assert "HX-Trigger" in response
 
         hx_trigger = json.loads(response["HX-Trigger"])
-        assert "reloadMessages" in hx_trigger
         assert "refreshMap" in hx_trigger
         assert "updateNavbarValues" in hx_trigger
 
@@ -199,12 +177,10 @@ def test_round_view_event_processing_order(request_factory):
     # Create mock events with different processing order
     mock_event1 = mock.Mock()
     mock_event1.process.return_value = "First event"
-    mock_event1.LEVEL = messages.INFO
     mock_event1.TITLE = "First"
 
     mock_event2 = mock.Mock()
     mock_event2.process.return_value = "Second event"
-    mock_event2.LEVEL = messages.INFO
     mock_event2.TITLE = "Second"
 
     events = [mock_event1, mock_event2]
@@ -214,23 +190,20 @@ def test_round_view_event_processing_order(request_factory):
         mock_service_instance = mock_service.return_value
         mock_service_instance.process.return_value = events
 
-        # Create request and view
-        request = request_factory.post("/")
-        request.user = user  # Add user to request
-        view = RoundView()
-        view.request = request
+        # Mock NotificationCreationService to track event order
+        with mock.patch("apps.round.views.NotificationCreationService") as mock_notification_service:
+            # Create request and view
+            request = request_factory.post("/")
+            request.user = user
+            view = RoundView()
+            view.request = request
 
-        # Track call order
-        call_order = []
-        mock_event1.process.side_effect = lambda: call_order.append("event1")
-        mock_event2.process.side_effect = lambda: call_order.append("event2")
-
-        # Mock messages framework
-        with mock.patch("apps.round.views.messages"):
             view.post(request)
 
-            # Verify events were processed in correct order
-            assert call_order == ["event1", "event2"]
+            # Verify events were passed to notification service in correct order
+            mock_notification_service.assert_called_once()
+            call_args = mock_notification_service.call_args
+            assert call_args[1]["events"] == events
 
 
 @pytest.mark.django_db
@@ -240,12 +213,11 @@ def test_round_view_single_event(request_factory):
 
     # Create user and savegame
     user = UserFactory.create()
-    SavegameFactory(user=user, is_active=True)
+    savegame = SavegameFactory(user=user, is_active=True)
 
     # Create single mock event
     mock_event = mock.Mock()
     mock_event.process.return_value = "Single event occurred"
-    mock_event.LEVEL = messages.SUCCESS
     mock_event.TITLE = "Single Event"
 
     events = [mock_event]
@@ -255,28 +227,20 @@ def test_round_view_single_event(request_factory):
         mock_service_instance = mock_service.return_value
         mock_service_instance.process.return_value = events
 
-        # Create request and view
-        request = request_factory.post("/")
-        request.user = user  # Add user to request
-        view = RoundView()
-        view.request = request
+        # Mock NotificationCreationService
+        with mock.patch("apps.round.views.NotificationCreationService") as mock_notification_service:
+            # Create request and view
+            request = request_factory.post("/")
+            request.user = user
+            view = RoundView()
+            view.request = request
 
-        # Mock messages framework
-        with mock.patch("apps.round.views.messages") as mock_messages:
             response = view.post(request)
 
-            # Verify single event was processed
-            mock_event.process.assert_called_once()
+            # Verify notification service was called
+            mock_notification_service.assert_called_once_with(savegame=savegame, events=events)
 
-            # Verify single message was added
-            mock_messages.add_message.assert_called_once_with(
-                request, mock_event.LEVEL, "Single event occurred", extra_tags="Single Event"
-            )
-
-            # Should not add quiet year message
-            assert mock_messages.add_message.call_count == 1
-
-            # Verify response
+            # Verify response is successful
             assert response.status_code == 200
 
 
@@ -321,16 +285,14 @@ def test_round_view_increments_year(request_factory):
         view = RoundView()
         view.request = request
 
-        # Mock messages framework
-        with mock.patch("apps.round.views.messages"):
-            response = view.post(request)
+        response = view.post(request)
 
-            # Verify year was incremented
-            savegame.refresh_from_db()
-            assert savegame.current_year == 1151
+        # Verify year was incremented
+        savegame.refresh_from_db()
+        assert savegame.current_year == 1151
 
-            # Verify successful response
-            assert response.status_code == 200
+        # Verify successful response
+        assert response.status_code == 200
 
 
 @pytest.mark.django_db
@@ -353,18 +315,16 @@ def test_round_view_triggers_navbar_update(request_factory):
         view = RoundView()
         view.request = request
 
-        # Mock messages framework
-        with mock.patch("apps.round.views.messages"):
-            response = view.post(request)
+        response = view.post(request)
 
-            # Verify year was incremented
-            savegame.refresh_from_db()
-            assert savegame.current_year == 1151
+        # Verify year was incremented
+        savegame.refresh_from_db()
+        assert savegame.current_year == 1151
 
-            # Verify updateNavbarValues event is triggered
-            assert response.status_code == 200
-            hx_trigger = json.loads(response["HX-Trigger"])
-            assert "updateNavbarValues" in hx_trigger
+        # Verify updateNavbarValues event is triggered
+        assert response.status_code == 200
+        hx_trigger = json.loads(response["HX-Trigger"])
+        assert "updateNavbarValues" in hx_trigger
 
 
 # Notification Blocking Tests

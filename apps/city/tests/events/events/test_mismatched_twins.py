@@ -12,7 +12,7 @@ def test_mismatched_twins_event_init():
 
     event = MismatchedTwinsEvent(savegame=savegame)
 
-    assert event.PROBABILITY == 15
+    assert event.PROBABILITY == 1
     assert event.LEVEL == messages.INFO
     assert event.TITLE == "Mismatched Twins"
     assert event.savegame.id == savegame.id
@@ -26,7 +26,7 @@ def test_mismatched_twins_event_get_probability_with_population():
     event = MismatchedTwinsEvent(savegame=savegame)
     probability = event.get_probability()
 
-    assert probability == 15
+    assert probability == 1
 
 
 @pytest.mark.django_db

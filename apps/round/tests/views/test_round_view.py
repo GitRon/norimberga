@@ -40,18 +40,20 @@ def test_round_view_post_with_events(request_factory):
         mock_service_instance.process.return_value = events
 
         # Mock NotificationCreationService
-        with mock.patch("apps.round.views.NotificationCreationService") as mock_notification_service:
+        with mock.patch("apps.round.views.round_view.NotificationCreationService") as mock_notification_service:
             # Create mock notifications
             mock_notification_service.return_value.process.return_value = [mock.Mock(), mock.Mock()]
 
-            # Create request and view
-            request = request_factory.post("/")
-            request.user = user
-            view = RoundView()
-            view.request = request
+            # Mock WallEnclosureService
+            with mock.patch("apps.round.views.round_view.WallEnclosureService") as mock_wall_service:
+                mock_wall_service.return_value.process.return_value = True
 
-            # Mock messages framework
-            with mock.patch("apps.round.views.round_view.messages"):
+                # Create request and view
+                request = request_factory.post("/")
+                request.user = user
+                view = RoundView()
+                view.request = request
+
                 response = view.post(request)
 
             # Verify year was incremented
@@ -82,14 +84,16 @@ def test_round_view_post_with_no_events(request_factory):
         mock_service_instance = mock_service.return_value
         mock_service_instance.process.return_value = []
 
-        # Create request and view
-        request = request_factory.post("/")
-        request.user = user
-        view = RoundView()
-        view.request = request
+        # Mock WallEnclosureService
+        with mock.patch("apps.round.views.round_view.WallEnclosureService") as mock_wall_service:
+            mock_wall_service.return_value.process.return_value = True
 
-        # Mock messages framework
-        with mock.patch("apps.round.views.round_view.messages"):
+            # Create request and view
+            request = request_factory.post("/")
+            request.user = user
+            view = RoundView()
+            view.request = request
+
             response = view.post(request)
 
         # Verify service was called
@@ -118,14 +122,16 @@ def test_round_view_post_response_headers(request_factory):
         mock_service_instance = mock_service.return_value
         mock_service_instance.process.return_value = []
 
-        # Create request and view
-        request = request_factory.post("/")
-        request.user = user
-        view = RoundView()
-        view.request = request
+        # Mock WallEnclosureService
+        with mock.patch("apps.round.views.round_view.WallEnclosureService") as mock_wall_service:
+            mock_wall_service.return_value.process.return_value = True
 
-        # Mock messages framework
-        with mock.patch("apps.round.views.round_view.messages"):
+            # Create request and view
+            request = request_factory.post("/")
+            request.user = user
+            view = RoundView()
+            view.request = request
+
             response = view.post(request)
 
         # Verify response headers
@@ -152,15 +158,19 @@ def test_round_view_post_via_client(authenticated_client, user):
         mock_service_instance = mock_service.return_value
         mock_service_instance.process.return_value = []
 
-        response = authenticated_client.post(reverse("round:finish"))
+        # Mock WallEnclosureService
+        with mock.patch("apps.round.views.round_view.WallEnclosureService") as mock_wall_service:
+            mock_wall_service.return_value.process.return_value = True
 
-        # Verify successful response
-        assert response.status_code == 200
-        assert "HX-Trigger" in response
+            response = authenticated_client.post(reverse("round:finish"))
 
-        hx_trigger = json.loads(response["HX-Trigger"])
-        assert "refreshMap" in hx_trigger
-        assert "updateNavbarValues" in hx_trigger
+            # Verify successful response
+            assert response.status_code == 200
+            assert "HX-Trigger" in response
+
+            hx_trigger = json.loads(response["HX-Trigger"])
+            assert "refreshMap" in hx_trigger
+            assert "updateNavbarValues" in hx_trigger
 
 
 @pytest.mark.django_db
@@ -196,20 +206,22 @@ def test_round_view_event_processing_order(request_factory):
         mock_service_instance.process.return_value = events
 
         # Mock NotificationCreationService to track event order
-        with mock.patch("apps.round.views.NotificationCreationService") as mock_notification_service:
-            # Create request and view
-            request = request_factory.post("/")
-            request.user = user
-            view = RoundView()
-            view.request = request
+        with mock.patch("apps.round.views.round_view.NotificationCreationService") as mock_notification_service:
+            # Mock WallEnclosureService
+            with mock.patch("apps.round.views.round_view.WallEnclosureService") as mock_wall_service:
+                mock_wall_service.return_value.process.return_value = True
 
-            # Track call order
-            call_order = []
-            mock_event1.process.side_effect = lambda: call_order.append("event1")
-            mock_event2.process.side_effect = lambda: call_order.append("event2")
+                # Create request and view
+                request = request_factory.post("/")
+                request.user = user
+                view = RoundView()
+                view.request = request
 
-            # Mock messages framework
-            with mock.patch("apps.round.views.round_view.messages"):
+                # Track call order
+                call_order = []
+                mock_event1.process.side_effect = lambda: call_order.append("event1")
+                mock_event2.process.side_effect = lambda: call_order.append("event2")
+
                 view.post(request)
 
             # Verify events were passed to notification service in correct order
@@ -240,15 +252,17 @@ def test_round_view_single_event(request_factory):
         mock_service_instance.process.return_value = events
 
         # Mock NotificationCreationService
-        with mock.patch("apps.round.views.NotificationCreationService") as mock_notification_service:
-            # Create request and view
-            request = request_factory.post("/")
-            request.user = user
-            view = RoundView()
-            view.request = request
+        with mock.patch("apps.round.views.round_view.NotificationCreationService") as mock_notification_service:
+            # Mock WallEnclosureService
+            with mock.patch("apps.round.views.round_view.WallEnclosureService") as mock_wall_service:
+                mock_wall_service.return_value.process.return_value = True
 
-            # Mock messages framework
-            with mock.patch("apps.round.views.round_view.messages"):
+                # Create request and view
+                request = request_factory.post("/")
+                request.user = user
+                view = RoundView()
+                view.request = request
+
                 response = view.post(request)
 
             # Verify notification service was called
@@ -293,14 +307,16 @@ def test_round_view_increments_year(request_factory):
         mock_service_instance = mock_service.return_value
         mock_service_instance.process.return_value = []
 
-        # Create request and view
-        request = request_factory.post("/")
-        request.user = user
-        view = RoundView()
-        view.request = request
+        # Mock WallEnclosureService
+        with mock.patch("apps.round.views.round_view.WallEnclosureService") as mock_wall_service:
+            mock_wall_service.return_value.process.return_value = True
 
-        # Mock messages framework
-        with mock.patch("apps.round.views.round_view.messages"):
+            # Create request and view
+            request = request_factory.post("/")
+            request.user = user
+            view = RoundView()
+            view.request = request
+
             response = view.post(request)
 
         # Verify year was incremented
@@ -325,14 +341,16 @@ def test_round_view_triggers_navbar_update(request_factory):
         mock_service_instance = mock_service.return_value
         mock_service_instance.process.return_value = []
 
-        # Create request and view
-        request = request_factory.post("/")
-        request.user = user
-        view = RoundView()
-        view.request = request
+        # Mock WallEnclosureService
+        with mock.patch("apps.round.views.round_view.WallEnclosureService") as mock_wall_service:
+            mock_wall_service.return_value.process.return_value = True
 
-        # Mock messages framework
-        with mock.patch("apps.round.views.round_view.messages"):
+            # Create request and view
+            request = request_factory.post("/")
+            request.user = user
+            view = RoundView()
+            view.request = request
+
             response = view.post(request)
 
         # Verify year was incremented
@@ -375,17 +393,21 @@ def test_round_view_allows_round_progression_with_acknowledged_notifications(aut
     EventNotificationFactory.create(savegame=savegame, acknowledged=True)
 
     # Mock EventSelectionService
-    with mock.patch("apps.round.views.EventSelectionService") as mock_service:
+    with mock.patch("apps.round.views.round_view.EventSelectionService") as mock_service:
         mock_service_instance = mock_service.return_value
         mock_service_instance.process.return_value = []
 
-        response = authenticated_client.post(reverse("round:finish"))
+        # Mock WallEnclosureService
+        with mock.patch("apps.round.views.round_view.WallEnclosureService") as mock_wall_service:
+            mock_wall_service.return_value.process.return_value = True
 
-        assert response.status_code == 200
+            response = authenticated_client.post(reverse("round:finish"))
 
-        # Year should have incremented
-        savegame.refresh_from_db()
-        assert savegame.current_year == 1201
+            assert response.status_code == 200
+
+            # Year should have incremented
+            savegame.refresh_from_db()
+            assert savegame.current_year == 1201
 
 
 @pytest.mark.django_db
@@ -396,17 +418,21 @@ def test_round_view_allows_round_progression_with_no_notifications(authenticated
     savegame = SavegameFactory.create(user=user, is_active=True, current_year=1200)
 
     # Mock EventSelectionService
-    with mock.patch("apps.round.views.EventSelectionService") as mock_service:
+    with mock.patch("apps.round.views.round_view.EventSelectionService") as mock_service:
         mock_service_instance = mock_service.return_value
         mock_service_instance.process.return_value = []
 
-        response = authenticated_client.post(reverse("round:finish"))
+        # Mock WallEnclosureService
+        with mock.patch("apps.round.views.round_view.WallEnclosureService") as mock_wall_service:
+            mock_wall_service.return_value.process.return_value = True
 
-        assert response.status_code == 200
+            response = authenticated_client.post(reverse("round:finish"))
 
-        # Year should have incremented
-        savegame.refresh_from_db()
-        assert savegame.current_year == 1201
+            assert response.status_code == 200
+
+            # Year should have incremented
+            savegame.refresh_from_db()
+            assert savegame.current_year == 1201
 
 
 @pytest.mark.django_db
@@ -422,13 +448,56 @@ def test_round_view_checks_only_current_savegame_notifications(authenticated_cli
     EventNotificationFactory.create(savegame=savegame2, acknowledged=False)
 
     # Mock EventSelectionService
-    with mock.patch("apps.round.views.EventSelectionService") as mock_service:
+    with mock.patch("apps.round.views.round_view.EventSelectionService") as mock_service:
         mock_service_instance = mock_service.return_value
         mock_service_instance.process.return_value = []
 
-        # Should succeed since active savegame has no unacknowledged notifications
-        response = authenticated_client.post(reverse("round:finish"))
+        # Mock WallEnclosureService
+        with mock.patch("apps.round.views.round_view.WallEnclosureService") as mock_wall_service:
+            mock_wall_service.return_value.process.return_value = True
 
-        assert response.status_code == 200
-        savegame1.refresh_from_db()
-        assert savegame1.current_year == 1201
+            # Should succeed since active savegame has no unacknowledged notifications
+            response = authenticated_client.post(reverse("round:finish"))
+
+            assert response.status_code == 200
+            savegame1.refresh_from_db()
+            assert savegame1.current_year == 1201
+
+
+@pytest.mark.django_db
+def test_round_view_redirects_to_notification_board_after_creating_notifications(authenticated_client, user):
+    """Test that round view redirects to notification board when new notifications are created."""
+    from apps.event.tests.factories import EventNotificationFactory
+    from apps.savegame.tests.factories import SavegameFactory
+
+    savegame = SavegameFactory.create(user=user, is_active=True, current_year=1200)
+
+    # Create mock events
+    mock_event = mock.Mock()
+    mock_event.process.return_value = "Event happened"
+    mock_event.TITLE = "Event"
+
+    # Mock EventSelectionService to return events
+    with mock.patch("apps.round.views.round_view.EventSelectionService") as mock_service:
+        mock_service_instance = mock_service.return_value
+        mock_service_instance.process.return_value = [mock_event]
+
+        # Mock NotificationCreationService to simulate creating notifications
+        def create_notification(*args, **kwargs):
+            # Create notification when the service's process() is called
+            EventNotificationFactory.create(savegame=savegame, acknowledged=False)
+            return []
+
+        with mock.patch("apps.round.views.round_view.NotificationCreationService") as mock_notif_service:
+            mock_notif_service.return_value.process.side_effect = create_notification
+
+            # Mock WallEnclosureService
+            with mock.patch("apps.round.views.round_view.WallEnclosureService") as mock_wall_service:
+                mock_wall_service.return_value.process.return_value = True
+
+                response = authenticated_client.post(reverse("round:finish"))
+
+                # Should redirect to notification board
+                assert response.status_code == 200
+                assert "HX-Redirect" in response
+                assert response["HX-Redirect"] == reverse("event:notification-board")

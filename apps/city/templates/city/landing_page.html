@@ -11,6 +11,9 @@
 
         {% include 'city/partials/city/_city_map.html' %}
 
+        <!-- Container for pending event modals -->
+        <div id="pending-events-container"></div>
+
         <!-- Modal container for build form -->
         <div id="build-modal" class="modal"
              onclick="if(event.target === this) this.classList.remove('modal-open')">
@@ -26,6 +29,14 @@
         // Close modal and refresh map on successful build/demolish
         document.body.addEventListener('refreshMap', function() {
             document.getElementById('build-modal').classList.remove('modal-open');
+        });
+
+        // Check for pending events on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            htmx.ajax('GET', '{% url "event:pending" %}', {
+                target: '#pending-events-container',
+                swap: 'innerHTML'
+            });
         });
     </script>
 {% endblock content %}

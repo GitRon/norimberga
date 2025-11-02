@@ -24,14 +24,16 @@ def test_round_view_post_with_events(request_factory):
     user = UserFactory.create()
     savegame = SavegameFactory(user=user, is_active=True)
 
-    # Create mock events
+    # Create mock events (without choices so they process immediately)
     mock_event1 = mock.Mock()
     mock_event1.process.return_value = "Event 1 happened"
+    mock_event1.has_choices.return_value = False
     mock_event1.LEVEL = messages.INFO
     mock_event1.TITLE = "Event 1"
 
     mock_event2 = mock.Mock()
     mock_event2.process.return_value = "Event 2 happened"
+    mock_event2.has_choices.return_value = False
     mock_event2.LEVEL = messages.WARNING
     mock_event2.TITLE = "Event 2"
 
@@ -195,14 +197,16 @@ def test_round_view_event_processing_order(request_factory):
     user = UserFactory.create()
     SavegameFactory(user=user, is_active=True)
 
-    # Create mock events with different processing order
+    # Create mock events with different processing order (without choices)
     mock_event1 = mock.Mock()
     mock_event1.process.return_value = "First event"
+    mock_event1.has_choices.return_value = False
     mock_event1.LEVEL = messages.INFO
     mock_event1.TITLE = "First"
 
     mock_event2 = mock.Mock()
     mock_event2.process.return_value = "Second event"
+    mock_event2.has_choices.return_value = False
     mock_event2.LEVEL = messages.INFO
     mock_event2.TITLE = "Second"
 
@@ -241,9 +245,10 @@ def test_round_view_single_event(request_factory):
     user = UserFactory.create()
     SavegameFactory(user=user, is_active=True)
 
-    # Create single mock event
+    # Create single mock event (without choices)
     mock_event = mock.Mock()
     mock_event.process.return_value = "Single event occurred"
+    mock_event.has_choices.return_value = False
     mock_event.LEVEL = messages.SUCCESS
     mock_event.TITLE = "Single Event"
 
@@ -330,6 +335,74 @@ def test_round_view_increments_year(request_factory):
 
             # Verify successful response
             assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_round_view_post_with_choice_events(request_factory):
+    """Test RoundView stores events with choices instead of processing them."""
+    from apps.savegame.tests.factories import SavegameFactory, UserFactory
+
+    # Create user and savegame
+    user = UserFactory.create()
+    savegame = SavegameFactory(user=user, is_active=True)
+
+    # Create mock events with choices
+    mock_event_with_choices = mock.Mock()
+    mock_event_with_choices.has_choices.return_value = True
+    mock_event_with_choices.LEVEL = messages.INFO
+    mock_event_with_choices.TITLE = "Event With Choices"
+
+    # Create mock event without choices
+    mock_event_without_choices = mock.Mock()
+    mock_event_without_choices.has_choices.return_value = False
+    mock_event_without_choices.process.return_value = "Regular event"
+    mock_event_without_choices.LEVEL = messages.INFO
+    mock_event_without_choices.TITLE = "Regular Event"
+
+    events = [mock_event_with_choices, mock_event_without_choices]
+
+    # Mock EventSelectionService and EventChoiceStorageService
+    with (
+        mock.patch("apps.round.views.round_view.EventSelectionService") as mock_selection_service,
+        mock.patch("apps.round.views.round_view.EventChoiceStorageService") as mock_storage_service,
+        mock.patch("apps.round.views.round_view.messages") as mock_messages,
+    ):
+        mock_selection_instance = mock_selection_service.return_value
+        mock_selection_instance.process.return_value = events
+
+        mock_storage_instance = mock_storage_service.return_value
+        mock_storage_instance.process.return_value = []
+
+        # Create request and view
+        request = request_factory.post("/")
+        request.user = user
+        view = RoundView()
+        view.request = request
+
+        response = view.post(request)
+
+        # Verify storage service was called with events with choices
+        mock_storage_service.assert_called_once_with(savegame=savegame)
+        mock_storage_instance.process.assert_called_once()
+        stored_events = mock_storage_instance.process.call_args.kwargs["events"]
+        assert len(stored_events) == 1
+        assert stored_events[0] == mock_event_with_choices
+
+        # Verify event with choices was NOT processed immediately
+        assert not mock_event_with_choices.process.called
+
+        # Verify event without choices WAS processed immediately
+        mock_event_without_choices.process.assert_called_once()
+
+        # Verify message added only for event without choices
+        mock_messages.add_message.assert_called_once_with(
+            request, mock_event_without_choices.LEVEL, "Regular event", extra_tags="Regular Event"
+        )
+
+        # Verify showPendingEvents trigger is present
+        assert response.status_code == 200
+        hx_trigger = json.loads(response["HX-Trigger"])
+        assert "showPendingEvents" in hx_trigger
 
 
 @pytest.mark.django_db

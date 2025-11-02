@@ -1,0 +1,54 @@
+{% if pending_events %}
+    {% with event_choice=pending_events.0 %}
+        <div id="event-modal-{{ event_choice.id }}" class="modal modal-open">
+            <div class="modal-box max-w-3xl">
+                <h3 class="font-bold text-2xl mb-4">{{ event_choice.get_title }}</h3>
+
+                <div class="mb-6">
+                    <p class="text-base leading-relaxed whitespace-pre-line">{{ event_choice.get_verbose_text }}</p>
+                </div>
+
+                <div class="divider">Choose your response</div>
+
+                <div class="space-y-4">
+                    {% for choice in event_choice.get_choices %}
+                        <div class="card bg-base-200">
+                            <div class="card-body">
+                                <h4 class="card-title text-lg">{{ choice.label }}</h4>
+                                <p class="text-sm text-base-content/70">{{ choice.description }}</p>
+                                <div class="card-actions justify-end mt-2">
+                                    <form method="POST"
+                                          hx-post="{% url 'event:select-choice' event_choice.id %}"
+                                          hx-swap="none">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="choice_index" value="{{ forloop.counter0 }}">
+                                        <button type="submit" class="btn btn-primary">
+                                            Select this option
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="modal-action">
+                    <p class="text-sm text-base-content/50">
+                        You must make a choice to continue
+                    </p>
+                </div>
+            </div>
+        </div>
+    {% endwith %}
+{% endif %}
+
+<script>
+    // Listen for the showPendingEvents trigger from HTMX
+    document.body.addEventListener('showPendingEvents', function() {
+        // Fetch and display pending events
+        htmx.ajax('GET', '{% url "event:pending" %}', {
+            target: '#pending-events-container',
+            swap: 'innerHTML'
+        });
+    });
+</script>

@@ -7,6 +7,7 @@ from django.views import generic
 
 from apps.city.services.wall.enclosure import WallEnclosureService
 from apps.event.services.selection import EventSelectionService
+from apps.event.services.storage import EventChoiceStorageService
 from apps.savegame.models import Savegame
 
 
@@ -23,10 +24,21 @@ class RoundView(generic.View):
         savegame.save()
 
         events = EventSelectionService(savegame=savegame).process()
-        for event in events:
+
+        # Separate events with choices from those without
+        events_with_choices = [event for event in events if event.has_choices()]
+        events_without_choices = [event for event in events if not event.has_choices()]
+
+        # Store events with choices for user interaction
+        if events_with_choices:
+            EventChoiceStorageService(savegame=savegame).process(events=events_with_choices)
+
+        # Process events without choices immediately (existing behavior)
+        for event in events_without_choices:
             message = event.process()
             messages.add_message(self.request, event.LEVEL, message, extra_tags=event.TITLE)
 
+        # Show "quiet year" message only if no events at all
         if not len(events):
             messages.add_message(
                 self.request, messages.INFO, "It was a quiet year. Nothing happened out of the ordinary."
@@ -37,11 +49,15 @@ class RoundView(generic.View):
         savegame.save()
 
         response = HttpResponse(status=HTTPStatus.OK)
-        response["HX-Trigger"] = json.dumps(
-            {
-                "reloadMessages": "-",
-                "refreshMap": "-",
-                "updateNavbarValues": "-",
-            }
-        )
+        triggers = {
+            "reloadMessages": "-",
+            "refreshMap": "-",
+            "updateNavbarValues": "-",
+        }
+
+        # Add trigger to show pending events if any were stored
+        if events_with_choices:
+            triggers["showPendingEvents"] = "-"
+
+        response["HX-Trigger"] = json.dumps(triggers)
         return response

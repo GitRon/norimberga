@@ -1,4 +1,20 @@
+import factory
+
 from apps.event.events.events.base_event import BaseEvent
+from apps.event.models import EventNotification
+
+
+class EventNotificationFactory(factory.django.DjangoModelFactory):
+    """Factory for creating EventNotification instances for testing."""
+
+    class Meta:
+        model = EventNotification
+
+    savegame = factory.SubFactory("apps.savegame.tests.factories.SavegameFactory")
+    year = 1150
+    title = "Test Event"
+    message = "This is a test event message."
+    acknowledged = False
 
 
 class MockEvent(BaseEvent):
@@ -53,3 +69,32 @@ class ZeroProbabilityEvent(BaseEvent):
 
     def get_verbose_text(self):
         return "Zero probability event occurred"
+
+
+class MockEffect:
+    """Mock effect class for testing event effects."""
+
+    def __init__(self):
+        self.was_processed = False
+
+    def process(self, *, savegame):
+        """Mark this effect as processed."""
+        self.was_processed = True
+
+
+class EventWithEffect(BaseEvent):
+    """Event with an effect for testing."""
+
+    PROBABILITY = 50
+    TITLE = "Event With Effect"
+
+    def __init__(self, *, savegame):
+        super().__init__(savegame=savegame)
+        self.effect = MockEffect()
+
+    def _prepare_effect_test(self):
+        """Prepare a test effect."""
+        return self.effect
+
+    def get_verbose_text(self):
+        return "Event with effect occurred"

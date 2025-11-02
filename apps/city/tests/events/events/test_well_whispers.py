@@ -12,7 +12,7 @@ def test_well_whispers_event_init():
 
     event = WellWhispersEvent(savegame=savegame)
 
-    assert event.PROBABILITY == 15
+    assert event.PROBABILITY == 1
     assert event.LEVEL == messages.INFO
     assert event.TITLE == "Well Whispers"
     assert event.savegame.id == savegame.id
@@ -26,7 +26,7 @@ def test_well_whispers_event_get_probability_with_population():
     event = WellWhispersEvent(savegame=savegame)
     probability = event.get_probability()
 
-    assert probability == 15
+    assert probability == 1
 
 
 @pytest.mark.django_db

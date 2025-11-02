@@ -68,14 +68,16 @@ def test_get_current_savegame_return_structure(request_factory, user):
 
     result = get_current_savegame(request)
 
-    # Should be a dictionary with 'savegame', 'is_enclosed', 'max_housing_space', 'defense_value', and 'prestige' keys
+    # Should be a dictionary with 'savegame', 'is_enclosed', 'max_housing_space', 'defense_value',
+    # 'prestige', and 'unacknowledged_notifications_count' keys
     assert isinstance(result, dict)
-    assert len(result) == 5
+    assert len(result) == 6
     assert "savegame" in result
     assert "is_enclosed" in result
     assert "max_housing_space" in result
     assert "defense_value" in result
     assert "prestige" in result
+    assert "unacknowledged_notifications_count" in result
 
     # Value should be None when no savegame exists
     assert result["savegame"] is None
@@ -83,6 +85,7 @@ def test_get_current_savegame_return_structure(request_factory, user):
     assert result["max_housing_space"] == 0
     assert result["defense_value"] == 0
     assert result["prestige"] == 0
+    assert result["unacknowledged_notifications_count"] == 0
 
 
 def test_get_current_savegame_returns_none_for_unauthenticated_user(request_factory):

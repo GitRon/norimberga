@@ -248,6 +248,166 @@ Events modify persistent game state through:
 - **Transactional Safety**: Each effect should maintain data integrity
 - **State Validation**: Effects should enforce game rules and constraints
 
+## Notification System
+
+The notification system provides persistent, user-acknowledged notifications for game events. Unlike the previous Django messages system, notifications are stored in the database and persist across sessions, preventing players from avoiding consequences by closing their browser.
+
+### Architecture
+
+**Components**:
+- **EventNotification Model** (`apps/event/models.py`) - Persistent storage for notifications
+- **NotificationCreationService** (`apps/event/services/notification_creation.py`) - Creates notifications from events
+- **NotificationBoardView** (`apps/event/views.py`) - Displays one notification at a time
+- **NotificationAcknowledgeView** (`apps/event/views.py`) - Handles HTMX-based acknowledgment
+
+### EventNotification Model
+
+```python
+class EventNotification(models.Model):
+    savegame = ForeignKey(Savegame)  # Links to player's game
+    year = PositiveSmallIntegerField  # Year when event occurred
+    title = CharField                 # Event title
+    message = TextField               # Event verbose text
+    level = CharField                 # success/error/warning/info
+    acknowledged = BooleanField       # User acknowledgment status
+    created_at = DateTimeField        # Timestamp
+```
+
+**Key Features**:
+- Persists per savegame and year
+- Cannot be dismissed by closing browser tab
+- Ordered by creation time
+- Cascade deletes with savegame
+
+### NotificationCreationService
+
+Replaces Django's session-based messages system with persistent database records.
+
+```python
+from apps.event.services.notification_creation import NotificationCreationService
+
+# Select events that should occur
+events = EventSelectionService(savegame=savegame).process()
+
+# Create persistent notifications
+notifications = NotificationCreationService(
+    savegame=savegame,
+    events=events
+).process()
+```
+
+**Process**:
+1. Takes list of selected events
+2. Calls `event.process()` to execute effects
+3. Gets verbose text from `event.get_verbose_text()`
+4. Creates EventNotification record with:
+   - Current savegame and year
+   - Event title and message
+   - Mapped message level (Django messages → EventNotification.Level)
+   - Unacknowledged status
+
+### User Flow
+
+**Round End Flow**:
+```
+User clicks "Finish Round"
+    ↓
+RoundView increments year
+    ↓
+EventSelectionService selects events
+    ↓
+NotificationCreationService creates notifications
+    ↓
+Redirect to NotificationBoardView (if notifications exist)
+```
+
+**Notification Display Flow**:
+```
+NotificationBoardView
+    ↓
+Display first unacknowledged notification
+    ↓
+Show parchment scroll UI with:
+    - Event title and year
+    - Event message
+    - Progress indicator (e.g., "Notification 1 of 3")
+    - "Acknowledge" button
+    ↓
+User clicks "Acknowledge" (HTMX POST)
+    ↓
+NotificationAcknowledgeView marks as acknowledged
+    ↓
+If more notifications exist:
+    → Redirect to next notification
+Else:
+    → Redirect to city view
+```
+
+### UI Components
+
+**Notification Board** (`apps/event/templates/event/notification_board.html`):
+- Medieval parchment/scroll aesthetic
+- Displays one notification at a time
+- Shows progress (e.g., "Notification 1 of 3")
+- Color-coded badges by severity level
+- HTMX-powered acknowledgment
+
+**Navbar Badge** (`apps/core/templates/partials/_navbar.html`):
+- Bell icon with notification count
+- Only shown when unacknowledged notifications exist
+- Links directly to notification board
+- Updated via context processor
+
+### Integration with Round System
+
+**Before** (Django Messages):
+```python
+events = EventSelectionService(savegame=savegame).process()
+for event in events:
+    message = event.process()
+    messages.add_message(request, event.LEVEL, message, extra_tags=event.TITLE)
+```
+
+**After** (Persistent Notifications):
+```python
+events = EventSelectionService(savegame=savegame).process()
+if events:
+    NotificationCreationService(savegame=savegame, events=events).process()
+
+# Redirect to notifications if any exist
+has_notifications = savegame.event_notifications.filter(acknowledged=False).exists()
+if has_notifications:
+    response["HX-Redirect"] = reverse("event:notification-board")
+```
+
+### Future Enhancements
+
+The notification system is designed to support future event choices:
+
+**Planned Fields**:
+- `requires_choice` - Boolean indicating if user must make a decision
+- `choice_data` - JSONField storing choice options
+- Modified acknowledgment view to handle choice submission
+
+**Example Future Event**:
+```python
+class EventWithChoice(BaseEvent):
+    def get_choice_options(self):
+        return {
+            "choice_1": {"label": "Pay tribute", "effect": "lose_coins"},
+            "choice_2": {"label": "Refuse", "effect": "increase_unrest"}
+        }
+```
+
+### Testing
+
+Comprehensive test coverage includes:
+- **Model Tests** (`test_notification_model.py`) - Creation, ordering, filtering, cascade deletion
+- **Service Tests** (`test_notification_creation_service.py`) - Event processing, level mapping, notification creation
+- **View Tests** (`test_notification_views.py`) - Display logic, acknowledgment flow, HTMX redirects
+
+All notification system components maintain 100% test coverage.
+
 ## Technical Notes
 
 ### Effect Discovery

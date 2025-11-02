@@ -5,7 +5,7 @@ from apps.savegame.models import Savegame
 
 
 class Event(BaseEvent):
-    PROBABILITY = 15
+    PROBABILITY = 1
     LEVEL = messages.INFO
     TITLE = "Broken Scales"
 

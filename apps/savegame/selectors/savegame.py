@@ -3,6 +3,11 @@ from collections import defaultdict
 from apps.savegame.models import Savegame
 
 
+def get_active_savegame_for_user(*, user) -> Savegame | None:
+    """Return the active savegame for a user, or None if none exists."""
+    return Savegame.objects.get_active_for_user(user=user)
+
+
 def get_balance_data(*, savegame: Savegame) -> dict:
     """
     Calculate the balance per round for a savegame with detailed breakdown.

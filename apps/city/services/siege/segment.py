@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from django.db.models import QuerySet
+from django.db import models
 
 from apps.city.constants import MAP_SIZE
 from apps.city.models import Tile
@@ -10,7 +10,7 @@ from apps.savegame.models import Savegame
 @dataclass(kw_only=True)
 class WallSegment:
     direction: str
-    tiles: list
+    tiles: list[Tile]
     total_hp: int
     total_max_hp: int
     hp_ratio: float
@@ -55,7 +55,5 @@ class WallSegmentService:
         else:
             return "S" if dy > 0 else "N"
 
-    def _get_wall_tiles(self) -> QuerySet:
-        return self.savegame.tiles.filter(wall_hitpoints__isnull=False).select_related(
-            "building", "building__building_type"
-        )
+    def _get_wall_tiles(self) -> models.QuerySet:
+        return self.savegame.tiles.filter_wall_tiles()

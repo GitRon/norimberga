@@ -1,5 +1,6 @@
 from django.db import models
 
+from apps.savegame.managers.pending_siege import PendingSiegeManager
 from apps.savegame.models.savegame import Savegame
 
 
@@ -16,6 +17,8 @@ class PendingSiege(models.Model):
     announced_strength = models.PositiveSmallIntegerField()
     direction = models.CharField(max_length=1, choices=Direction.choices)
     resolved = models.BooleanField(default=False)
+
+    objects = PendingSiegeManager()
 
     class Meta:
         default_related_name = "pending_sieges"

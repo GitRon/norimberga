@@ -21,13 +21,12 @@ class SiegeAnnouncementService:
         announced_strength = self._fuzz_strength(actual=actual_strength)
         direction = self._pick_direction()
 
-        return PendingSiege.objects.create(
+        return PendingSiege.objects.create_pending_siege(
             savegame=self.savegame,
             attack_year=self.savegame.current_year + SIEGE_ADVANCE_ROUNDS,
             actual_strength=actual_strength,
             announced_strength=announced_strength,
             direction=direction,
-            resolved=False,
         )
 
     def _roll_actual_strength(self) -> int:

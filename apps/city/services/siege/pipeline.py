@@ -22,16 +22,16 @@ class SiegePipelineService:
         return outcome
 
     def _get_due_siege(self) -> PendingSiege | None:
-        return self.savegame.pending_sieges.filter(
-            resolved=False,
-            attack_year=self.savegame.current_year,
-        ).first()
+        return PendingSiege.objects.get_due_siege(
+            savegame=self.savegame,
+            year=self.savegame.current_year,
+        )
 
     def _resolve(self, *, pending_siege: PendingSiege) -> SiegeOutcome:
         return SiegeResolutionService(savegame=self.savegame, pending_siege=pending_siege).process()
 
     def _create_chronicle(self, *, outcome: SiegeOutcome, pending_siege: PendingSiege) -> SiegeChronicle:
-        return SiegeChronicle.objects.create(
+        return SiegeChronicle.objects.create_chronicle(
             savegame=self.savegame,
             year=pending_siege.attack_year,
             direction=outcome.direction,
@@ -49,10 +49,9 @@ class SiegePipelineService:
         }
         title = f"Battle Report: {result_labels.get(outcome.result, 'Siege Resolved')}"
 
-        return EventNotification.objects.create(
+        return EventNotification.objects.create_notification(
             savegame=self.savegame,
             year=self.savegame.current_year,
             title=title,
             message=outcome.report_text,
-            acknowledged=False,
         )

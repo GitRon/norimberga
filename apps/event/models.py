@@ -1,5 +1,6 @@
 from django.db import models
 
+from apps.event.managers.event_notification import EventNotificationManager
 from apps.savegame.models import Savegame
 
 
@@ -14,6 +15,8 @@ class EventNotification(models.Model):
     title = models.CharField("Event title", max_length=100)
     message = models.TextField("Event message")
     acknowledged = models.BooleanField("Acknowledged", default=False)
+
+    objects = EventNotificationManager()
 
     class Meta:
         default_related_name = "event_notifications"

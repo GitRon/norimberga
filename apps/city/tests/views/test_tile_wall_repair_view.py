@@ -127,6 +127,40 @@ def test_tile_wall_repair_view_post_rejects_foreign_tile(user):
 
 
 @pytest.mark.django_db
+def test_tile_wall_repair_view_post_no_active_savegame(user):
+    """Test repair fails when the user has no active savegame."""
+    wall_type = WallBuildingTypeFactory.create()
+    building = BuildingFactory.create(building_type=wall_type, level=1)
+    other_savegame = SavegameFactory.create(is_active=True)
+    tile = TileFactory.create(savegame=other_savegame, building=building, wall_hitpoints=60)
+
+    view = TileWallRepairView()
+    request = RequestFactory().post("/")
+    request.user = user
+
+    response = view.post(request, pk=tile.pk)
+
+    assert response.status_code == 400
+
+
+@pytest.mark.django_db
+def test_tile_wall_repair_view_post_wall_hitpoints_none(user):
+    """Test repair fails when wall tile has no hitpoints (e.g. just built)."""
+    savegame = SavegameFactory.create(user=user, is_active=True, coins=1000)
+    wall_type = WallBuildingTypeFactory.create()
+    building = BuildingFactory.create(building_type=wall_type, level=1)
+    tile = TileFactory.create(savegame=savegame, building=building, wall_hitpoints=None)
+
+    view = TileWallRepairView()
+    request = RequestFactory().post("/")
+    request.user = user
+
+    response = view.post(request, pk=tile.pk)
+
+    assert response.status_code == 400
+
+
+@pytest.mark.django_db
 def test_tile_wall_repair_view_post_level2_wall(user):
     """Test repair cost scales with wall level."""
     savegame = SavegameFactory.create(user=user, is_active=True, coins=2000)

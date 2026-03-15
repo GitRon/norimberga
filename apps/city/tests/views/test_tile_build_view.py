@@ -9,6 +9,7 @@ from apps.city.tests.factories import (
     BuildingTypeFactory,
     TerrainFactory,
     TileFactory,
+    WallBuildingTypeFactory,
 )
 from apps.city.views import TileBuildView
 from apps.savegame.tests.factories import SavegameFactory
@@ -126,6 +127,61 @@ def test_tile_build_view_form_valid_demolish_with_costs(request_factory, user):
 
         # Verify response headers
         assert response.status_code == 200
+
+
+@pytest.mark.django_db
+def test_tile_build_view_form_valid_building_wall_sets_hitpoints(request_factory, user):
+    """Test that building a wall tile sets wall_hitpoints to max."""
+    savegame = SavegameFactory(user=user, coins=100, is_active=True)
+    wall_type = WallBuildingTypeFactory.create()
+    building = BuildingFactory(building_type=wall_type, building_costs=10, level=1)
+    tile = TileFactory.create(savegame=savegame)
+
+    mock_form = mock.Mock()
+    mock_form.cleaned_data = {"building": building}
+    mock_form.initial = {"current_building": None}
+    mock_form.instance = tile
+
+    request = request_factory.get("/")
+    request.user = user
+    view = TileBuildView()
+    view.object = tile
+    view.request = request
+
+    def set_building(*args, **kwargs):
+        tile.building = building
+
+    with mock.patch("apps.city.views.tile_build_view.generic.UpdateView.form_valid", side_effect=set_building):
+        view.form_valid(mock_form)
+
+    tile.refresh_from_db()
+    assert tile.wall_hitpoints == building.level * 100
+
+
+@pytest.mark.django_db
+def test_tile_build_view_form_valid_demolish_wall_clears_hitpoints(request_factory, user):
+    """Test that demolishing a wall tile clears wall_hitpoints."""
+    savegame = SavegameFactory(user=user, coins=100, is_active=True)
+    wall_type = WallBuildingTypeFactory.create()
+    old_building = BuildingFactory(building_type=wall_type, demolition_costs=10, level=1)
+    tile = TileFactory.create(savegame=savegame, building=old_building, wall_hitpoints=80)
+
+    mock_form = mock.Mock()
+    mock_form.cleaned_data = {"building": None}
+    mock_form.initial = {"current_building": old_building}
+    mock_form.instance = tile
+
+    request = request_factory.get("/")
+    request.user = user
+    view = TileBuildView()
+    view.object = tile
+    view.request = request
+
+    with mock.patch("apps.city.views.tile_build_view.generic.UpdateView.form_valid"):
+        view.form_valid(mock_form)
+
+    tile.refresh_from_db()
+    assert tile.wall_hitpoints is None
 
 
 @pytest.mark.django_db

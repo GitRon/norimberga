@@ -211,3 +211,71 @@ def test_tile_is_edge_tile_center():
     assert tile_center.is_edge_tile() is False
     assert tile_inner.is_edge_tile() is False
     assert tile_inner2.is_edge_tile() is False
+
+
+@pytest.mark.django_db
+def test_tile_wall_hitpoints_max_for_wall():
+    """Test wall_hitpoints_max returns level * 100 for wall tiles."""
+    wall_type = WallBuildingTypeFactory.create()
+    building = BuildingFactory.create(building_type=wall_type, level=2)
+    tile = TileFactory.create(building=building)
+
+    assert tile.wall_hitpoints_max == 200
+
+
+@pytest.mark.django_db
+def test_tile_wall_hitpoints_max_for_non_wall():
+    """Test wall_hitpoints_max returns None for non-wall tiles."""
+    building_type = BuildingTypeFactory.create(is_wall=False)
+    building = BuildingFactory.create(building_type=building_type)
+    tile = TileFactory.create(building=building)
+
+    assert tile.wall_hitpoints_max is None
+
+
+@pytest.mark.django_db
+def test_tile_wall_hitpoints_max_without_building():
+    """Test wall_hitpoints_max returns None for tiles without a building."""
+    tile = TileFactory.create(building=None)
+
+    assert tile.wall_hitpoints_max is None
+
+
+@pytest.mark.django_db
+def test_tile_wall_repair_cost_when_damaged():
+    """Test wall_repair_cost is proportional to building cost."""
+    wall_type = WallBuildingTypeFactory.create()
+    building = BuildingFactory.create(building_type=wall_type, level=1, building_costs=100)
+    tile = TileFactory.create(building=building, wall_hitpoints=60)
+
+    assert tile.wall_repair_cost == 40
+
+
+@pytest.mark.django_db
+def test_tile_wall_repair_cost_when_full_hp():
+    """Test wall_repair_cost returns 0 when wall is at full HP."""
+    wall_type = WallBuildingTypeFactory.create()
+    building = BuildingFactory.create(building_type=wall_type, level=1)
+    tile = TileFactory.create(building=building, wall_hitpoints=100)
+
+    assert tile.wall_repair_cost == 0
+
+
+@pytest.mark.django_db
+def test_tile_wall_repair_cost_without_hitpoints():
+    """Test wall_repair_cost returns None when wall_hitpoints is None."""
+    wall_type = WallBuildingTypeFactory.create()
+    building = BuildingFactory.create(building_type=wall_type, level=1)
+    tile = TileFactory.create(building=building, wall_hitpoints=None)
+
+    assert tile.wall_repair_cost is None
+
+
+@pytest.mark.django_db
+def test_tile_wall_repair_cost_for_non_wall():
+    """Test wall_repair_cost returns None for non-wall tiles."""
+    building_type = BuildingTypeFactory.create(is_wall=False)
+    building = BuildingFactory.create(building_type=building_type)
+    tile = TileFactory.create(building=building)
+
+    assert tile.wall_repair_cost is None

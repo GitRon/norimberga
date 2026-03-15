@@ -1,4 +1,4 @@
-{% load core_filters %}
+{% load core_filters tile_tags %}
 <div class="flex flex-col" hx-trigger="refreshMap from:body" hx-get="{% url "city:city-map" %}" hx-swap="outerHTML">
     <div class="bg-white rounded-lg shadow-lg p-6">
         <div class="grid grid-cols-20 gap-0 text-center bg-gray-300 rounded">
@@ -15,6 +15,14 @@
                             <span class="text-[0.5rem] sm:text-[0.55rem] md:text-[0.6rem] lg:text-[0.65rem] xl:text-[0.7rem] 2xl:text-sm font-semibold text-gray-600 mt-0.5">{{ tile.building.level|to_roman }}</span>
                         </div>
                     {% endif %}
+                    {% with hp_pct=tile|wall_hp_percent %}
+                        {% if hp_pct is not None %}
+                            <div class="absolute bottom-0 left-0 right-0 h-1 flex pointer-events-none">
+                                <div class="h-full bg-green-500" style="width: {{ hp_pct }}%"></div>
+                                <div class="h-full bg-red-500 flex-1"></div>
+                            </div>
+                        {% endif %}
+                    {% endwith %}
 {# <span class="absolute bottom-0 right-0 m-1 text-xs text-slate-500">{{ tile.x }}/{{ tile.y }}</span> #}
                 </div>
             {% endfor %}

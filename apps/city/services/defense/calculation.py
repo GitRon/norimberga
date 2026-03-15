@@ -88,11 +88,19 @@ class DefenseCalculationService:
     def _calculate_base_defense(self) -> int:
         """
         Calculate base defense from all buildings with defense_value.
+
+        Wall tiles are scaled by their current hitpoints ratio.
         """
         tiles_with_buildings = Tile.objects.filter(savegame=self.savegame, building__isnull=False).select_related(
-            "building"
+            "building", "building__building_type"
         )
 
-        total_defense = sum(tile.building.defense_value for tile in tiles_with_buildings)
+        total_defense = 0
+        for tile in tiles_with_buildings:
+            defense = tile.building.defense_value
+            if tile.building.building_type.is_wall and tile.wall_hitpoints is not None:
+                max_hp = tile.wall_hitpoints_max
+                defense = int(defense * tile.wall_hitpoints / max_hp)
+            total_defense += defense
 
         return total_defense

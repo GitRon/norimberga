@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git fetch:*)",
+      "Bash(git merge:*)",
+      "Bash(git stash:*)",
+      "Bash(grep:*)",
+      "Bash(npx tailwindcss:*)",
+      "Bash(pre-commit run --all-files)",
+      "Bash(pytest:*)",
+      "Bash(python manage.py:*)",
+      "Bash(python:*)",
+      "Bash(ruff check:*)",
+      "Bash(ruff format:*)",
+      "Bash(uv run pytest:*)"
+    ],
+    "deny": [],
+    "defaultMode": "acceptEdits"
+  }
+}

@@ -5,6 +5,7 @@ from django.http import HttpResponse
 from django.urls import reverse
 from django.views import generic
 
+from apps.city.services.wall.decay import WallDecayService
 from apps.city.services.wall.enclosure import WallEnclosureService
 from apps.event.services.notification_creation import NotificationCreationService
 from apps.event.services.selection import EventSelectionService
@@ -34,6 +35,9 @@ class RoundView(generic.View):
         # Create persistent notifications from events
         if events:
             NotificationCreationService(savegame=savegame, events=events).process()
+
+        # Decay wall hitpoints each round
+        WallDecayService(savegame=savegame).process()
 
         # Update enclosure status after events (in case buildings were removed)
         savegame.is_enclosed = WallEnclosureService(savegame=savegame).process()

@@ -9,6 +9,7 @@ from apps.city.tests.factories import (
     BuildingTypeFactory,
     TileFactory,
     UniqueBuildingTypeFactory,
+    WallBuildingTypeFactory,
 )
 from apps.city.views import TileDemolishView
 from apps.savegame.tests.factories import SavegameFactory
@@ -175,3 +176,24 @@ def test_tile_demolish_view_insufficient_coins_for_demolition(user):
     # Verify error response
     assert response.status_code == 400
     assert b"Not enough coins" in response.content
+
+
+@pytest.mark.django_db
+def test_tile_demolish_view_clears_wall_hitpoints(user):
+    """Test TileDemolishView clears wall_hitpoints when demolishing a wall tile."""
+    SavegameFactory(user=user, is_active=True)
+
+    wall_type = WallBuildingTypeFactory.create()
+    building = BuildingFactory(building_type=wall_type)
+    tile = TileFactory(building=building, wall_hitpoints=80)
+
+    view = TileDemolishView()
+    request = RequestFactory().post("/")
+    request.user = user
+
+    response = view.post(request, pk=tile.pk)
+
+    assert response.status_code == 200
+    tile.refresh_from_db()
+    assert tile.building is None
+    assert tile.wall_hitpoints is None

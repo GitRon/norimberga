@@ -34,6 +34,7 @@ class TileBuildView(SavegameRequiredMixin, generic.UpdateView):
 
     def form_valid(self, form) -> HttpResponse:
         old_building = form.initial.get("current_building")
+        tile = form.instance
         super().form_valid(form=form)
 
         savegame = Savegame.objects.filter(user=self.request.user, is_active=True).first()
@@ -48,6 +49,14 @@ class TileBuildView(SavegameRequiredMixin, generic.UpdateView):
 
             savegame.is_enclosed = WallEnclosureService(savegame=savegame).process()
             savegame.save()
+
+        # Set or clear wall_hitpoints based on whether the new building is a wall
+        new_building = form.cleaned_data["building"]
+        if new_building and new_building.building_type.is_wall:
+            tile.wall_hitpoints = tile.wall_hitpoints_max
+        elif old_building and old_building.building_type.is_wall:
+            tile.wall_hitpoints = None
+        tile.save()
 
         response = HttpResponse(status=HTTPStatus.OK)
         response["HX-Trigger"] = json.dumps(

@@ -13,6 +13,7 @@ class Tile(models.Model):
     x = models.PositiveSmallIntegerField()
     y = models.PositiveSmallIntegerField()
     building = models.ForeignKey(Building, on_delete=models.SET_NULL, blank=True, null=True)
+    wall_hitpoints = models.PositiveSmallIntegerField(null=True, blank=True)
 
     objects = TileManager()
 
@@ -49,6 +50,25 @@ class Tile(models.Model):
 
     def is_adjacent_to_city_building(self) -> bool:
         return Tile.objects.has_adjacent_city_building(tile=self)
+
+    @property
+    def wall_hitpoints_max(self) -> int | None:
+        """Return max hitpoints for this wall tile, or None if not a wall."""
+        if self.building and self.building.building_type.is_wall:
+            return self.building.level * 100
+        return None
+
+    @property
+    def wall_repair_cost(self) -> int | None:
+        """Return the coin cost to fully repair this wall tile, or None if not applicable.
+
+        Cost is proportional to the wall's building cost: full repair costs as much as rebuilding.
+        """
+        max_hp = self.wall_hitpoints_max
+        if max_hp is None or self.wall_hitpoints is None:
+            return None
+        missing_hp = max_hp - self.wall_hitpoints
+        return round(missing_hp / max_hp * self.building.building_costs)
 
     def is_edge_tile(self) -> bool:
         """Check if this tile is on the edge of the map."""

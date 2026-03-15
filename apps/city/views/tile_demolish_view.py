@@ -32,8 +32,9 @@ class TileDemolishView(SavegameRequiredMixin, generic.View):
                 savegame.coins -= tile.building.demolition_costs
                 savegame.save()
 
-            # Remove the building
+            # Remove the building and clear any wall hitpoints
             tile.building = None
+            tile.wall_hitpoints = None
             tile.save()
 
             # Update enclosure status

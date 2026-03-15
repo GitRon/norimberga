@@ -53,4 +53,4 @@ celerybeat-schedule
 /static/css/dist
 
 # AI
-.claude/
+.claude/settings.local.json

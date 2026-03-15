@@ -3,7 +3,6 @@ import json
 import pytest
 from django.test import RequestFactory
 
-from apps.city.constants import WALL_REPAIR_COST_PER_HP
 from apps.city.tests.factories import BuildingFactory, BuildingTypeFactory, TileFactory, WallBuildingTypeFactory
 from apps.city.views.tile_wall_repair_view import TileWallRepairView
 from apps.savegame.tests.factories import SavegameFactory
@@ -14,7 +13,7 @@ def test_tile_wall_repair_view_post_success(user):
     """Test repair restores HP and charges coins."""
     savegame = SavegameFactory.create(user=user, is_active=True, coins=500)
     wall_type = WallBuildingTypeFactory.create()
-    building = BuildingFactory.create(building_type=wall_type, level=1)
+    building = BuildingFactory.create(building_type=wall_type, level=1, building_costs=100)
     tile = TileFactory.create(savegame=savegame, building=building, wall_hitpoints=60)
 
     view = TileWallRepairView()
@@ -28,8 +27,7 @@ def test_tile_wall_repair_view_post_success(user):
     assert tile.wall_hitpoints == 100
 
     savegame.refresh_from_db()
-    expected_cost = (100 - 60) * WALL_REPAIR_COST_PER_HP
-    assert savegame.coins == 500 - expected_cost
+    assert savegame.coins == 460  # 500 - round((100-60)/100 * 100) = 500 - 40
 
 
 @pytest.mark.django_db
@@ -165,7 +163,7 @@ def test_tile_wall_repair_view_post_level2_wall(user):
     """Test repair cost scales with wall level."""
     savegame = SavegameFactory.create(user=user, is_active=True, coins=2000)
     wall_type = WallBuildingTypeFactory.create()
-    building = BuildingFactory.create(building_type=wall_type, level=2)
+    building = BuildingFactory.create(building_type=wall_type, level=2, building_costs=100)
     tile = TileFactory.create(savegame=savegame, building=building, wall_hitpoints=100)
 
     view = TileWallRepairView()
@@ -179,5 +177,4 @@ def test_tile_wall_repair_view_post_level2_wall(user):
     assert tile.wall_hitpoints == 200  # max HP for level 2
 
     savegame.refresh_from_db()
-    expected_cost = (200 - 100) * WALL_REPAIR_COST_PER_HP
-    assert savegame.coins == 2000 - expected_cost
+    assert savegame.coins == 1950  # 2000 - round((200-100)/200 * 100) = 2000 - 50

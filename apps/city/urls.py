@@ -16,4 +16,6 @@ urlpatterns = [
     path("tile/<int:pk>/build", views.TileBuildView.as_view(), name="tile-build"),
     path("tile/<int:pk>/demolish", views.TileDemolishView.as_view(), name="tile-demolish"),
     path("tile/<int:pk>/repair-wall", views.TileWallRepairView.as_view(), name="tile-wall-repair"),
+    # Walls
+    path("walls/repair-all", views.WallRepairAllView.as_view(), name="wall-repair-all"),
 ]

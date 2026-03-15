@@ -190,6 +190,15 @@
                                       value="{{ wall_condition.total_hp }}"
                                       max="{{ wall_condition.total_max_hp }}"></progress>
                         </div>
+                        {% if wall_condition.total_repair_cost %}
+                            <div class="mb-4">
+                                <button class="btn btn-warning"
+                                        hx-post="{% url 'city:wall-repair-all' %}"
+                                        hx-confirm="Repair all walls for {{ wall_condition.total_repair_cost }} coins?">
+                                    Repair All Walls ({{ wall_condition.total_repair_cost }} coins)
+                                </button>
+                            </div>
+                        {% endif %}
                     {% endif %}
 
                     <div class="overflow-x-auto">
@@ -200,6 +209,7 @@
                                     <th>Wall</th>
                                     <th>Hitpoints</th>
                                     <th>Condition</th>
+                                    <th>Repair</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -222,6 +232,18 @@
                                                           max="{{ tile.wall_hitpoints_max }}"></progress>
                                             {% else %}
                                                 <span class="badge badge-ghost">No data</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if tile.wall_repair_cost %}
+                                                <button class="btn btn-xs btn-warning"
+                                                        hx-post="{% url 'city:tile-wall-repair' tile.id %}"
+                                                        hx-confirm="Repair this wall for {{ tile.wall_repair_cost }} coins?"
+                                                        hx-on:htmx:after-request="if (event.detail.successful) window.location.reload()">
+                                                    {{ tile.wall_repair_cost }} coins
+                                                </button>
+                                            {% else %}
+                                                <span class="badge badge-success badge-sm">Full</span>
                                             {% endif %}
                                         </td>
                                     </tr>

@@ -4,7 +4,6 @@ from http import HTTPStatus
 from django.http import HttpResponse
 from django.views import generic
 
-from apps.city.constants import WALL_REPAIR_COST_PER_HP
 from apps.city.models import Tile
 from apps.savegame.mixins.savegame import SavegameRequiredMixin
 from apps.savegame.models import Savegame
@@ -30,13 +29,9 @@ class TileWallRepairView(SavegameRequiredMixin, generic.View):
         if tile.wall_hitpoints is None:
             return HttpResponse("This wall tile has no hitpoints to repair.", status=HTTPStatus.BAD_REQUEST)
 
-        max_hitpoints = tile.wall_hitpoints_max
-        missing_hp = max_hitpoints - tile.wall_hitpoints
-
-        if missing_hp == 0:
+        repair_cost = tile.wall_repair_cost
+        if not repair_cost:
             return HttpResponse("This wall is already at full health.", status=HTTPStatus.BAD_REQUEST)
-
-        repair_cost = missing_hp * WALL_REPAIR_COST_PER_HP
 
         if savegame.coins < repair_cost:
             return HttpResponse(f"Not enough coins. Repair costs {repair_cost} coins.", status=HTTPStatus.BAD_REQUEST)

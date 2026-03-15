@@ -8,6 +8,7 @@ from apps.city.views.prestige_view import PrestigeView
 from apps.city.views.tile_build_view import TileBuildView
 from apps.city.views.tile_demolish_view import TileDemolishView
 from apps.city.views.tile_wall_repair_view import TileWallRepairView
+from apps.city.views.wall_repair_all_view import WallRepairAllView
 
 __all__ = [
     "BalanceView",
@@ -20,4 +21,5 @@ __all__ = [
     "TileBuildView",
     "TileDemolishView",
     "TileWallRepairView",
+    "WallRepairAllView",
 ]

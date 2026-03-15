@@ -3,7 +3,6 @@ from unittest import mock
 import pytest
 from django.db import IntegrityError
 
-from apps.city.constants import WALL_REPAIR_COST_PER_HP
 from apps.city.tests.factories import (
     BuildingFactory,
     BuildingTypeFactory,
@@ -244,12 +243,12 @@ def test_tile_wall_hitpoints_max_without_building():
 
 @pytest.mark.django_db
 def test_tile_wall_repair_cost_when_damaged():
-    """Test wall_repair_cost returns correct cost for damaged wall tile."""
+    """Test wall_repair_cost is proportional to building cost."""
     wall_type = WallBuildingTypeFactory.create()
-    building = BuildingFactory.create(building_type=wall_type, level=1)
+    building = BuildingFactory.create(building_type=wall_type, level=1, building_costs=100)
     tile = TileFactory.create(building=building, wall_hitpoints=60)
 
-    assert tile.wall_repair_cost == (100 - 60) * WALL_REPAIR_COST_PER_HP
+    assert tile.wall_repair_cost == 40
 
 
 @pytest.mark.django_db

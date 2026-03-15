@@ -60,13 +60,15 @@ class Tile(models.Model):
 
     @property
     def wall_repair_cost(self) -> int | None:
-        """Return the coin cost to fully repair this wall tile, or None if not applicable."""
-        from apps.city.constants import WALL_REPAIR_COST_PER_HP
+        """Return the coin cost to fully repair this wall tile, or None if not applicable.
 
+        Cost is proportional to the wall's building cost: full repair costs as much as rebuilding.
+        """
         max_hp = self.wall_hitpoints_max
         if max_hp is None or self.wall_hitpoints is None:
             return None
-        return (max_hp - self.wall_hitpoints) * WALL_REPAIR_COST_PER_HP
+        missing_hp = max_hp - self.wall_hitpoints
+        return round(missing_hp / max_hp * self.building.building_costs)
 
     def is_edge_tile(self) -> bool:
         """Check if this tile is on the edge of the map."""

@@ -19,7 +19,7 @@ def test_defenses_view_response(authenticated_client, user):
 
 @pytest.mark.django_db
 def test_defenses_view_with_savegame(authenticated_client, user):
-    """Test DefensesView includes defense breakdown when savegame exists."""
+    """Test DefensesView includes defense breakdown and wall condition when savegame exists."""
     SavegameFactory(user=user, is_active=True)
 
     response = authenticated_client.get(reverse("city:defenses"))
@@ -34,6 +34,13 @@ def test_defenses_view_with_savegame(authenticated_client, user):
     assert hasattr(breakdown, "spike_malus")
     assert hasattr(breakdown, "potential_total")
     assert hasattr(breakdown, "actual_total")
+
+    assert "wall_condition" in response.context
+    wall_condition = response.context["wall_condition"]
+    assert hasattr(wall_condition, "tiles")
+    assert hasattr(wall_condition, "total_hp")
+    assert hasattr(wall_condition, "total_max_hp")
+    assert hasattr(wall_condition, "health_percent")
 
 
 @pytest.mark.django_db

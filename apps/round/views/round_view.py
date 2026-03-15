@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.http import HttpResponse
 from django.views import generic
 
+from apps.city.services.wall.decay import WallDecayService
 from apps.city.services.wall.enclosure import WallEnclosureService
 from apps.event.services.selection import EventSelectionService
 from apps.savegame.models import Savegame
@@ -31,6 +32,9 @@ class RoundView(generic.View):
             messages.add_message(
                 self.request, messages.INFO, "It was a quiet year. Nothing happened out of the ordinary."
             )
+
+        # Decay wall hitpoints each round
+        WallDecayService(savegame=savegame).process()
 
         # Update enclosure status after events (in case buildings were removed)
         savegame.is_enclosed = WallEnclosureService(savegame=savegame).process()

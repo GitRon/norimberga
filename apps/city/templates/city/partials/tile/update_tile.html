@@ -35,6 +35,16 @@
                         Demolish Building{% if object.building.demolition_costs > 0 %} ({{ object.building.demolition_costs }} coins){% endif %}
                     </button>
                 {% endif %}
+                {% comment %}Show repair button for damaged wall tiles{% endcomment %}
+                {% if object.wall_repair_cost %}
+                    <button class="btn btn-warning"
+                            hx-post="{% url "city:tile-wall-repair" object.id %}"
+                            hx-target="#form-container"
+                            hx-swap="outerHTML"
+                            hx-confirm="Repair this wall section to full health? This will cost {{ object.wall_repair_cost }} coins.">
+                        Repair Wall ({{ object.wall_hitpoints }}/{{ object.wall_hitpoints_max }} HP, {{ object.wall_repair_cost }} coins)
+                    </button>
+                {% endif %}
             {% endif %}
         </div>
     </form>

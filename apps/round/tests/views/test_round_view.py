@@ -501,3 +501,30 @@ def test_round_view_redirects_to_notification_board_after_creating_notifications
                 assert response.status_code == 200
                 assert "HX-Redirect" in response
                 assert response["HX-Redirect"] == reverse("event:notification-board")
+
+
+@pytest.mark.django_db
+def test_round_view_calls_siege_pipeline_service(request_factory):
+    """Test RoundView calls SiegePipelineService after wall enclosure check."""
+    from apps.savegame.tests.factories import SavegameFactory, UserFactory
+
+    user = UserFactory.create()
+    SavegameFactory(user=user, is_active=True)
+
+    with mock.patch("apps.round.views.round_view.EventSelectionService") as mock_event_svc:
+        mock_event_svc.return_value.process.return_value = []
+
+        with mock.patch("apps.round.views.round_view.WallEnclosureService") as mock_wall_svc:
+            mock_wall_svc.return_value.process.return_value = True
+
+            with mock.patch("apps.round.views.round_view.SiegePipelineService") as mock_siege_svc:
+                mock_siege_svc.return_value.process.return_value = None
+
+                request = request_factory.post("/")
+                request.user = user
+                view = RoundView()
+                view.request = request
+                view.post(request)
+
+            mock_siege_svc.assert_called_once()
+            mock_siege_svc.return_value.process.assert_called_once()

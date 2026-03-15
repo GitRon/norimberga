@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h1 class="text-4xl font-bold mb-8 text-gray-900">Siege Chronicle</h1>
+
+        {% if chronicles %}
+            <div class="flex flex-col gap-4">
+                {% for entry in chronicles %}
+                    {% include "city/siege/_chronicle_entry.html" with entry=entry %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="card bg-base-100 shadow-lg">
+                <div class="card-body">
+                    <p class="text-gray-500 text-center py-8">No sieges have been recorded yet.</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock content %}

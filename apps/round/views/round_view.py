@@ -5,6 +5,7 @@ from django.http import HttpResponse
 from django.urls import reverse
 from django.views import generic
 
+from apps.city.services.siege.pipeline import SiegePipelineService
 from apps.city.services.wall.decay import WallDecayService
 from apps.city.services.wall.enclosure import WallEnclosureService
 from apps.event.services.notification_creation import NotificationCreationService
@@ -41,6 +42,10 @@ class RoundView(generic.View):
 
         # Update enclosure status after events (in case buildings were removed)
         savegame.is_enclosed = WallEnclosureService(savegame=savegame).process()
+
+        # Resolve any due siege attacks
+        SiegePipelineService(savegame=savegame).process()
+
         savegame.save()
 
         # Check if there are unacknowledged notifications

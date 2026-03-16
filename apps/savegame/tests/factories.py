@@ -4,12 +4,13 @@ import factory
 from django.core.files import File
 
 from apps.account.tests.factories import UserFactory
-from apps.savegame.models import Savegame
+from apps.savegame.models import PendingSiege, Savegame, SiegeChronicle
 
 
 class SavegameFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Savegame
+        skip_postgeneration_save = True
 
     user = factory.SubFactory(UserFactory)
     city_name = factory.Faker("city")
@@ -39,3 +40,28 @@ class SavegameFactory(factory.django.DjangoModelFactory):
             self.coat_of_arms.save(f"coat_of_arms_{self.id}.svg", File(f), save=True)
 
         temp_path.unlink()
+
+
+class PendingSiegeFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = PendingSiege
+
+    savegame = factory.SubFactory(SavegameFactory)
+    attack_year = 1153
+    actual_strength = 150
+    announced_strength = 150
+    direction = PendingSiege.Direction.NORTH
+    resolved = False
+
+
+class SiegeChronicleFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = SiegeChronicle
+
+    savegame = factory.SubFactory(SavegameFactory)
+    year = 1153
+    direction = "N"
+    attacker_strength = 150
+    defense_score = 200
+    result = SiegeChronicle.Result.REPELLED
+    report_text = "The enemy was repelled at the North wall."

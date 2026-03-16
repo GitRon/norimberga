@@ -1,12 +1,23 @@
+import typing
+
 from django.db import models
 from django.db.models import Sum
 
+if typing.TYPE_CHECKING:
+    from django.contrib.auth.models import AbstractBaseUser
+
+    from apps.savegame.models import Savegame
+
 
 class SavegameQuerySet(models.QuerySet):
-    pass
+    def filter_active_for_user(self, *, user: "AbstractBaseUser") -> models.QuerySet:
+        return self.filter(user=user, is_active=True)
 
 
 class SavegameManager(models.Manager):
+    def get_active_for_user(self, *, user: "AbstractBaseUser") -> "Savegame | None":
+        return self.filter_active_for_user(user=user).first()
+
     def aggregate_taxes(self, *, savegame) -> int:
         """Aggregate total tax income from all buildings in the savegame."""
         result = savegame.tiles.aggregate(sum_taxes=Sum("building__taxes"))["sum_taxes"]

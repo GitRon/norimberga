@@ -5,6 +5,7 @@ from apps.city.views.defenses_view import DefensesView
 from apps.city.views.landing_page_view import LandingPageView
 from apps.city.views.navbar_values_view import NavbarValuesView
 from apps.city.views.prestige_view import PrestigeView
+from apps.city.views.siege.chronicle_view import SiegeChronicleView
 from apps.city.views.tile_build_view import TileBuildView
 from apps.city.views.tile_demolish_view import TileDemolishView
 from apps.city.views.tile_wall_repair_view import TileWallRepairView
@@ -18,6 +19,7 @@ __all__ = [
     "LandingPageView",
     "NavbarValuesView",
     "PrestigeView",
+    "SiegeChronicleView",
     "TileBuildView",
     "TileDemolishView",
     "TileWallRepairView",

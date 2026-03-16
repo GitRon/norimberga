@@ -18,4 +18,6 @@ urlpatterns = [
     path("tile/<int:pk>/repair-wall", views.TileWallRepairView.as_view(), name="tile-wall-repair"),
     # Walls
     path("walls/repair-all", views.WallRepairAllView.as_view(), name="wall-repair-all"),
+    # Siege
+    path("siege/chronicle/", views.SiegeChronicleView.as_view(), name="siege-chronicle"),
 ]

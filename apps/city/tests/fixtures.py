@@ -16,28 +16,33 @@ def ruins_building(db):
         for i in range(1, 8)
     ]
 
-    # Create Ruins BuildingType
-    ruins_type = BuildingType.objects.create(
-        name="Ruins",
+    # Get or create Ruins BuildingType (may already exist in reused test DB from fixtures)
+    ruins_type, created = BuildingType.objects.get_or_create(
         type=BuildingType.Type.RUINS,
-        is_country=False,
-        is_city=False,
-        is_house=False,
-        is_wall=False,
-        is_unique=False,
+        defaults={
+            "name": "Ruins",
+            "is_country": False,
+            "is_city": False,
+            "is_house": False,
+            "is_wall": False,
+            "is_unique": False,
+        },
     )
-    ruins_type.allowed_terrains.set(terrains)
+    if created:
+        ruins_type.allowed_terrains.set(terrains)
 
-    # Create Ruins Building
-    ruins = Building.objects.create(
-        name="Ruins",
-        building_type=ruins_type,
-        level=1,
-        taxes=0,
-        building_costs=0,
-        demolition_costs=20,
-        maintenance_costs=0,
-        housing_space=0,
-    )
+    # Get or create Ruins Building
+    ruins = ruins_type.buildings.first()
+    if ruins is None:
+        ruins = Building.objects.create(
+            name="Ruins",
+            building_type=ruins_type,
+            level=1,
+            taxes=0,
+            building_costs=0,
+            demolition_costs=20,
+            maintenance_costs=0,
+            housing_space=0,
+        )
 
     return ruins

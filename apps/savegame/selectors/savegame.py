@@ -1,11 +1,19 @@
 from collections import defaultdict
 
+from django.db.models import QuerySet
+
 from apps.savegame.models import Savegame
+from apps.savegame.models.siege_chronicle import SiegeChronicle
 
 
 def get_active_savegame_for_user(*, user) -> Savegame | None:
     """Return the active savegame for a user, or None if none exists."""
     return Savegame.objects.get_active_for_user(user=user)
+
+
+def get_siege_chronicles(*, savegame: Savegame) -> QuerySet[SiegeChronicle]:
+    """Return all siege chronicle entries for a savegame, ordered by year."""
+    return savegame.siege_chronicles.all()
 
 
 def get_balance_data(*, savegame: Savegame) -> dict:

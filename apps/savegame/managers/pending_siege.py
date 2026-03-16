@@ -15,6 +15,9 @@ class PendingSiegeQuerySet(models.QuerySet):
 
 
 class PendingSiegeManager(models.Manager):
+    def has_unresolved(self, *, savegame: "Savegame") -> bool:
+        return self.filter(savegame=savegame).filter_unresolved().exists()
+
     def get_due_siege(self, *, savegame: "Savegame", year: int) -> "PendingSiege | None":
         return self.filter(savegame=savegame).filter_unresolved().filter_by_year(year=year).first()
 

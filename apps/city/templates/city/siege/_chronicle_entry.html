@@ -1,7 +1,7 @@
 <div class="card bg-base-100 shadow-lg">
     <div class="card-body">
         <div class="flex items-center justify-between mb-2">
-            <h2 class="card-title text-xl">Year {{ entry.year }} — {{ entry.direction }} Wall</h2>
+            <h2 class="card-title text-xl">Year {{ entry.year }} — {{ entry.get_direction_display }} Wall</h2>
             {% if entry.result == "repelled" %}
                 <span class="badge badge-success badge-lg">Repelled</span>
             {% elif entry.result == "damaged" %}

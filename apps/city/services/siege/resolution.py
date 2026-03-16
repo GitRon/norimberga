@@ -2,9 +2,10 @@ import random
 from dataclasses import dataclass
 from enum import Enum
 
-from apps.city.constants import DIRECTION_NAMES, SIEGE_DAMAGED_THRESHOLD
+from apps.city.constants import SIEGE_DAMAGED_THRESHOLD
 from apps.city.events.effects.building.damage_wall import DamageWall
 from apps.city.events.effects.building.remove_building import RemoveBuilding
+from apps.city.events.effects.savegame.decrease_population_absolute import DecreasePopulationAbsolute
 from apps.city.models import Tile
 from apps.city.services.siege.segment import WallSegment, WallSegmentService
 from apps.savegame.models import PendingSiege, Savegame
@@ -62,7 +63,7 @@ class SiegeResolutionService:
             return SiegeOutcome.Result.BREACHED
 
     def _apply_repelled(self, *, segment: WallSegment, defense_score: int) -> SiegeOutcome:
-        direction_name = DIRECTION_NAMES.get(self.pending_siege.direction, self.pending_siege.direction)
+        direction_name = PendingSiege.Direction(self.pending_siege.direction).label
         attacker_strength = self.pending_siege.actual_strength
 
         tiles_to_damage = segment.tiles[: max(1, len(segment.tiles) // 5)]
@@ -93,7 +94,7 @@ class SiegeResolutionService:
         )
 
     def _apply_damaged(self, *, segment: WallSegment, defense_score: int) -> SiegeOutcome:
-        direction_name = DIRECTION_NAMES.get(self.pending_siege.direction, self.pending_siege.direction)
+        direction_name = PendingSiege.Direction(self.pending_siege.direction).label
         attacker_strength = self.pending_siege.actual_strength
 
         tiles_to_damage = segment.tiles[: max(1, len(segment.tiles) * 2 // 5)]
@@ -126,7 +127,7 @@ class SiegeResolutionService:
         )
 
     def _apply_breached(self, *, segment: WallSegment, defense_score: int) -> SiegeOutcome:
-        direction_name = DIRECTION_NAMES.get(self.pending_siege.direction, self.pending_siege.direction)
+        direction_name = PendingSiege.Direction(self.pending_siege.direction).label
         attacker_strength = self.pending_siege.actual_strength
 
         tiles_to_destroy_count = random.randint(1, 3)
@@ -142,8 +143,6 @@ class SiegeResolutionService:
         buildings_damaged = self._remove_random_city_buildings(count=buildings_to_remove)
 
         population_lost = random.randint(5, 20)
-        from apps.city.events.effects.savegame.decrease_population_absolute import DecreasePopulationAbsolute
-
         DecreasePopulationAbsolute(lost_population=population_lost).process(savegame=self.savegame)
 
         destroyed_count = len(tiles_to_destroy)

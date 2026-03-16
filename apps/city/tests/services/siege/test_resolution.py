@@ -49,22 +49,22 @@ def test_resolution_process_damaged(ruins_building):
 
     city_type = BuildingTypeFactory.create(is_city=True, is_wall=False, allowed_terrains=[terrain])
     city_building = BuildingFactory.create(building_type=city_type)
-    TileFactory.create(savegame=savegame, x=10, y=10, terrain=terrain, building=city_building)
+    city_tile = TileFactory.create(savegame=savegame, x=10, y=10, terrain=terrain, building=city_building)
 
     # actual_strength=100, defense=70 → 70 >= 100*0.6=60 → DAMAGED
     pending = PendingSiegeFactory.create(savegame=savegame, actual_strength=100, direction="N")
-    with mock.patch("apps.city.services.siege.resolution.RemoveBuilding") as mock_rb:
-        mock_rb.return_value.process.return_value = None
-        outcome = SiegeResolutionService(savegame=savegame, pending_siege=pending).process()
+    outcome = SiegeResolutionService(savegame=savegame, pending_siege=pending).process()
 
     assert outcome.result == SiegeOutcome.Result.DAMAGED
     assert outcome.buildings_damaged == 1
     assert outcome.population_lost == 0
     assert len(outcome.report_text) > 0
-    mock_rb.assert_called_once()
 
     tile.refresh_from_db()
     assert tile.wall_hitpoints < 70
+
+    city_tile.refresh_from_db()
+    assert city_tile.building == ruins_building
 
 
 @pytest.mark.django_db

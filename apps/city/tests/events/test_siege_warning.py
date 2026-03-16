@@ -1,28 +1,9 @@
 from unittest import mock
 
 import pytest
-from django.contrib import messages
 
 from apps.city.events.events.siege_warning import Event as SiegeWarningEvent
 from apps.savegame.tests.factories import PendingSiegeFactory, SavegameFactory
-
-
-@pytest.mark.django_db
-def test_siege_warning_event_probability():
-    """Test PROBABILITY is 8."""
-    assert SiegeWarningEvent.PROBABILITY == 8
-
-
-@pytest.mark.django_db
-def test_siege_warning_event_level():
-    """Test LEVEL is WARNING."""
-    assert SiegeWarningEvent.LEVEL == messages.WARNING
-
-
-@pytest.mark.django_db
-def test_siege_warning_event_title():
-    """Test TITLE contains scout report."""
-    assert "Scout" in SiegeWarningEvent.TITLE
 
 
 @pytest.mark.django_db

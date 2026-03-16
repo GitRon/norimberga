@@ -10,6 +10,7 @@ from apps.savegame.models import PendingSiege, Savegame, SiegeChronicle
 class SavegameFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Savegame
+        skip_postgeneration_save = True
 
     user = factory.SubFactory(UserFactory)
     city_name = factory.Faker("city")

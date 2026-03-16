@@ -1,6 +1,5 @@
 from django.contrib import messages
 
-from apps.city.constants import DIRECTION_NAMES
 from apps.city.services.siege.announcement import SiegeAnnouncementService
 from apps.event.events.events.base_event import BaseEvent
 from apps.savegame.models import PendingSiege
@@ -14,7 +13,7 @@ class Event(BaseEvent):
     _pending_siege: PendingSiege
 
     def get_probability(self) -> int:
-        already_pending = self.savegame.pending_sieges.filter(resolved=False).exists()
+        already_pending = PendingSiege.objects.has_unresolved(savegame=self.savegame)
         return 0 if already_pending else super().get_probability()
 
     def get_effects(self) -> list:
@@ -25,7 +24,7 @@ class Event(BaseEvent):
         return self.get_verbose_text()
 
     def get_verbose_text(self) -> str:
-        direction = DIRECTION_NAMES.get(self._pending_siege.direction, self._pending_siege.direction)
+        direction = PendingSiege.Direction(self._pending_siege.direction).label
         years_away = self._pending_siege.attack_year - self.savegame.current_year
 
         return (
